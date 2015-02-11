@@ -1,0 +1,4 @@
+genome01	data/genome01_R1.fastq	data/genome01_R2.fastq
+genome02	data/genome02_R1.fastq	data/genome02_R2.fastq
+genome03	data/genome03_R1.fastq	data/genome03_R2.fastq
+genome04	data/genome04_R1.fastq	data/genome04_R2.fastq
