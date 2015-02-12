@@ -23,7 +23,7 @@ use Nullarbor::Report;
 # constants
 
 my $EXE = "$FindBin::RealScript";
-my $VERSION = '0.1';
+my $VERSION = '0.2';
 my $AUTHOR = 'Torsten Seemann <torsten.seemann@gmail.com>';
 
 #-------------------------------------------------------------------
@@ -42,6 +42,7 @@ my $force = 0;
 my $run = 0;
 my $report = 0;
 my $indir = '';
+my $name = '';
 
 GetOptions(
   "help"     => \&usage,
@@ -57,6 +58,7 @@ GetOptions(
   "run!"     => \$run,
   "report!"  => \$report,
   "indir=s"  => \$indir,
+  "name=s"   => \$name,
 ) 
 or usage();
 
@@ -69,8 +71,9 @@ msg("Send complaints to $AUTHOR");
 if ($report) {
   $indir or err("Please ser the --indir folder to a $EXE output folder");
   $outdir or err("Please set the --outdir output folder.");
+  $name or err("Please specify a report --name");
   make_path($outdir) unless -f $outdir;
-  Nullarbor::Report->generate($indir, $outdir);
+  Nullarbor::Report->generate($indir, $outdir, $name);
   exit;
 }
 
@@ -79,9 +82,13 @@ my $make_target = '$@';
 my $make_dep = '$<';
 my $make_deps = '$^';
 
+$name or err("Please provide a --name for the project.");
+$name =~ m{/|\s} and err("The --name is not allowed to have spaces or slashes in it.");
+
 $outdir or err("Please provide an --outdir folder.");
 if (-d $outdir) {
   if ($force) {
+    msg("Re-using existing folder: $outdir");
 #    msg("Forced removal of existing --outdir $outdir");
 #    remove_tree($outdir);
   }
@@ -115,19 +122,33 @@ my $R2 = "R2.fq.gz";
 my $CTG = "contigs.fa";
 my $zcat = 'gzip -f -c -d';
 
-$make{all} = { 
-  DEP => [ $REF, 'folders', 'yields', 'mlst', 'parsnp', 'abricate', 'kraken', 'wombac', 'tree.gif', 'assembly.csv' ],
-  CMD => [ "$FindBin::Bin/nullarbor.pl --report --indir $outdir --outdir $outdir/report" ],
+# Makefile logic
+
+my @PHONY = [ qw(folders yields abricate kraken) ] ;
+
+$make{'.PHONY'} = { 
+  DEP => \@PHONY, 
 };
 
+$make{all} = { 
+  DEP => [ 'report/index.html' ],
+};
+
+$make{'report/index.html'} = {
+  DEP => 'report/index.md',
+  CMD => "pandoc --from markdown_github --to html --css 'nullarbor.css' $make_dep > $make_target"
+};
+
+$make{'report/index.md'} = {
+  DEP => [ $REF, @PHONY, qw(mlst.csv assembly.csv tree.gif snps.csv) ],
+  CMD => "$FindBin::Bin/nullarbor.pl --name $name --report --indir $outdir --outdir $outdir/report",
+};
+  
 $make{$REF} = { 
   DEP => $ref, 
   CMD => "cp $make_dep $make_target",
 };
 
-$make{'.PHONY'} = { 
-  DEP => [ qw(folders yields mlst abricate kraken parsnp wombac) ] 
-};
 
 for my $s ($set->isolates) {
   msg("Preparing rules for isolate:", $s->id);
@@ -199,9 +220,9 @@ $make{"kraken"} = {
   DEP => [ map { "$_/kraken.csv" } $set->ids ],
 };
 
-$make{'mlst'} = { 
-  DEP => 'mlst.csv',
-};
+#$make{'mlst'} = { 
+#  DEP => 'mlst.csv',
+#};
 
 $make{"mlst.csv"} = { 
   DEP => [ map { "$_/$CTG" } $set->ids ],
@@ -217,13 +238,23 @@ my $wtree = "wombac/core.tree";
 $make{"wombac"} = { DEP => $wtree };
 $make{$wtree} = {
   DEP => [ $REF, map { ("$_/$R1", "$_/$R2") } $set->ids ],
-  CMD => "wombac --ref $REF --outdir wombac --run --ref $REF ".join(' ',$set->ids),
+  CMD => "wombac --force --ref $REF --outdir wombac --run --ref $REF ".join(' ',$set->ids),
 };
 
-#  Example: figtree -graphic GIF -width 320 -height 320 test.tree test.gif
-$make{'tree.gif'} = {
+$make{'tree.svg'} = {
   DEP => 'wombac/core.tree',
-  CMD => "figtree -graphic GIF -width 1024 -height 1024 $make_dep $make_target",
+#  CMD => "figtree -graphic GIF -width 1024 -height 1024 $make_dep $make_target",
+  CMD => "nw_display -S -s -w 1024 -l 'font-size:12' -i 'opacity:0' -b 'opacity:0' $make_dep > $make_target",
+};
+
+$make{'tree.gif'} = {
+  DEP => 'tree.svg',
+  CMD => "convert $make_dep $make_target",
+};
+
+$make{'snps.csv'} = {
+  DEP => 'wombac/core.aln',
+  CMD => "afa-pairwise.pl $make_dep > $make_target",
 };
 
 my $ptree = "parsnp/parsnp.tree";
@@ -274,9 +305,15 @@ sub write_makefile {
 sub usage {
   print "USAGE\n";
   print "(1) Analyse samples\n";
-  print "  $EXE --mlst SCHEME --ref REF.FA --input SAMPLES.TAB --outdir DIR\n";
+  print "  $EXE [options] --mlst SCHEME --ref REF.FA --input SAMPLES.TAB --outdir DIR\n";
+  print "    --force     Nuke --outdir\n";
+  print "    --cpus      Number of CPUs to use\n";
+  print "    --quiet     No output\n";
+  print "    --verbose   More output\n";
+  print "    --version   Tool version\n";
   print "(2) Generate report\n";
-  print "  $EXE --indir DIR --outdir WEBDIR\n";
+  print "  $EXE [options] --indir DIR --outdir WEBDIR --name JOBNAME\n";
+  print "    --version   Tool version\n";
   exit;
 }
 
@@ -285,4 +322,3 @@ sub version {
   print "$EXE $VERSION\n";
   exit;
 }
-

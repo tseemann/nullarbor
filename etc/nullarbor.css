@@ -1,0 +1,27 @@
+
+BODY {
+  font-family: sans-serif;
+}
+
+TABLE, TD, TH {
+  border-collapse: collapse;
+  text-align: center;
+  border: solid black 1px;
+  padding: 0.5ex;
+}
+
+TABLE {
+  font-size: smaller;
+}
+
+TH {
+  font-weight: bold;
+  background: LemonChiffon;
+}
+
+/* not working */
+#antibiotic-resistance-genes > TABLE { 
+  -webkit-writing-mode: vertical-rl; 
+  -ms-writing-mode: tb-rl; 
+  writing-mode: vertical-rl; 
+}

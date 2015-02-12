@@ -4,16 +4,27 @@ use Moo;
 use Nullarbor::Logger qw(msg err);
 use Data::Dumper;
 use File::Copy;
+use Bio::SeqIO;
 
 #.................................................................................
 
 sub generate {
-  my($self, $indir, $outdir) = @_;
+  my($self, $indir, $outdir, $name) = @_;
 
-  # Heading
+  $name ||= $outdir;
+
+  msg("Generating $name report in: $outdir");
   open my $fh, '>', "$outdir/index.md";
-  print $fh "#MDU Report: $indir\n";
+  copy("$FindBin::Bin/../etc/nullarbor.css", "$outdir/");  
 
+  #...........................................................................................
+  # Heading
+  print $fh "#MDU Report: $name\n";
+
+  print  $fh "__Date:__ ", qx(date);
+  printf $fh "__Author:__ %s\n", $ENV{USER} || $ENV{LOGNAME} || 'anonymous';
+
+  #...........................................................................................
   # MLST
   my $mlst = load_tabular(-file=>"$indir/mlst.csv", -sep=>"\t", -header=>1);
 #  print STDERR Dumper($mlst);
@@ -25,42 +36,50 @@ sub generate {
   }
   shift @id;
 #  print STDERR Dumper(\@id);
+  printf $fh "__Isolates:__ %d\n", scalar(@id);
 
   print $fh "##MLST\n";
+  copy("$indir/mlst.csv", "$outdir/$name.mlst.csv");
+  print $fh "Download: [$name.mlst.csv]($name.mlst.csv)\n";
   $mlst->[0][0] = 'Isolate';
   print $fh table_to_markdown($mlst, 1);
-  
-  
-  # Yields
-  print $fh "##WGS\n";
-  my @wgs;
-  my $first=1;
-  for my $id (@id) {
-    my $t = load_tabular(-file=>"$indir/$id/yield.clean.csv", -sep=>"\t");
-    if ($first) {
-      $t->[0][0] = 'Isolate';
-      push @wgs, [ map { $_->[0] } @$t ];
-      $first=0;
-    }
-    $t->[0][1] = $id;
-    push @wgs, [ map { $_->[1] } @$t ];
-  }
-#  print Dumper(\@wgs);
-  print $fh table_to_markdown(\@wgs, 1);
     
+  #...........................................................................................
+  # Yields
+#  for my $stage ('dirty', 'clean') {
+  for my $stage ('clean') {
+    print $fh "##Sequence data\n";
+    my @wgs;
+    my $first=1;
+    for my $id (@id) {
+      my $t = load_tabular(-file=>"$indir/$id/yield.$stage.csv", -sep=>"\t");
+      if ($first) {
+        $t->[0][0] = 'Isolate';
+        push @wgs, [ map { $_->[0] } @$t ];
+        $first=0;
+      }
+      $t->[0][1] = $id;
+      push @wgs, [ map { $_->[1] } @$t ];
+    }
+  #  print Dumper(\@wgs);
+    print $fh table_to_markdown(\@wgs, 1);
+  }
+    
+  #...........................................................................................
   # Species ID
   print $fh "##Sequence identification\n";
   my @spec;
-  push @spec, [ 'Isolate', 'Predicted species' ];
-  $first=1;
+  push @spec, [ 'Isolate', 'Predicted species', '%matched' ];
   for my $id (@id) {
     my $t = load_tabular(-file=>"$indir/$id/kraken.csv", -sep=>"\t");
-    my @s = grep { $_->[3] eq 'S' or $_->[3] eq '-' && $_->[0] < 90 } @$t;
-    push @spec, [ $id, $s[0][5] ];
+    my @s = grep { $_->[3] eq 'S' } @$t;
+    $s[0][5] =~ s/^\s+//;
+    push @spec, [ $id, '_'.$s[0][5].'_', $s[0][0] ];  # italics species
   }
 #  print Dumper(\@spec);
   print $fh table_to_markdown(\@spec, 1);
 
+  #...........................................................................................
   # Assembly
   print $fh "##Assembly\n";
   my $ass = load_tabular(-file=>"$indir/assembly.csv", -sep=>"\t", -header=>1);
@@ -70,8 +89,9 @@ sub generate {
   map { $_->[0] =~ s{/contigs.fa}{} } @$ass;
   print $fh table_to_markdown($ass,1);
   
+  #...........................................................................................
   # ABR
-  print $fh "##Antibiotic Resistance\n";
+  print $fh "##Antibiotic Resistance Genes\n";
   my %abr;
   for my $id (@id) {
     $abr{$id} = load_tabular(-file=>"$indir/$id/abricate.csv", -sep=>"\t",-header=>1, -key=>4);
@@ -84,23 +104,73 @@ sub generate {
     @x = 'n/a' if @x==0;
     push @abr, [ $id, join( ',', @x) ];
   }
-  print $fh table_to_markdown(\@abr, 1);
+#  print $fh table_to_markdown(\@abr, 1);
 
+  if (1) {
+    print $fh "\n";
+    my %gene;
+    map { $gene{$_}++ } (map { (keys %{$abr{$_}}) } @id);
+    my @gene = sort { $a cmp $b } keys %gene;
+#    print STDERR Dumper(\%gene);
+    my @grid;
+#    my @vertgene = map { '__'.join(' ', split m//, $_).'__' } @gene;
+    push @grid, [ 'Isolate', @gene ];
+    for my $id (@id) {
+      push @grid, [ $id, map { exists $abr{$id}{$_} ? int($abr{$id}{$_}{'%COVERAGE'}).'%' : '.' } @gene ];
+    }
+    print $fh table_to_markdown(\@grid, 1);
+  }
+
+  #...........................................................................................
   # Reference Genome
   print $fh "##Reference genome\n";
-  my $r = load_tabular(-file=>"fa -f $indir/ref.fa |", -sep=>"\t");
+  my $fin = Bio::SeqIO->new(-file=>"$indir/ref.fa", -format=>'fasta');
+  my $refsize;
   my @ref;
-  push @ref, [ qw(Sequence Length) ];
-  for my $row (@$r) {
-    push @ref, [ $row->[0], $row->[2] ] if @$row == 3;
+  push @ref, [ qw(Sequence Length Description) ];
+  while (my $seq = $fin->next_seq) {
+    my $id = $seq->id;
+    $id =~ s/\W+/_/g;
+    push @ref, [ $id, $seq->length, '_'.$seq->desc.'_' ];
+    $refsize += $seq->length;
   }
 #  print STDERR Dumper($r, \@ref);
-  print $fh table_to_markdown(\@ref, 1);
+  copy("$indir/ref.fa", "$outdir/$name.ref.fa");
+  printf $fh "Reference contains %d sequences totalling %.2f Mbp. ", @ref-1, $refsize/1E6;
+  print  $fh " Download: [$name.ref.fa]($name.ref.fa)\n";
+  print  $fh table_to_markdown(\@ref, 1);
  
-  # Reference Genome
-  print $fh "##Core SNP tree\n";
-  copy("$indir/tree.gif", "$outdir/tree.gif");
-  print $fh "![Core tree](tree.gif)\n";
+  #...........................................................................................
+  # Core SNP tree
+  print $fh "##Core SNP phylogeny\n";
+  
+  my $aln = Bio::SeqIO->new(-file=>"$indir/wombac/core.aln", -format=>'fasta');
+  $aln = $aln->next_seq;
+  printf $fh "Core SNP alignment has %d taxa and %s bp. ", scalar(@id), $aln->length;
+  
+  copy("$indir/wombac/core.aln", "$outdir/$name.aln");
+  copy("$indir/wombac/core.tree", "$outdir/$name.tree");
+  print $fh "Download: [$name.tree]($name.tree) | [$name.aln]($name.aln)\n";
+
+  copy("$indir/tree.gif", "$outdir/$name.tree.gif");
+  print $fh "![Core tree]($name.tree.gif)\n";
+
+  #...........................................................................................
+  # Core SNP counts
+  print $fh "##Core SNP distances\n";
+  my $snps = load_tabular(-file=>"$indir/snps.csv", -sep=>"\t");
+  print $fh table_to_markdown($snps, 1);
+
+  #...........................................................................................
+  # Software
+  print $fh "##Software\n";
+  for my $tool (qw(nullarbor.pl wombac kraken samtools freebayes)) {
+    print $fh "- $tool ```", qx($tool --version 2>&1), "```\n";
+  }
+  
+  #...........................................................................................
+  # Done!
+  msg("Report can be viewed in $outdir/index.md");
 }
 
 #.................................................................................

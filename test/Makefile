@@ -21,9 +21,9 @@ clean:
 
 doc:
 	../bin/nullarbor.pl --report --indir t --outdir t/report	
-	pandoc --from markdown_github --to html t/report/index.md > t/report/index.html
-	cat t/report/index.html
-	cat t/report/index.md
+	pandoc --from markdown_github --to html --css "nullarbor.css" t/report/index.md > t/report/index.html
+#	cat t/report/index.html
+#	cat t/report/index.md
 	rm -fr $(HOME)/public_html/tmp/mdu
 	cp -rf t/report $(HOME)/public_html/tmp/mdu
 
