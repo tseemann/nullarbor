@@ -85,6 +85,23 @@ my $make_deps = '$^';
 $name or err("Please provide a --name for the project.");
 $name =~ m{/|\s} and err("The --name is not allowed to have spaces or slashes in it.");
 
+$ref or err("Please provide a --ref reference genome in FASTA format");
+-r $ref or err("Can not read reference '$ref'");
+$ref = File::Spec->rel2abs($ref);
+msg("Using reference genome: $ref");
+
+$input or err("Please specify an dataset with --input <dataset.tab>");
+-r $input or err("Can not read dataset file '$input'");
+my $set = Nullarbor::IsolateSet->new();
+$set->load($input);
+msg("Loaded", $set->num, "isolates:", $set->ids);
+
+my %scheme = ( map { $_=>1 } split ' ', qx(mlst --list) );
+msg("Found", scalar(keys %scheme), "MLST schemes");
+$mlst or err("Please provide an --mlst <scheme> from this list:\n", sort keys %scheme);
+err("Invalid --mlst '$mlst'") if ! exists $scheme{$mlst}; 
+msg("Using scheme: $mlst");
+
 $outdir or err("Please provide an --outdir folder.");
 if (-d $outdir) {
   if ($force) {
@@ -100,22 +117,6 @@ $outdir = File::Spec->rel2abs($outdir);
 msg("Making output folder: $outdir");
 make_path($outdir); 
 
--r $ref or err("Can not read reference '$ref'");
-$ref = File::Spec->rel2abs($ref);
-msg("Using reference genome: $ref");
-
-my %scheme = ( map { $_=>1 } split ' ', qx(mlst --list) );
-msg("Found", scalar(keys %scheme), "MLST schemes");
-$mlst or err("Please provide an --mlst <scheme> from this list:\n", sort keys %scheme);
-err("Invalid --mlst '$mlst'") if ! exists $scheme{$mlst}; 
-msg("Using scheme: $mlst");
-
-$input or err("Please specify an dataset with --input <dataset.tab>");
--r $input or err("Can not read dataset file '$input'");
-my $set = Nullarbor::IsolateSet->new();
-$set->load($input);
-msg("Loaded", $set->num, "isolates:", $set->ids);
-
 my $REF = 'ref.fa';
 my $R1 = "R1.fq.gz";
 my $R2 = "R2.fq.gz";
@@ -124,7 +125,7 @@ my $zcat = 'gzip -f -c -d';
 
 # Makefile logic
 
-my @PHONY = [ qw(folders yields abricate kraken) ] ;
+my @PHONY = qw(folders yields abricate kraken);
 
 $make{'.PHONY'} = { 
   DEP => \@PHONY, 
@@ -185,7 +186,7 @@ for my $s ($set->isolates) {
   $make{"$id/$CTG"} = {
     DEP => [ @clipped ],
     CMD => [ 
-      "megahit -m 1E10 -l 650 --out-dir $id --input-cmd '$zcat $make_deps' --cpu-only -t $cpus --k-min 31 --k-max 31 --min-count 3",
+      "megahit -m 16E9 -l 610 --out-dir $id --input-cmd '$zcat $make_deps' --cpu-only -t $cpus --k-min 31 --k-max 71 --k-step 20 --min-count 3",
       "mv $id/final.contigs.fa $make_target",
       "mv $id/log $id/megahit.log",
       "rm -r $id/tmp $id/done $id/opts.txt",
@@ -290,6 +291,7 @@ sub write_makefile {
   print $fh "SHELL := /bin/bash\n";
   
   for my $target ('all', sort grep { $_ ne 'all' } keys %$make) {
+    print $fh "\n";
     my $dep = $make->{$target}{DEP};
     $dep = ref($dep) eq 'ARRAY' ? (join ' ', @$dep) : $dep;
     $dep ||= '';
