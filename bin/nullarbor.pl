@@ -127,9 +127,8 @@ my $zcat = 'gzip -f -c -d';
 
 my @PHONY = qw(folders yields abricate kraken);
 
-$make{'.PHONY'} = { 
-  DEP => \@PHONY, 
-};
+$make{'.PHONY'  } = { DEP => \@PHONY };
+$make{'.DEFAULT'} = { DEP => 'all'   };
 
 $make{all} = { 
   DEP => [ 'report/index.html' ],
@@ -141,7 +140,7 @@ $make{'report/index.html'} = {
 };
 
 $make{'report/index.md'} = {
-  DEP => [ $REF, @PHONY, qw(mlst.csv assembly.csv tree.gif snps.csv) ],
+  DEP => [ $REF, qw(mlst.csv assembly.csv tree.gif snps.csv), @PHONY ],
   CMD => "$FindBin::Bin/nullarbor.pl --name $name --report --indir $outdir --outdir $outdir/report",
 };
   
@@ -242,8 +241,13 @@ $make{$wtree} = {
   CMD => "wombac --force --ref $REF --outdir wombac --run --ref $REF ".join(' ',$set->ids),
 };
 
+$make{'tree.newick'} = {
+  DEP => $wtree,
+  CMD => "nw_reroot $make_dep Reference > $make_target",
+};
+
 $make{'tree.svg'} = {
-  DEP => 'wombac/core.tree',
+  DEP => 'tree.newick',
 #  CMD => "figtree -graphic GIF -width 1024 -height 1024 $make_dep $make_target",
   CMD => "nw_display -S -s -w 1024 -l 'font-size:12' -i 'opacity:0' -b 'opacity:0' $make_dep > $make_target",
 };
