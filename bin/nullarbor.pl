@@ -130,8 +130,8 @@ my @PHONY = qw(folders yields abricate kraken);
 $make{'.PHONY'  } = { DEP => \@PHONY };
 $make{'.DEFAULT'} = { DEP => 'all'   };
 
-$make{all} = { 
-  DEP => [ 'report/index.html' ],
+$make{'all'} = { 
+  DEP => [ 'isolates.txt', 'report/index.html' ],
 };
 
 $make{'report/index.html'} = {
@@ -150,6 +150,8 @@ $make{$REF} = {
 };
 
 
+# START per isolate
+open ISOLATES, '>', "$outdir/isolates.txt";
 for my $s ($set->isolates) {
   msg("Preparing rules for isolate:", $s->id);
   my $dir = File::Spec->rel2abs( File::Spec->catdir($outdir, $s->id) );
@@ -158,6 +160,7 @@ for my $s ($set->isolates) {
   my @reads = @{$s->reads};
   @reads != 2 and err("Sample '$id' only has 1 read, need 2 (paired).");
   my @clipped = ("$id/$R1", "$id/$R2");
+  print ISOLATES "$id\n";
 
 #  make_path($dir);
   $make{"$id"} = {
@@ -203,6 +206,8 @@ for my $s ($set->isolates) {
     CMD => "abricate $make_deps > $make_target",
   };
 }
+close ISOLATES;
+#END per isolate
 
 $make{"folders"} = { 
   DEP => [ $set->ids ],
@@ -220,12 +225,8 @@ $make{"kraken"} = {
   DEP => [ map { "$_/kraken.csv" } $set->ids ],
 };
 
-#$make{'mlst'} = { 
-#  DEP => 'mlst.csv',
-#};
-
 $make{"mlst.csv"} = { 
-  DEP => [ map { "$_/$CTG" } $set->ids ],
+  DEP => [ (map { "$_/$CTG" } $set->ids), $REF ],
   CMD => "mlst --scheme $mlst $make_deps > $make_target" ,
 };
 

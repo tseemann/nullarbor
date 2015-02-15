@@ -18,25 +18,34 @@ sub generate {
   copy("$FindBin::Bin/../etc/nullarbor.css", "$outdir/");  
 
   #...........................................................................................
-  # Heading
-  print $fh "#MDU Report: $name\n";
+  # Load isolate list
 
+  my $isolates_fname = 'isolates.txt';
+  open ISOLATES, '<', $isolates_fname or err("Can not open $indir/$isolates_fname");
+  my @id = <ISOLATES>;
+  chomp @id;
+  close ISOLATES;
+  msg("Read", 0+@id, "isolates from $isolates_fname");
+  #print Dumper(\@id); exit;
+
+  #...........................................................................................
+  # Heading
+
+  print  $fh "#MDU Report: $name\n";
   print  $fh "__Date:__ ", qx(date);
   printf $fh "__Author:__ %s\n", $ENV{USER} || $ENV{LOGNAME} || 'anonymous';
+  printf $fh "__Isolates:__ %d\n", scalar(@id);
 
   #...........................................................................................
   # MLST
-  my $mlst = load_tabular(-file=>"$indir/mlst.csv", -sep=>"\t", -header=>1);
-#  print STDERR Dumper($mlst);
   
-  my @id;
+  my $mlst = load_tabular(-file=>"$indir/mlst.csv", -sep=>"\t", -header=>1);
+  #print STDERR Dumper($mlst);
+  
   foreach (@$mlst) {
     $_->[0] =~ s{/contigs.fa}{};
-    push @id, $_->[0];
+    $_->[0] =~ s/ref.fa/Reference/;
   }
-  shift @id;
-#  print STDERR Dumper(\@id);
-  printf $fh "__Isolates:__ %d\n", scalar(@id);
 
   print $fh "##MLST\n";
   copy("$indir/mlst.csv", "$outdir/$name.mlst.csv");
@@ -46,7 +55,8 @@ sub generate {
     
   #...........................................................................................
   # Yields
-#  for my $stage ('dirty', 'clean') {
+
+  #for my $stage ('dirty', 'clean') {
   for my $stage ('clean') {
     print $fh "##Sequence data\n";
     my @wgs;
