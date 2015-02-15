@@ -69,12 +69,18 @@ sub generate {
   # Species ID
   print $fh "##Sequence identification\n";
   my @spec;
-  push @spec, [ 'Isolate', 'Predicted species', '%matched' ];
+  push @spec, [ 'Isolate', 'Predicted genus', '%matched', 'Predicted species', '%matched' ];
   for my $id (@id) {
     my $t = load_tabular(-file=>"$indir/$id/kraken.csv", -sep=>"\t");
+    my @g = grep { $_->[3] eq 'G' } @$t;
     my @s = grep { $_->[3] eq 'S' } @$t;
+    $g[0][5] =~ s/^\s+//;
     $s[0][5] =~ s/^\s+//;
-    push @spec, [ $id, '_'.$s[0][5].'_', $s[0][0] ];  # italics species
+    push @spec, [ 
+      $id, 
+      '_'.$g[0][5].'_', $g[0][0],
+      '_'.$s[0][5].'_', $s[0][0],
+    ];  # _italics_ taxa names
   }
 #  print Dumper(\@spec);
   print $fh table_to_markdown(\@spec, 1);
@@ -151,7 +157,7 @@ sub generate {
   printf $fh "Core SNP alignment has %d taxa and %s bp. ", scalar(@id), $aln->length;
   
   copy("$indir/wombac/core.aln", "$outdir/$name.aln");
-  copy("$indir/wombac/core.tree", "$outdir/$name.tree");
+  copy("$indir/tree.newick", "$outdir/$name.tree");
   print $fh "Download: [$name.tree]($name.tree) | [$name.aln]($name.aln)\n";
 
   copy("$indir/tree.gif", "$outdir/$name.tree.gif");
