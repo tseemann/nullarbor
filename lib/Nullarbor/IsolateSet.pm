@@ -33,6 +33,15 @@ sub print {
 
 #.................................................................................
 
+sub _clean_id {
+  my $s = shift;
+  $s =~ s/[^\w._-]/~/g;
+  #$s = quotemeta($s);
+  return $s;
+}
+
+#.................................................................................
+
 sub load {
   my($self, $fname) = @_;
   %set = ();
@@ -42,6 +51,7 @@ sub load {
     chomp;
     my($id, @reads) = split m/\t/;
     next unless $id and @reads >= 1;
+    $id = _clean_id($id);
     exists $set{$id} and die "Duplicate ID '$id' in dataset '$fname'";
     for my $i (0 ..$#reads) {
       $reads[$i] = abs_path($reads[$i]);
