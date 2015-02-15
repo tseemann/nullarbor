@@ -114,9 +114,11 @@ sub generate {
 #    print STDERR Dumper(\%gene);
     my @grid;
 #    my @vertgene = map { '__'.join(' ', split m//, $_).'__' } @gene;
-    push @grid, [ 'Isolate', @gene ];
+    push @grid, [ 'Isolate', 'Found', @gene ];
     for my $id (@id) {
-      push @grid, [ $id, map { exists $abr{$id}{$_} ? int($abr{$id}{$_}{'%COVERAGE'}).'%' : '.' } @gene ];
+      my @abr = map { exists $abr{$id}{$_} ? int($abr{$id}{$_}{'%COVERAGE'}).'%' : '.' } @gene;
+      my $found = scalar( grep { $_ ne '.' } @abr );
+      push @grid, [ $id, $found, @abr ];
     }
     print $fh table_to_markdown(\@grid, 1);
   }
