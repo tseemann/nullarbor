@@ -239,7 +239,7 @@ my $wtree = "wombac/core.tree";
 $make{"wombac"} = { DEP => $wtree };
 $make{$wtree} = {
   DEP => [ $REF, map { ("$_/$R1", "$_/$R2") } $set->ids ],
-  CMD => "wombac --cpus $cpus--force --ref $REF --outdir wombac --run --ref $REF ".join(' ',$set->ids),
+  CMD => "wombac --cpus $cpus --force --ref $REF --outdir wombac --run --ref $REF ".join(' ',$set->ids),
 };
 
 $make{'tree.newick'} = {
