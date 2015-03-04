@@ -107,7 +107,7 @@ sub generate {
   
   #...........................................................................................
   # ABR
-  print $fh "##Antibiotic Resistance Genes\n";
+  print $fh "##Resistome\n";
   my %abr;
   for my $id (@id) {
     $abr{$id} = load_tabular(-file=>"$indir/$id/abricate.csv", -sep=>"\t",-header=>1, -key=>4);
