@@ -140,7 +140,7 @@ $make{'report/index.html'} = {
 };
 
 $make{'report/index.md'} = {
-  DEP => [ $REF, qw(mlst.csv assembly.csv tree.gif snps.csv), @PHONY ],
+  DEP => [ $REF, @PHONY, qw(mlst.csv assembly.csv tree.gif snps.csv) ],
   CMD => "$FindBin::Bin/nullarbor.pl --name $name --report --indir $outdir --outdir $outdir/report",
 };
   
@@ -239,7 +239,10 @@ my $wtree = "wombac/core.tree";
 $make{"wombac"} = { DEP => $wtree };
 $make{$wtree} = {
   DEP => [ $REF, map { ("$_/$R1", "$_/$R2") } $set->ids ],
-  CMD => "wombac --cpus $cpus --force --ref $REF --outdir wombac --run --ref $REF ".join(' ',$set->ids),
+  CMD => [
+    "wombac --cpus $cpus --force --ref $REF --outdir wombac --ref $REF ".join(' ',$set->ids),
+    "make -C wombac",
+  ],
 };
 
 $make{'tree.newick'} = {
