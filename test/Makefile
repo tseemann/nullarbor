@@ -3,7 +3,7 @@ DATA=data
 TESTDIR=./t
 
 setup:
-	../bin/nullarbor.pl --outdir $(TESTDIR) --ref $(DATA)/ref.fa --input $(DATA)/data.tab  --force --mlst saureus
+	../bin/nullarbor.pl --outdir $(TESTDIR) --ref $(DATA)/ref.fa --input $(DATA)/data.tab  --force --mlst saureus --name NullTest
 
 run:
 	make -C $(TESTDIR)
