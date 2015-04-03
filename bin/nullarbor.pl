@@ -14,7 +14,7 @@ use File::Spec qw(catfile);
 # local modules 
 
 use FindBin;
-use lib "$FindBin::Bin/../lib";
+use lib "$FindBin::RealBin/../lib";
 use Nullarbor::IsolateSet;
 use Nullarbor::Logger qw(msg err);
 use Nullarbor::Report;
@@ -297,7 +297,10 @@ sub write_makefile {
   $fh = \*STDOUT if not defined $fh;
   
   print $fh "SHELL := /bin/bash\n";
-  
+  print $fh "MAKEFLAGS += --no-builtin-rules\n";
+  print $fh "MAKEFLAGS += --no-builtin-variables\n";
+  print $fh ".SUFFIXES:\n";
+
   for my $target ('all', sort grep { $_ ne 'all' } keys %$make) {
     print $fh "\n";
     my $dep = $make->{$target}{DEP};
