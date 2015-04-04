@@ -14,7 +14,7 @@ use File::Spec qw(catfile);
 # local modules 
 
 use FindBin;
-use lib "$FindBin::RealBin/../lib";
+use lib "$FindBin::RealBin/../perl5";
 use Nullarbor::IsolateSet;
 use Nullarbor::Logger qw(msg err);
 use Nullarbor::Report;
@@ -24,7 +24,7 @@ use Nullarbor::Requirements qw(require_exe require_perlmod);
 # constants
 
 my $EXE = "$FindBin::RealScript";
-my $VERSION = '0.3';
+my $VERSION = '0.4';
 my $AUTHOR = 'Torsten Seemann <torsten.seemann@gmail.com>';
 
 #-------------------------------------------------------------------
@@ -69,7 +69,7 @@ msg("Hello", $ENV{USER} || 'stranger');
 msg("This is $EXE $VERSION");
 msg("Send complaints to $AUTHOR");
 
-require_exe( qw'kraken snippy mlst fq abricate nw_display trimal FastTree convert pandoc afa-pairwise.pl' );
+require_exe( qw'kraken snippy mlst fq abricate megahit nw_reroot nw_display trimal FastTree convert pandoc afa-pairwise.pl' );
 require_perlmod( qw'Data::Dumper Moo Spreadsheet::Read SVG::Graph Bio::SeqIO File::Copy Time::Piece' );
 
 if ($report) {

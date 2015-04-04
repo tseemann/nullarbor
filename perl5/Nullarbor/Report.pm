@@ -15,7 +15,7 @@ sub generate {
 
   msg("Generating $name report in: $outdir");
   open my $fh, '>', "$outdir/index.md";
-  copy("$FindBin::Bin/../etc/nullarbor.css", "$outdir/");  
+  copy("$FindBin::Bin/../conf/nullarbor.css", "$outdir/");  
 
   #...........................................................................................
   # Load isolate list
