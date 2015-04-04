@@ -25,6 +25,7 @@ sub generate {
   my @id = <ISOLATES>;
   chomp @id;
   close ISOLATES;
+  @id = sort @id;
   msg("Read", 0+@id, "isolates from $isolates_fname");
   #print Dumper(\@id); exit;
 
