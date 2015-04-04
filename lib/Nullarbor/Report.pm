@@ -45,10 +45,14 @@ sub generate {
   foreach (@$mlst) {
     $_->[0] =~ s{/contigs.fa}{};
     $_->[0] =~ s/ref.fa/Reference/;
+    # move ST column to end to match MDU LIMS
+    my @ST = splice @$_, 2, 1;
+    push @$_, @ST;
   }
 
   print $fh "##MLST\n";
-  copy("$indir/mlst.csv", "$outdir/$name.mlst.csv");
+  #copy("$indir/mlst.csv", "$outdir/$name.mlst.csv");
+  save_tabular("$outdir/$name.mlst.csv", $mlst);
   print $fh "Download: [$name.mlst.csv]($name.mlst.csv)\n";
   $mlst->[0][0] = 'Isolate';
   print $fh table_to_markdown($mlst, 1);
@@ -256,6 +260,21 @@ sub load_tabular {
   close TABULAR;
   return $res;
 }
+
+#.................................................................................
+# EVENTUALLY!: use Text::CSV 
+
+sub save_tabular {
+  my($outfile, $matrix, $sep) = @_;
+  $sep ||= "\t";
+  open TABLE, '>', $outfile;
+  for my $row (@$matrix) {
+    print TABLE join($sep, @$row),"\n";
+  }
+  close TABLE;
+}
+
+#.................................................................................
 
 1;
 
