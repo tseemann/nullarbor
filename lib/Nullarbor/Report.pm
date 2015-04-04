@@ -162,11 +162,11 @@ sub generate {
   # Core SNP tree
   print $fh "##Core SNP phylogeny\n";
   
-  my $aln = Bio::SeqIO->new(-file=>"$indir/wombac/core.aln", -format=>'fasta');
+  my $aln = Bio::SeqIO->new(-file=>"$indir/core.aln", -format=>'fasta');
   $aln = $aln->next_seq;
   printf $fh "Core SNP alignment has %d taxa and %s bp. ", scalar(@id), $aln->length;
   
-  copy("$indir/wombac/core.aln", "$outdir/$name.aln");
+  copy("$indir/core.aln", "$outdir/$name.aln");
   copy("$indir/tree.newick", "$outdir/$name.tree");
   print $fh "Download: [$name.tree]($name.tree) | [$name.aln]($name.aln)\n";
 
@@ -182,7 +182,7 @@ sub generate {
   #...........................................................................................
   # Software
   print $fh "##Software\n";
-  for my $tool (qw(nullarbor.pl wombac kraken samtools freebayes)) {
+  for my $tool (qw(nullarbor.pl snippy kraken samtools freebayes)) {
     print $fh "- $tool ```", qx($tool --version 2>&1), "```\n";
   }
   

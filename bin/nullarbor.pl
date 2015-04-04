@@ -18,12 +18,13 @@ use lib "$FindBin::RealBin/../lib";
 use Nullarbor::IsolateSet;
 use Nullarbor::Logger qw(msg err);
 use Nullarbor::Report;
+use Nullarbor::Requirements qw(require_exe require_perlmod);
 
 #-------------------------------------------------------------------
 # constants
 
 my $EXE = "$FindBin::RealScript";
-my $VERSION = '0.2';
+my $VERSION = '0.3';
 my $AUTHOR = 'Torsten Seemann <torsten.seemann@gmail.com>';
 
 #-------------------------------------------------------------------
@@ -68,8 +69,11 @@ msg("Hello", $ENV{USER} || 'stranger');
 msg("This is $EXE $VERSION");
 msg("Send complaints to $AUTHOR");
 
+require_exe( qw'kraken snippy mlst fq abricate nw_display nw_reroot FastTree convert pandoc afa-pairwise.pl' );
+require_perlmod( qw'Data::Dumper Moo Spreadsheet::Read SVG::Graph Bio::SeqIO File::Copy Time::Piece' );
+
 if ($report) {
-  $indir or err("Please ser the --indir folder to a $EXE output folder");
+  $indir or err("Please set the --indir folder to a $EXE output folder");
   $outdir or err("Please set the --outdir output folder.");
   $name or err("Please specify a report --name");
   make_path($outdir) unless -f $outdir;
@@ -141,7 +145,7 @@ $make{'report/index.html'} = {
 
 $make{'report/index.md'} = {
   DEP => [ $REF, @PHONY, qw(mlst.csv assembly.csv tree.gif snps.csv) ],
-  CMD => "$FindBin::Bin/nullarbor.pl --name $name --report --indir $outdir --outdir $outdir/report",
+  CMD => "$FindBin::RealBin/nullarbor.pl --name $name --report --indir $outdir --outdir $outdir/report",
 };
   
 $make{$REF} = { 
@@ -192,9 +196,6 @@ for my $s ($set->isolates) {
       "mv $id/final.contigs.fa $make_target",
       "mv $id/log $id/megahit.log",
       "rm -r $id/tmp $id/done $id/opts.txt",
-#      "minia -in $clipped[0] -in $clipped[1] -verbose 0 -nb-cores $cpus -out-dir $id -out $id/minia -kmer-size 31 -abundance-min 3 -fasta-line 60".
-#     " && mv $id/minia.contigs.fa $make_target",
-#     "rm $id/minia.h5" 
     ],
   };
   $make{"$id/kraken.csv"} = {
@@ -205,6 +206,10 @@ for my $s ($set->isolates) {
     DEP => "$id/$CTG",
     CMD => "abricate $make_deps > $make_target",
   };
+  $make{"$id/$id/snps.tab"} = {
+    DEP => [ $REF, @clipped ],
+    CMD => "snippy --force --outdir $id/$id --ref $REF --R1 $clipped[0] --R2 $clipped[1]",
+  }
 }
 close ISOLATES;
 #END per isolate
@@ -235,25 +240,20 @@ $make{"assembly.csv"} = {
   CMD => "fa -t -e $make_deps > $make_target" ,
 };
 
-my $wtree = "wombac/core.tree";
-$make{"wombac"} = { DEP => $wtree };
-$make{$wtree} = {
-  DEP => [ $REF, map { ("$_/$R1", "$_/$R2") } $set->ids ],
-  CMD => [
-    "wombac --cpus $cpus --force --ref $REF --outdir wombac --ref $REF ".join(' ',$set->ids),
-    "make -C wombac",
-  ],
+$make{'core.aln'} = {
+  DEP => [ map { ("$_/$_/snps.tab") } $set->ids ],
+  CMD => "snippy-core ".join(' ', map { "$_/$_" } $set->ids),
 };
 
 $make{'tree.newick'} = {
-  DEP => $wtree,
-  CMD => "nw_reroot $make_dep Reference > $make_target",
+  DEP => 'core.aln',
+  CMD => "FastTree -gtr -nt $make_dep > $make_target",
 };
 
 $make{'tree.svg'} = {
   DEP => 'tree.newick',
 #  CMD => "figtree -graphic GIF -width 1024 -height 1024 $make_dep $make_target",
-  CMD => "nw_display -S -s -w 1024 -l 'font-size:12' -i 'opacity:0' -b 'opacity:0' $make_dep > $make_target",
+  CMD => "nw_reroot $make_dep | nw_display -S -s -w 1024 -l 'font-size:12' -i 'opacity:0' -b 'opacity:0' - > $make_target",
 };
 
 $make{'tree.gif'} = {
@@ -262,7 +262,7 @@ $make{'tree.gif'} = {
 };
 
 $make{'snps.csv'} = {
-  DEP => 'wombac/core.aln',
+  DEP => 'core.aln',
   CMD => "afa-pairwise.pl $make_dep > $make_target",
 };
 
@@ -275,8 +275,6 @@ $make{$ptree} = {
            "parsnp -p $cpus -c -d parsnp/genomes -r $ref -o parsnp",
          ],
 };
-
-
 
 #print Dumper(\%make);
 my $makefile = "$outdir/Makefile";
@@ -318,13 +316,13 @@ sub write_makefile {
 sub usage {
   print "USAGE\n";
   print "(1) Analyse samples\n";
-  print "  $EXE [options] --mlst SCHEME --ref REF.FA --input SAMPLES.TAB --outdir DIR\n";
+  print "  $EXE [options] --name NAME --mlst SCHEME --ref REF.FA --input SAMPLES.TAB --outdir DIR\n";
   print "    --force     Nuke --outdir\n";
-  print "    --cpus      Number of CPUs to use\n";
+  print "    --cpus      Maximum number of CPUs to allow one command to use\n";
   print "    --quiet     No output\n";
   print "    --verbose   More output\n";
   print "    --version   Tool version\n";
-  print "(2) Generate report\n";
+  print "(2) Generate report  ** NOTE: done automatically by (1) - see report/ folder **\n";
   print "  $EXE [options] --indir DIR --outdir WEBDIR --name JOBNAME\n";
   print "    --version   Tool version\n";
   exit;
