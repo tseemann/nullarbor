@@ -164,8 +164,20 @@ sub generate {
   print  $fh table_to_markdown(\@ref, 1);
  
   #...........................................................................................
-  # Core SNP tree
-  print $fh "##Core SNP phylogeny\n";
+  # Core genome
+  print $fh "##Core genome\n";
+  
+  my $gin = Bio::SeqIO->new(-file=>"$indir/core.nogaps.aln", -format=>'fasta');
+  my $core = $gin->next_seq;
+  printf $fh "Core genome of %d taxa is %d of %d bp (%2.f%%)\n", 
+    scalar(@id), $core->length, $refsize, $core->length*100/$refsize;
+  my $core_stats = load_tabular(-file=>"$indir/core.txt", -sep=>"\t");
+  unshift @$core_stats, [ 'Isolate', 'Aligned bases', 'Reference length', 'Aligned bases %' ];
+  print $fh table_to_markdown($core_stats, 1);
+
+  #...........................................................................................
+  # Phylogeny
+  print $fh "##Phylogeny\n";
   
   my $aln = Bio::SeqIO->new(-file=>"$indir/core.aln", -format=>'fasta');
   $aln = $aln->next_seq;

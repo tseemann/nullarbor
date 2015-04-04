@@ -69,7 +69,7 @@ msg("Hello", $ENV{USER} || 'stranger');
 msg("This is $EXE $VERSION");
 msg("Send complaints to $AUTHOR");
 
-require_exe( qw'kraken snippy mlst fq abricate nw_display nw_reroot FastTree convert pandoc afa-pairwise.pl' );
+require_exe( qw'kraken snippy mlst fq abricate nw_display trimal FastTree convert pandoc afa-pairwise.pl' );
 require_perlmod( qw'Data::Dumper Moo Spreadsheet::Read SVG::Graph Bio::SeqIO File::Copy Time::Piece' );
 
 if ($report) {
@@ -144,7 +144,7 @@ $make{'report/index.html'} = {
 };
 
 $make{'report/index.md'} = {
-  DEP => [ $REF, @PHONY, qw(mlst.csv assembly.csv tree.gif snps.csv) ],
+  DEP => [ $REF, @PHONY, 'core.nogaps.aln', qw(mlst.csv assembly.csv tree.gif snps.csv) ],
   CMD => "$FindBin::RealBin/nullarbor.pl --name $name --report --indir $outdir --outdir $outdir/report",
 };
   
@@ -243,6 +243,15 @@ $make{"assembly.csv"} = {
 $make{'core.aln'} = {
   DEP => [ map { ("$_/$_/snps.tab") } $set->ids ],
   CMD => "snippy-core ".join(' ', map { "$_/$_" } $set->ids),
+};
+
+$make{'core.full.aln'} = {
+  DEP => 'core.aln',
+};
+
+$make{'core.nogaps.aln'} = {
+  DEP => 'core.full.aln',
+  CMD => "trimal -in $make_deps -out $make_target -nogaps",
 };
 
 $make{'tree.newick'} = {
