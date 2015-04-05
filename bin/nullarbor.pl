@@ -241,7 +241,7 @@ $make{"assembly.csv"} = {
 };
 
 $make{'core.aln'} = {
-  DEP => [ map { ("$_/$_/snps.tab") } $set->ids ],
+  DEP => [ 'isolates.txt', map { ("$_/$_/snps.tab") } $set->ids ],
   CMD => "snippy-core ".join(' ', map { "$_/$_" } $set->ids),
 };
 
