@@ -24,7 +24,7 @@ use Nullarbor::Requirements qw(require_exe require_perlmod);
 # constants
 
 my $EXE = "$FindBin::RealScript";
-my $VERSION = '0.4';
+my $VERSION = '0.5';
 my $AUTHOR = 'Torsten Seemann <torsten.seemann@gmail.com>';
 
 #-------------------------------------------------------------------
@@ -69,7 +69,9 @@ msg("Hello", $ENV{USER} || 'stranger');
 msg("This is $EXE $VERSION");
 msg("Send complaints to $AUTHOR");
 
-require_exe( qw'kraken snippy mlst fq abricate megahit nw_reroot nw_display trimal FastTree convert pandoc afa-pairwise.pl' );
+require_exe( qw'kraken snippy mlst abricate megahit nw_reroot nw_display trimal FastTree' );
+require_exe( qw'fq fa afa-pairwise.pl' );
+require_exe( qw'convert pandoc head cat' );
 require_perlmod( qw'Data::Dumper Moo Spreadsheet::Read SVG::Graph Bio::SeqIO File::Copy Time::Piece' );
 
 if ($report) {
@@ -121,12 +123,14 @@ $outdir = File::Spec->rel2abs($outdir);
 msg("Making output folder: $outdir");
 make_path($outdir); 
 
+my $IDFILE = 'isolates.txt';
 my $REF = 'ref.fa';
 my $R1 = "R1.fq.gz";
 my $R2 = "R2.fq.gz";
 my $CTG = "contigs.fa";
 my $zcat = 'gzip -f -c -d';
 
+#...................................................................................................
 # Makefile logic
 
 my @PHONY = qw(folders yields abricate kraken);
@@ -135,7 +139,7 @@ $make{'.PHONY'  } = { DEP => \@PHONY };
 $make{'.DEFAULT'} = { DEP => 'all'   };
 
 $make{'all'} = { 
-  DEP => [ 'isolates.txt', 'folders', 'report/index.html' ],
+  DEP => [ $IDFILE, 'folders', 'report/index.html' ],
 };
 
 $make{'report/index.html'} = {
@@ -144,7 +148,7 @@ $make{'report/index.html'} = {
 };
 
 $make{'report/index.md'} = {
-  DEP => [ $REF, @PHONY, 'core.nogaps.aln', qw(mlst.csv assembly.csv tree.gif snps.csv) ],
+  DEP => [ $REF, @PHONY, 'core.nogaps.aln', qw(mlst.tab denovo.tab tree.gif distances.tab) ],
   CMD => "$FindBin::RealBin/nullarbor.pl --name $name --report --indir $outdir --outdir $outdir/report",
 };
   
@@ -153,9 +157,9 @@ $make{$REF} = {
   CMD => "cp $make_dep $make_target",
 };
 
-
+# vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 # START per isolate
-open ISOLATES, '>', "$outdir/isolates.txt";
+open ISOLATES, '>', "$outdir/$IDFILE";
 for my $s ($set->isolates) {
   msg("Preparing rules for isolate:", $s->id);
   my $dir = File::Spec->rel2abs( File::Spec->catdir($outdir, $s->id) );
@@ -170,11 +174,11 @@ for my $s ($set->isolates) {
   $make{"$id"} = {
     CMD => [ "mkdir -p $make_target" ],
   };
-  $make{"$id/yield.dirty.csv"} = {
+  $make{"$id/yield.dirty.tab"} = {
     DEP => [ @reads ],
     CMD => "fq --quiet --ref $ref @reads > $make_target",
   };
-  $make{"$id/yield.clean.csv"} = {
+  $make{"$id/yield.clean.tab"} = {
     DEP => [ @clipped ],
     CMD => "fq --quiet --ref $ref $make_deps > $make_target",
   };
@@ -198,14 +202,22 @@ for my $s ($set->isolates) {
       "rm -r $id/tmp $id/done $id/opts.txt",
     ],
   };
-  $make{"$id/kraken.csv"} = {
+  $make{"$id/kraken.tab"} = {
     DEP => [ @clipped ],
     CMD => "kraken --threads $cpus --preload --quick --paired @clipped | kraken-report > $make_target",
   };
-  $make{"$id/abricate.csv"} = {
+  $make{"$id/abricate.tab"} = {
     DEP => "$id/$CTG",
     CMD => "abricate $make_deps > $make_target",
   };
+  $make{"$id/mlst.tab"} = {
+    DEP => "$id/$CTG",
+    CMD => "mlst --scheme $mlst $make_deps > $make_target",
+  };
+  $make{"$id/denovo.tab"} = {
+    DEP => "$id/$CTG",
+    CMD => "fa -e -t $make_deps > $make_target",
+  };  
   $make{"$id/$id/snps.tab"} = {
     DEP => [ $REF, @clipped ],
     CMD => "snippy --force --outdir $id/$id --ref $REF --R1 $clipped[0] --R2 $clipped[1]",
@@ -213,35 +225,36 @@ for my $s ($set->isolates) {
 }
 close ISOLATES;
 #END per isolate
+#^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 $make{"folders"} = { 
   DEP => [ $set->ids ],
 };
 
 $make{"yields"} = { 
-  DEP => [ map { ("$_/yield.dirty.csv", "$_/yield.clean.csv") } $set->ids ],
+  DEP => [ map { ("$_/yield.dirty.tab", "$_/yield.clean.tab") } $set->ids ],
 };
 
 $make{"abricate"} = { 
-  DEP => [ map { "$_/abricate.csv" } $set->ids ],
+  DEP => [ map { "$_/abricate.tab" } $set->ids ],
 };
 
 $make{"kraken"} = { 
-  DEP => [ map { "$_/kraken.csv" } $set->ids ],
+  DEP => [ map { "$_/kraken.tab" } $set->ids ],
 };
 
-$make{"mlst.csv"} = { 
-  DEP => [ (map { "$_/$CTG" } $set->ids), $REF ],
-  CMD => "mlst --scheme $mlst $make_deps > $make_target" ,
+$make{"mlst.tab"} = {
+  DEP => [ map { "$_/mlst.tab" } $set->ids ],
+  CMD => "(head -n 1 $make_dep && tail -q -n +2 $make_deps) > $make_target",
 };
-
-$make{"assembly.csv"} = { 
-  DEP => [ map { "$_/$CTG" } $set->ids ],
-  CMD => "fa -t -e $make_deps > $make_target" ,
+  
+$make{"denovo.tab"} = {
+  DEP => [ map { "$_/denovo.tab" } $set->ids ],
+  CMD => "(head -n 1 $make_dep && tail -q -n +2 $make_deps) > $make_target",
 };
 
 $make{'core.aln'} = {
-  DEP => [ 'isolates.txt', map { ("$_/$_/snps.tab") } $set->ids ],
+  DEP => [ $IDFILE, map { ("$_/$_/snps.tab") } $set->ids ],
   CMD => "snippy-core ".join(' ', map { "$_/$_" } $set->ids),
 };
 
@@ -270,7 +283,7 @@ $make{'tree.gif'} = {
   CMD => "convert $make_dep $make_target",
 };
 
-$make{'snps.csv'} = {
+$make{'distances.tab'} = {
   DEP => 'core.aln',
   CMD => "afa-pairwise.pl $make_dep > $make_target",
 };
@@ -279,10 +292,11 @@ my $ptree = "parsnp/parsnp.tree";
 $make{"parsnp"} = { DEP => $ptree };
 $make{$ptree} = {
   DEP => [ $REF, map { "$_/$CTG" } $set->ids ],
-  CMD => [ "mkdir -p parsnp/genomes",
-           (map { "ln -sf $outdir/$_/contigs.fa $outdir/parsnp/genomes/$_.fa" } $set->ids),
-           "parsnp -p $cpus -c -d parsnp/genomes -r $ref -o parsnp",
-         ],
+  CMD => [ 
+    "mkdir -p parsnp/genomes",
+    (map { "ln -sf $outdir/$_/contigs.fa $outdir/parsnp/genomes/$_.fa" } $set->ids),
+    "parsnp -p $cpus -c -d parsnp/genomes -r $ref -o parsnp",
+  ],
 };
 
 #print Dumper(\%make);
@@ -290,7 +304,7 @@ my $makefile = "$outdir/Makefile";
 open my $make_fh, '>', $makefile or err("Could not write $makefile");
 write_makefile(\%make, $make_fh);
 if ($run) {
-  exec("make -C $outdir") or err("Could not run pipeline's Makefile");
+  exec("nice make -C $outdir") or err("Could not run pipeline's Makefile");
 }
 else {
   #msg("Run the pipeline with: nohup nice make -C $outdir 1> $outdir/log.out $outdir/log.err");

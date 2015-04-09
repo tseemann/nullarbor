@@ -40,7 +40,7 @@ sub generate {
   #...........................................................................................
   # MLST
   
-  my $mlst = load_tabular(-file=>"$indir/mlst.csv", -sep=>"\t", -header=>1);
+  my $mlst = load_tabular(-file=>"$indir/mlst.tab", -sep=>"\t", -header=>1);
   #print STDERR Dumper($mlst);
   
   foreach (@$mlst) {
@@ -67,7 +67,7 @@ sub generate {
     my @wgs;
     my $first=1;
     for my $id (@id) {
-      my $t = load_tabular(-file=>"$indir/$id/yield.$stage.csv", -sep=>"\t");
+      my $t = load_tabular(-file=>"$indir/$id/yield.$stage.tab", -sep=>"\t");
       if ($first) {
         $t->[0][0] = 'Isolate';
         push @wgs, [ map { $_->[0] } @$t ];
@@ -86,7 +86,7 @@ sub generate {
   my @spec;
   push @spec, [ 'Isolate', 'Predicted genus', '%matched', 'Predicted species', '%matched' ];
   for my $id (@id) {
-    my $t = load_tabular(-file=>"$indir/$id/kraken.csv", -sep=>"\t");
+    my $t = load_tabular(-file=>"$indir/$id/kraken.tab", -sep=>"\t");
     my @g = grep { $_->[3] eq 'G' } @$t;
     my @s = grep { $_->[3] eq 'S' } @$t;
     $g[0][5] =~ s/^\s+//;
@@ -103,7 +103,7 @@ sub generate {
   #...........................................................................................
   # Assembly
   print $fh "##Assembly\n";
-  my $ass = load_tabular(-file=>"$indir/assembly.csv", -sep=>"\t", -header=>1);
+  my $ass = load_tabular(-file=>"$indir/denovo.tab", -sep=>"\t", -header=>1);
 #  print STDERR Dumper($ass);
   $ass->[0][0] = 'Isolate';
   $ass->[0][1] = 'Contigs';
@@ -115,7 +115,7 @@ sub generate {
   print $fh "##Resistome\n";
   my %abr;
   for my $id (@id) {
-    $abr{$id} = load_tabular(-file=>"$indir/$id/abricate.csv", -sep=>"\t",-header=>1, -key=>4);
+    $abr{$id} = load_tabular(-file=>"$indir/$id/abricate.tab", -sep=>"\t",-header=>1, -key=>4);
   }
 #  print STDERR Dumper(\%abr);
   my @abr;
@@ -172,7 +172,8 @@ sub generate {
   printf $fh "Core genome of %d taxa is %d of %d bp (%2.f%%)\n", 
     scalar(@id), $core->length, $refsize, $core->length*100/$refsize;
   my $core_stats = load_tabular(-file=>"$indir/core.txt", -sep=>"\t");
-  unshift @$core_stats, [ 'Isolate', 'Aligned bases', 'Reference length', 'Aligned bases %' ];
+  $core_stats->[0][0] = 'Isolate';
+#  unshift @$core_stats, [ 'Isolate', 'Aligned bases', 'Reference length', 'Aligned bases %' ];
   print $fh table_to_markdown($core_stats, 1);
 
   #...........................................................................................
@@ -193,13 +194,13 @@ sub generate {
   #...........................................................................................
   # Core SNP counts
   print $fh "##Core SNP distances\n";
-  my $snps = load_tabular(-file=>"$indir/snps.csv", -sep=>"\t");
+  my $snps = load_tabular(-file=>"$indir/distances.tab", -sep=>"\t");
   print $fh table_to_markdown($snps, 1);
 
   #...........................................................................................
   # Software
   print $fh "##Software\n";
-  for my $tool (qw(nullarbor.pl snippy kraken samtools freebayes)) {
+  for my $tool (qw(nullarbor.pl mlst abricate snippy kraken samtools freebayes)) {
     print $fh "- $tool ```", qx($tool --version 2>&1), "```\n";
   }
   
