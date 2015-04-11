@@ -9,6 +9,7 @@ use Data::Dumper;
 use Getopt::Long;
 use File::Path qw(make_path remove_tree);
 use File::Spec qw(catfile);
+use YAML::Tiny;
 
 #-------------------------------------------------------------------
 # local modules 
@@ -30,8 +31,6 @@ my $AUTHOR = 'Torsten Seemann <torsten.seemann@gmail.com>';
 #-------------------------------------------------------------------
 # parameters
 
-@ARGV or usage();
-
 my $verbose = 0;
 my $quiet   = 0;
 my $ref = '';
@@ -44,12 +43,16 @@ my $run = 0;
 my $report = 0;
 my $indir = '';
 my $name = '';
+my $conf_file = "$FindBin::RealBin/../conf/nullarbor.conf";
+
+@ARGV or usage();
 
 GetOptions(
   "help"     => \&usage,
   "version"  => \&version, 
   "verbose"  => \$verbose,
   "quiet"    => \$quiet,
+  "conf=s"   => \$conf_file,
   "mlst=s"   => \$mlst,
   "ref=s"    => \$ref,
   "cpus=i"   => \$cpus,
@@ -71,8 +74,20 @@ msg("Send complaints to $AUTHOR");
 
 require_exe( qw'kraken snippy mlst abricate megahit nw_reroot nw_display trimal FastTree' );
 require_exe( qw'fq fa afa-pairwise.pl' );
-require_exe( qw'convert pandoc head cat' );
-require_perlmod( qw'Data::Dumper Moo Spreadsheet::Read SVG::Graph Bio::SeqIO File::Copy Time::Piece' );
+require_exe( qw'convert pandoc head cat install' );
+require_perlmod( qw'Data::Dumper Moo Spreadsheet::Read SVG::Graph Bio::SeqIO File::Copy Time::Piece YAML::Tiny' );
+
+my $cfg;
+if (-r $conf_file) {
+  my $yaml = YAML::Tiny->read( $conf_file );
+  $cfg = $yaml->[0];
+#  print Dumper($cfg);
+  msg("Loaded YAML config: $conf_file");
+  msg("Options set:", keys %$cfg);
+}
+else {
+  msg("Could not read config file: $conf_file");
+}
 
 if ($report) {
   $indir or err("Please set the --indir folder to a $EXE output folder");
@@ -151,6 +166,13 @@ $make{'report/index.md'} = {
   DEP => [ $REF, @PHONY, 'core.nogaps.aln', qw(mlst.tab denovo.tab tree.gif distances.tab) ],
   CMD => "$FindBin::RealBin/nullarbor.pl --name $name --report --indir $outdir --outdir $outdir/report",
 };
+
+if (my $dir = $cfg->{publish}) {
+  $make{'publish'} = {
+    DEP => 'report/index.html',
+    CMD => "install -t \Q$dir/$name\E report/*",
+  };
+}
   
 $make{$REF} = { 
   DEP => $ref, 
@@ -338,15 +360,16 @@ sub write_makefile {
 #-------------------------------------------------------------------
 sub usage {
   print "USAGE\n";
-  print "(1) Analyse samples\n";
+#  print "(1) Analyse samples\n";
   print "  $EXE [options] --name NAME --mlst SCHEME --ref REF.FA --input SAMPLES.TAB --outdir DIR\n";
   print "    --force     Nuke --outdir\n";
   print "    --cpus      Maximum number of CPUs to allow one command to use\n";
   print "    --quiet     No output\n";
   print "    --verbose   More output\n";
   print "    --version   Tool version\n";
-  print "(2) Generate report  ** NOTE: done automatically by (1) - see report/ folder **\n";
-  print "  $EXE [options] --indir DIR --outdir WEBDIR --name JOBNAME\n";
+  print "    --conf      Config file ($conf_file)\n";
+#  print "(2) Generate report  ** NOTE: done automatically by (1) - see report/ folder **\n";
+#  print "  $EXE [options] --indir DIR --outdir WEBDIR --name JOBNAME\n";
   print "    --version   Tool version\n";
   exit;
 }
