@@ -297,7 +297,7 @@ $make{'tree.newick'} = {
 $make{'tree.svg'} = {
   DEP => 'tree.newick',
 #  CMD => "figtree -graphic GIF -width 1024 -height 1024 $make_dep $make_target",
-  CMD => "nw_reroot $make_dep | nw_display -S -s -w 1024 -l 'font-size:12' -i 'opacity:0' -b 'opacity:0' - > $make_target",
+  CMD => "nw_display -S -s -w 1024 -l 'font-size:12' -i 'opacity:0' -b 'opacity:0' $make_dep > $make_target",
 };
 
 $make{'tree.gif'} = {
