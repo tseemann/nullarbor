@@ -154,7 +154,7 @@ sub generate {
   while (my $seq = $fin->next_seq) {
     my $id = $seq->id;
     $id =~ s/\W+/_/g;
-    push @ref, [ $id, $seq->length, '_'.$seq->desc.'_' ];
+    push @ref, [ $id, $seq->length, '_'.($seq->desc || 'no description').'_' ];
     $refsize += $seq->length;
   }
 #  print STDERR Dumper($r, \@ref);
