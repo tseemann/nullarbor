@@ -204,7 +204,7 @@ sub generate {
   #...........................................................................................
   # Software
   print $fh "##Software\n";
-  for my $tool (qw(nullarbor.pl mlst abricate snippy kraken samtools freebayes)) {
+  for my $tool (qw(nullarbor.pl mlst abricate snippy kraken samtools freebayes megahit)) {
     print $fh "- $tool ```", qx($tool --version 2>&1), "```\n";
   }
   
