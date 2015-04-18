@@ -170,7 +170,10 @@ $make{'report/index.md'} = {
 if (my $dir = $cfg->{publish}) {
   $make{'publish'} = {
     DEP => 'report/index.html',
-    CMD => "install -p -D -t \Q$dir/$name\E report/*",
+    CMD => [
+      "mkdir -p \Q$dir/$name\E",
+      "install -p -D -t \Q$dir/$name\E report/*",
+    ],
   };
 }
   
