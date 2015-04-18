@@ -160,7 +160,12 @@ sub generate {
   copy("$indir/ref.fa", "$outdir/$name.ref.fa");
   printf $fh "Reference contains %d sequences totalling %.2f Mbp. ", @ref-1, $refsize/1E6;
   print  $fh " Download: [$name.ref.fa]($name.ref.fa)\n";
-  print  $fh table_to_markdown(\@ref, 1);
+  if (@ref < 10) {
+    print  $fh table_to_markdown(\@ref, 1);
+  }
+  else {
+    print $fh "\n_Contig table not shown due to number of contigs; likely draft genome._\n";
+  }
  
   #...........................................................................................
   # Core genome
