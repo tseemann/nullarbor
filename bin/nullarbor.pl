@@ -209,7 +209,7 @@ for my $s ($set->isolates) {
   };
   $make{$clipped[0]} = {
     DEP => [ @reads ],
-    CMD => [ "skewer --quiet -t $cpus -n -l 50 -q 10 -z -o $id/clipped @reads",
+    CMD => [ "skewer --quiet -t $cpus -n -q 10 -z -o $id/clipped @reads",
              "mv $id/clipped-trimmed-pair1.fastq.gz $id/$R1",
              "mv $id/clipped-trimmed-pair2.fastq.gz $id/$R2", ],
   };
