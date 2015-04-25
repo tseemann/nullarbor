@@ -221,10 +221,13 @@ for my $s ($set->isolates) {
   $make{"$id/$CTG"} = {
     DEP => [ @clipped ],
     CMD => [ 
-      "megahit -m 16E9 -l 610 --out-dir $id --input-cmd '$zcat $make_deps' --cpu-only -t $cpus --k-min 31 --k-max 71 --k-step 20 --min-count 3",
-      "mv $id/final.contigs.fa $make_target",
-      "mv $id/log $id/megahit.log",
-      "rm -r $id/tmp $id/done $id/opts.txt",
+      # v0.2.1 will not allow outputting to an existing folder
+      "rm -f -r $id/megahit",
+      # FIXME: make --min-count a function of sequencing depth
+      "megahit -m 16E9 -l 610 --out-dir $id/megahit --input-cmd '$zcat $make_deps' --cpu-only -t $cpus --k-min 31 --k-max 71 --k-step 20 --min-count 3",
+      "mv $id/megahit/final.contigs.fa $make_target",
+      "mv $id/megahit/log $id/megahit.log",
+      "rm -f -v -r $id/megahit",
     ],
   };
   $make{"$id/kraken.tab"} = {
