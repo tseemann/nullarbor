@@ -127,6 +127,10 @@ $outdir or err("Please provide an --outdir folder.");
 if (-d $outdir) {
   if ($force) {
     msg("Re-using existing folder: $outdir");
+    for my $file (<$outdir/*.tab>, <$outdir/*.aln>) {
+      msg("Removing previous run file: $file");
+      unlink $file;
+    }
 #    msg("Forced removal of existing --outdir $outdir");
 #    remove_tree($outdir);
   }
