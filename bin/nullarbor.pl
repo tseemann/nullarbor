@@ -19,7 +19,7 @@ use lib "$FindBin::RealBin/../perl5";
 use Nullarbor::IsolateSet;
 use Nullarbor::Logger qw(msg err);
 use Nullarbor::Report;
-use Nullarbor::Requirements qw(require_exe require_perlmod);
+use Nullarbor::Requirements qw(require_exe require_perlmod require_version);
 
 #-------------------------------------------------------------------
 # constants
@@ -76,6 +76,9 @@ require_exe( qw'kraken snippy mlst abricate megahit nw_reroot nw_display trimal 
 require_exe( qw'fq fa afa-pairwise.pl' );
 require_exe( qw'convert pandoc head cat install' );
 require_perlmod( qw'Data::Dumper Moo Spreadsheet::Read SVG::Graph Bio::SeqIO File::Copy Time::Piece YAML::Tiny' );
+
+require_version('megahit', 0.3);
+require_version('snippy', 2.5);
 
 my $cfg;
 if (-r $conf_file) {
@@ -228,7 +231,8 @@ for my $s ($set->isolates) {
       # v0.2.1 will not allow outputting to an existing folder
       "rm -f -r $id/megahit",
       # FIXME: make --min-count a function of sequencing depth
-      "megahit -m 16E9 -l 610 --out-dir $id/megahit --input-cmd '$zcat $make_deps' --cpu-only -t $cpus --k-min 31 --k-max 71 --k-step 20 --min-count 3",
+##      "megahit -m 16E9 -l 610 --out-dir $id/megahit --input-cmd '$zcat $make_deps' --cpu-only -t $cpus --k-min 31 --k-max 71 --k-step 20 --min-count 3",
+      "megahit -t $cpus -1 $clipped[0] -2 $clipped[1] --out-dir $id/megahit --k-min 41 --k-max 101 --k-step 20 --min-count 5 --min-contig-len 500 --no-mercy",
       "mv $id/megahit/final.contigs.fa $make_target",
       "mv $id/megahit/log $id/megahit.log",
       "rm -f -v -r $id/megahit",
