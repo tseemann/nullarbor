@@ -74,7 +74,7 @@ msg("Send complaints to $AUTHOR");
 
 require_exe( qw'kraken snippy mlst abricate megahit nw_reroot nw_display trimal FastTree' );
 require_exe( qw'fq fa afa-pairwise.pl' );
-require_exe( qw'convert pandoc head cat install' );
+require_exe( qw'convert pandoc head cat install env' );
 require_perlmod( qw'Data::Dumper Moo Spreadsheet::Read SVG::Graph Bio::SeqIO File::Copy Time::Piece YAML::Tiny' );
 
 require_version('megahit', 0.3);
@@ -240,7 +240,7 @@ for my $s ($set->isolates) {
   };
   $make{"$id/kraken.tab"} = {
     DEP => [ @clipped ],
-    CMD => "kraken --threads $cpus --preload --quick --paired @clipped | kraken-report > $make_target",
+    CMD => "kraken --threads $cpus --preload --paired @clipped | kraken-report > $make_target",
   };
   $make{"$id/abricate.tab"} = {
     DEP => "$id/$CTG",
@@ -256,7 +256,7 @@ for my $s ($set->isolates) {
   };  
   $make{"$id/$id/snps.tab"} = {
     DEP => [ $REF, @clipped ],
-    CMD => "snippy --force --outdir $id/$id --ref $REF --R1 $clipped[0] --R2 $clipped[1]",
+    CMD => "snippy --cpus $cpus --force --outdir $id/$id --ref $REF --R1 $clipped[0] --R2 $clipped[1]",
   }
 }
 close ISOLATES;
@@ -305,7 +305,7 @@ $make{'core.nogaps.aln'} = {
 
 $make{'tree.newick'} = {
   DEP => 'core.aln',
-  CMD => "FastTree -gtr -nt $make_dep > $make_target",
+  CMD => "env OMP_NUM_THREADS=$cpus OMP_THREAD_LIMIT=$cpus FastTree -gtr -nt $make_dep > $make_target",
 };
 
 $make{'tree.svg'} = {
