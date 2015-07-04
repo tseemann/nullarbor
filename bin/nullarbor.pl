@@ -376,7 +376,7 @@ sub usage {
   print "USAGE\n";
 #  print "(1) Analyse samples\n";
   print "  $EXE [options] --name NAME --mlst SCHEME --ref REF.FA --input SAMPLES.TAB --outdir DIR\n";
-  print "    --force     Nuke --outdir\n";
+  print "    --force     Overwrite --outdir (useful for adding samples to existing analysis)\n";
   print "    --cpus      Maximum number of CPUs to allow one command to use\n";
   print "    --quiet     No output\n";
   print "    --verbose   More output\n";
