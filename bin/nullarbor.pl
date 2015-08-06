@@ -72,7 +72,7 @@ msg("Hello", $ENV{USER} || 'stranger');
 msg("This is $EXE $VERSION");
 msg("Send complaints to $AUTHOR");
 
-require_exe( qw'kraken snippy mlst abricate megahit nw_reroot nw_display trimal FastTree' );
+require_exe( qw'kraken snippy mlst abricate megahit nw_order nw_display trimal FastTree' );
 require_exe( qw'fq fa afa-pairwise.pl' );
 require_exe( qw'convert pandoc head cat install env' );
 require_perlmod( qw'Data::Dumper Moo Spreadsheet::Read SVG::Graph Bio::SeqIO File::Copy Time::Piece YAML::Tiny' );
@@ -311,7 +311,7 @@ $make{'tree.newick'} = {
 $make{'tree.svg'} = {
   DEP => 'tree.newick',
 #  CMD => "figtree -graphic GIF -width 1024 -height 1024 $make_dep $make_target",
-  CMD => "nw_display -S -s -w 1024 -l 'font-size:12' -i 'opacity:0' -b 'opacity:0' $make_dep > $make_target",
+  CMD => "nw_order -c n $make_dep | nw_display -S -s -w 1024 -l 'font-size:12' -i 'opacity:0' -b 'opacity:0' - > $make_target",
 };
 
 $make{'tree.gif'} = {
