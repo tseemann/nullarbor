@@ -12,7 +12,7 @@ sub require_version {
   err("missing minver or maxver parameter") unless $minver || $maxver;
   my($line) = qx"$exe --version 2>&1";
   chomp $line;
-  $line =~ m/\b(\d+(\.\d+)?)/;
+  $line =~ m/(\d+(\.\d+)?)/;
   my $ver = $1 or err("Could not determine $exe version: $line");
   msg("Parsed version '$ver' from '$line'");
   err("Need $exe >= $minver (found $ver)") if defined $minver && $ver < $minver;
