@@ -305,13 +305,13 @@ $make{'core.nogaps.aln'} = {
 
 $make{'tree.newick'} = {
   DEP => 'core.aln',
-  CMD => "env OMP_NUM_THREADS=$cpus OMP_THREAD_LIMIT=$cpus FastTree -gtr -nt $make_dep > $make_target",
+  CMD => "env OMP_NUM_THREADS=$cpus OMP_THREAD_LIMIT=$cpus FastTree -gtr -nt $make_dep | nw_order -c n - > $make_target",
 };
 
 $make{'tree.svg'} = {
   DEP => 'tree.newick',
 #  CMD => "figtree -graphic GIF -width 1024 -height 1024 $make_dep $make_target",
-  CMD => "nw_order -c n $make_dep | nw_display -S -s -w 1024 -l 'font-size:12' -i 'opacity:0' -b 'opacity:0' - > $make_target",
+  CMD => "nw_display -S -s -w 1024 -l 'font-size:12' -i 'opacity:0' -b 'opacity:0' $make_dep > $make_target",
 };
 
 $make{'tree.gif'} = {
