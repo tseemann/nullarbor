@@ -66,6 +66,11 @@ GetOptions(
 ) 
 or usage();
 
+# At least megahit needs >1 cpu or else it will die.
+# So this will be the cpus for those programs.
+my $multicpus=$cpus;
+   $multicpus=2 if($multicpus < 2);
+
 Nullarbor::Logger->quiet($quiet);
 
 msg("Hello", $ENV{USER} || 'stranger');
@@ -233,7 +238,7 @@ for my $s ($set->isolates) {
       "rm -f -r $id/megahit",
       # FIXME: make --min-count a function of sequencing depth
 ##      "megahit -m 16E9 -l 610 --out-dir $id/megahit --input-cmd '$zcat $make_deps' --cpu-only -t $cpus --k-min 31 --k-max 71 --k-step 20 --min-count 3",
-      "megahit -t $cpus -1 $clipped[0] -2 $clipped[1] --out-dir $id/megahit --k-min 41 --k-max 101 --k-step 20 --min-count 3 --min-contig-len 500 --no-mercy",
+      "megahit -t $multicpus -1 $clipped[0] -2 $clipped[1] --out-dir $id/megahit --k-min 41 --k-max 101 --k-step 20 --min-count 3 --min-contig-len 500 --no-mercy",
       "mv $id/megahit/final.contigs.fa $make_target",
       "mv $id/megahit/log $id/megahit.log",
       "rm -f -v -r $id/megahit",
