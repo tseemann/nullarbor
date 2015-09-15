@@ -37,7 +37,7 @@ my $ref = '';
 my $mlst = '';
 my $input = '';
 my $outdir = '';
-my $cpus = 8;
+my $cpus = 1;
 my $force = 0;
 my $run = 0;
 my $report = 0;
@@ -73,7 +73,8 @@ msg("This is $EXE $VERSION");
 msg("Send complaints to $AUTHOR");
 
 require_exe( qw'kraken snippy mlst abricate megahit nw_order nw_display trimal FastTree' );
-require_exe( qw'fq fa afa-pairwise.pl' );
+#require_exe( qw'fq fa afa-pairwise.pl' );
+require_exe( qw'fq afa-pairwise.pl' );
 require_exe( qw'convert pandoc head cat install env' );
 require_perlmod( qw'Data::Dumper Moo Spreadsheet::Read SVG::Graph Bio::SeqIO File::Copy Time::Piece YAML::Tiny' );
 
