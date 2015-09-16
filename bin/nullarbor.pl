@@ -115,6 +115,8 @@ my $make_deps = '$^';
 $name or err("Please provide a --name for the project.");
 $name =~ m{/|\s} and err("The --name is not allowed to have spaces or slashes in it.");
 
+# TODO figure out whether the user has specified a reference genome:
+# if not, then one should be provided.
 $ref or err("Please provide a --ref reference genome in FASTA format");
 -r $ref or err("Can not read reference '$ref'");
 $ref = File::Spec->rel2abs($ref);
@@ -172,7 +174,13 @@ $make{'all'} = {
 
 $make{'report/index.html'} = {
   DEP => 'report/index.md',
-  CMD => "pandoc --from markdown_github --to html --css 'nullarbor.css' $make_dep > $make_target"
+  #CMD => "pandoc --from markdown_github --to html --css 'nullarbor.css' $make_dep > $make_target"
+  CMD => [
+    "echo '<style type=\"text/css\">' > $make_target",
+    "cat $FindBin::RealBin/../conf/nullarbor.css >> $make_target",
+    "echo '</style>' >> $make_target",
+    "$FindBin::RealBin/../sbin/Markdown.pl < $make_dep >> $make_target",
+  ],
 };
 
 $make{'report/index.md'} = {
@@ -190,10 +198,6 @@ if (my $dir = $cfg->{publish}) {
   };
 }
   
-$make{$REF} = { 
-  DEP => $ref, 
-  CMD => "cp $make_dep $make_target",
-};
 
 # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 # START per isolate
@@ -213,11 +217,11 @@ for my $s ($set->isolates) {
     CMD => [ "mkdir -p $make_target" ],
   };
   $make{"$id/yield.dirty.tab"} = {
-    DEP => [ @reads ],
+    DEP => [$ref, @reads ],
     CMD => "fq --quiet --ref $ref @reads > $make_target",
   };
   $make{"$id/yield.clean.tab"} = {
-    DEP => [ @clipped ],
+    DEP => [$ref, @clipped ],
     CMD => "fq --quiet --ref $ref $make_deps > $make_target",
   };
   $make{$clipped[0]} = {
@@ -268,6 +272,16 @@ for my $s ($set->isolates) {
 close ISOLATES;
 #END per isolate
 #^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+# get the best reference assembly in denovo.tab
+$make{$REF} = { 
+  #DEP => $ref, 
+  #CMD => "cp $make_dep $make_target",
+  DEP => "denovo.tab",
+  CMD => [
+    "asm=\$\$(tail -n +2 denovo.tab | sort -k10,10nr | cut -f 1 | head -n 1) && cp \$\$asm $ref",
+  ],
+};
 
 $make{"folders"} = { 
   DEP => [ $set->ids ],
