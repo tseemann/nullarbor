@@ -111,6 +111,7 @@ my %make;
 my $make_target = '$@';
 my $make_dep = '$<';
 my $make_deps = '$^';
+my $bash_dollar = '$$';
 
 $name or err("Please provide a --name for the project.");
 $name =~ m{/|\s} and err("The --name is not allowed to have spaces or slashes in it.");
@@ -153,12 +154,13 @@ $outdir = File::Spec->rel2abs($outdir);
 msg("Making output folder: $outdir");
 make_path($outdir); 
 
-my $IDFILE = 'isolates.txt';
-my $REF = 'ref.fa';
-my $R1 = "R1.fq.gz";
-my $R2 = "R2.fq.gz";
-my $CTG = "contigs.fa";
-my $zcat = 'gzip -f -c -d';
+my $IDFILE     = $outdir.'/isolates.txt';
+my $REF        = $outdir.'/ref.fa';
+my $R1         = "R1.fq.gz";
+my $R2         = "R2.fq.gz";
+my $CTG        = "contigs.fa";
+my $reportfile = $outdir."/report/index.html";
+my $zcat       = 'gzip -f -c -d';
 
 #...................................................................................................
 # Makefile logic
@@ -169,10 +171,10 @@ $make{'.PHONY'  } = { DEP => \@PHONY };
 $make{'.DEFAULT'} = { DEP => 'all'   };
 
 $make{'all'} = { 
-  DEP => [ $IDFILE, 'folders', 'report/index.html' ],
+  DEP => [ $IDFILE, 'folders', $reportfile ],
 };
 
-$make{'report/index.html'} = {
+$make{$reportfile} = {
   DEP => 'report/index.md',
   #CMD => "pandoc --from markdown_github --to html --css 'nullarbor.css' $make_dep > $make_target"
   CMD => [
@@ -190,7 +192,7 @@ $make{'report/index.md'} = {
 
 if (my $dir = $cfg->{publish}) {
   $make{'publish'} = {
-    DEP => 'report/index.html',
+    DEP => $reportfile,
     CMD => [
       "mkdir -p \Q$dir/$name\E",
       "install -p -D -t \Q$dir/$name\E report/*",
@@ -201,41 +203,43 @@ if (my $dir = $cfg->{publish}) {
 
 # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 # START per isolate
-open ISOLATES, '>', "$outdir/$IDFILE";
+open ISOLATES, '>', $IDFILE;
 for my $s ($set->isolates) {
   msg("Preparing rules for isolate:", $s->id);
   my $dir = File::Spec->rel2abs( File::Spec->catdir($outdir, $s->id) );
+  mkdir $dir;
   $s->folder($dir);
   my $id = $s->id;
   my @reads = @{$s->reads};
   @reads != 2 and err("Sample '$id' only has 1 read, need 2 (paired).");
-  my @clipped = ("$id/$R1", "$id/$R2");
+  my @clipped = ("$dir/$R1", "$dir/$R2");
   print ISOLATES "$id\n";
 
 #  make_path($dir);
-  $make{"$id"} = {
+  #$make{"$id"} = {
+  $make{$dir} = {
     CMD => [ "mkdir -p $make_target" ],
   };
-  $make{"$id/yield.dirty.tab"} = {
+  $make{"$dir/yield.dirty.tab"} = {
     DEP => [$ref, @reads ],
     CMD => "fq --quiet --ref $ref @reads > $make_target",
   };
-  $make{"$id/yield.clean.tab"} = {
+  $make{"$dir/yield.clean.tab"} = {
     DEP => [$ref, @clipped ],
     CMD => "fq --quiet --ref $ref $make_deps > $make_target",
   };
   $make{$clipped[0]} = {
     DEP => [ @reads ],
-    CMD => [ "skewer --quiet -t $cpus -n -q 10 -z -o $id/clipped @reads ".($cfg->{skewer} || ''),
-             "mv $id/clipped-trimmed-pair1.fastq.gz $id/$R1",
-             "mv $id/clipped-trimmed-pair2.fastq.gz $id/$R2", ],
+    CMD => [ "skewer --quiet -t $cpus -n -q 10 -z -o $dir/clipped @reads ".($cfg->{skewer} || ''),
+             "mv $dir/clipped-trimmed-pair1.fastq.gz $dir/$R1",
+             "mv $dir/clipped-trimmed-pair2.fastq.gz $dir/$R2", ],
   };
   # we need this special rule to handle the 'double dependency' problem
   # http://www.gnu.org/software/automake/manual/html_node/Multiple-Outputs.html#Multiple-Outputs
   $make{$clipped[1]} = { 
     DEP => [ $clipped[0] ],
   };
-  $make{"$id/$CTG"} = {
+  $make{"$dir/$CTG"} = {
     DEP => [ @clipped ],
     CMD => [ 
       # v0.2.1 will not allow outputting to an existing folder
@@ -248,23 +252,23 @@ for my $s ($set->isolates) {
       "rm -f -v -r $id/megahit",
     ],
   };
-  $make{"$id/kraken.tab"} = {
+  $make{"$dir/kraken.tab"} = {
     DEP => [ @clipped ],
     CMD => "kraken --threads $cpus --preload --paired @clipped | kraken-report > $make_target",
   };
-  $make{"$id/abricate.tab"} = {
-    DEP => "$id/$CTG",
+  $make{"$dir/abricate.tab"} = {
+    DEP => "$dir/$CTG",
     CMD => "abricate $make_deps > $make_target",
   };
-  $make{"$id/mlst.tab"} = {
-    DEP => "$id/$CTG",
+  $make{"$dir/mlst.tab"} = {
+    DEP => "$dir/$CTG",
     CMD => "mlst --scheme $mlst $make_deps > $make_target",
   };
-  $make{"$id/denovo.tab"} = {
-    DEP => "$id/$CTG",
+  $make{"$dir/denovo.tab"} = {
+    DEP => "$dir/$CTG",
     CMD => "fa -e -t $make_deps > $make_target",
   };  
-  $make{"$id/$id/snps.tab"} = {
+  $make{"$dir/$id/snps.tab"} = {
     DEP => [ $REF, @clipped ],
     CMD => "snippy --cpus $cpus --force --outdir $id/$id --ref $REF --R1 $clipped[0] --R2 $clipped[1]",
   }
@@ -279,39 +283,39 @@ $make{$REF} = {
   #CMD => "cp $make_dep $make_target",
   DEP => "denovo.tab",
   CMD => [
-    "asm=\$\$(tail -n +2 denovo.tab | sort -k10,10nr | cut -f 1 | head -n 1) && cp \$\$asm $ref",
+    "asm=$bash_dollar(tail -n +2 denovo.tab | sort -k10,10nr | cut -f 1 | head -n 1) && cp ${bash_dollar}asm $ref",
   ],
 };
 
 $make{"folders"} = { 
-  DEP => [ $set->ids ],
+  DEP => [ map {"$outdir/$_"} $set->ids ],
 };
 
 $make{"yields"} = { 
-  DEP => [ map { ("$_/yield.dirty.tab", "$_/yield.clean.tab") } $set->ids ],
+  DEP => [ map { ("$outdir/$_/yield.dirty.tab", "$outdir/$_/yield.clean.tab") } $set->ids ],
 };
 
 $make{"abricate"} = { 
-  DEP => [ map { "$_/abricate.tab" } $set->ids ],
+  DEP => [ map { "$outdir/$_/abricate.tab" } $set->ids ],
 };
 
 $make{"kraken"} = { 
-  DEP => [ map { "$_/kraken.tab" } $set->ids ],
+  DEP => [ map { "$outdir/$_/kraken.tab" } $set->ids ],
 };
 
 $make{"mlst.tab"} = {
-  DEP => [ map { "$_/mlst.tab" } $set->ids ],
+  DEP => [ map { "$outdir/$_/mlst.tab" } $set->ids ],
   CMD => "(head -n 1 $make_dep && tail -q -n +2 $make_deps) > $make_target",
 };
   
 $make{"denovo.tab"} = {
-  DEP => [ map { "$_/denovo.tab" } $set->ids ],
+  DEP => [ map { "$outdir/$_/denovo.tab" } $set->ids ],
   CMD => "(head -n 1 $make_dep && tail -q -n +2 $make_deps) > $make_target",
 };
 
 $make{'core.aln'} = {
-  DEP => [ $IDFILE, map { ("$_/$_/snps.tab") } $set->ids ],
-  CMD => "snippy-core ".join(' ', map { "$_/$_" } $set->ids),
+  DEP => [ $IDFILE, map { ("$outdir/$_/$_/snps.tab") } $set->ids ],
+  CMD => "snippy-core ".join(' ', map { "$outdir/$_/$_" } $set->ids),
 };
 
 $make{'core.full.aln'} = {
@@ -347,7 +351,7 @@ $make{'distances.tab'} = {
 my $ptree = "parsnp/parsnp.tree";
 $make{"parsnp"} = { DEP => $ptree };
 $make{$ptree} = {
-  DEP => [ $REF, map { "$_/$CTG" } $set->ids ],
+  DEP => [ $REF, map { "$outdir/$_/$CTG" } $set->ids ],
   CMD => [ 
     "mkdir -p parsnp/genomes",
     (map { "ln -sf $outdir/$_/contigs.fa $outdir/parsnp/genomes/$_.fa" } $set->ids),
