@@ -270,7 +270,7 @@ for my $s ($set->isolates) {
   };  
   $make{"$dir/$id/snps.tab"} = {
     DEP => [ $REF, @clipped ],
-    CMD => "snippy --cpus $cpus --force --outdir $id/$id --ref $REF --R1 $clipped[0] --R2 $clipped[1]",
+    CMD => "snippy --cpus $cpus --force --outdir $dir/$id --ref $REF --R1 $clipped[0] --R2 $clipped[1]",
   }
 }
 close ISOLATES;
