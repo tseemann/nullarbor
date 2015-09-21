@@ -108,7 +108,31 @@ sub generate {
   $ass->[0][1] = 'Contigs';
   map { $_->[0] =~ s{/contigs.fa}{} } @$ass;
   print $fh table_to_markdown($ass,1);
+
+  #...........................................................................................
+  # Annotation
+  print $fh "##Annotation\n";
+  my %anno;
+  for my $id (@id) {
+    $anno{$id} = { 
+      map { ($_->[0] => $_->[1]) } @{ load_tabular(-file=>"$indir/$id/prokka/$id.txt", -sep=>': ') }
+    };
+  }
+#  print STDERR Dumper(\%anno);
   
+  if (1) {
+    my @feat = qw(contigs bases CDS rRNA tRNA tmRNA);
+    my @grid = ( [ 'Isolate', @feat ] );
+    for my $id (@id) {
+      my @row = ($id);
+      for my $f (@feat) {
+        push @row, $anno{$id}{$f} || '-';
+      }
+      push @grid, \@row;
+    }
+    print $fh table_to_markdown(\@grid, 1); 
+  }
+
   #...........................................................................................
   # ABR
   print $fh "##Resistome\n";
