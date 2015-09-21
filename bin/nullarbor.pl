@@ -154,12 +154,12 @@ $outdir = File::Spec->rel2abs($outdir);
 msg("Making output folder: $outdir");
 make_path($outdir); 
 
-my $IDFILE     = $outdir.'/isolates.txt';
-my $REF        = $outdir.'/ref.fa';
+my $IDFILE     = 'isolates.txt';
+my $REF        = 'ref.fa';
 my $R1         = "R1.fq.gz";
 my $R2         = "R2.fq.gz";
 my $CTG        = "contigs.fa";
-my $reportfile = $outdir."/report/index.html";
+my $reportfile = "report/index.html";
 my $zcat       = 'gzip -f -c -d';
 
 #...................................................................................................
@@ -178,7 +178,7 @@ $make{$reportfile} = {
   DEP => "$outdir/report/index.md",
   #CMD => "pandoc --from markdown_github --to html --css 'nullarbor.css' $make_dep > $make_target"
   CMD => [
-    qq(kramdown $make_dep | perl -lane 'if(/\\/head/){print "<style type=\"text/css\">"; system("cat $FindBin::RealBin/../conf/nullarbor.css"); print "</style>";} print;' > $make_target ),
+    qq(kramdown $make_dep | perl -lane 'if(/\\/head/){print "<style type=\\"text/css\\">"; system("cat $FindBin::RealBin/../conf/nullarbor.css"); print "</style>";} print;' > $make_target ),
   ],
 };
 
@@ -209,7 +209,7 @@ for my $s ($set->isolates) {
   my $id = $s->id;
   my @reads = @{$s->reads};
   @reads != 2 and err("Sample '$id' only has 1 read, need 2 (paired).");
-  my @clipped = ("$dir/$R1", "$dir/$R2");
+  my @clipped = ("$id/$R1", "$id/$R2");
   print ISOLATES "$id\n";
 
 #  make_path($dir);
@@ -217,26 +217,26 @@ for my $s ($set->isolates) {
   $make{$dir} = {
     CMD => [ "mkdir -p $make_target" ],
   };
-  $make{"$dir/yield.dirty.tab"} = {
-    DEP => [$ref, @reads ],
-    CMD => "fq --quiet --ref $ref @reads > $make_target",
+  $make{"$id/yield.dirty.tab"} = {
+    DEP => [$REF, @reads ],
+    CMD => "fq --quiet --ref $REF @reads > $make_target",
   };
-  $make{"$dir/yield.clean.tab"} = {
-    DEP => [$ref, @clipped ],
-    CMD => "fq --quiet --ref $ref $make_deps > $make_target",
+  $make{"$id/yield.clean.tab"} = {
+    DEP => [$REF, @clipped ],
+    CMD => "fq --quiet --ref $REF $make_deps > $make_target",
   };
   $make{$clipped[0]} = {
     DEP => [ @reads ],
-    CMD => [ "skewer --quiet -t $cpus -n -q 10 -z -o $dir/clipped @reads ".($cfg->{skewer} || ''),
-             "mv $dir/clipped-trimmed-pair1.fastq.gz $dir/$R1",
-             "mv $dir/clipped-trimmed-pair2.fastq.gz $dir/$R2", ],
+    CMD => [ "skewer --quiet -t $cpus -n -q 10 -z -o $id/clipped @reads ".($cfg->{skewer} || ''),
+             "mv $id/clipped-trimmed-pair1.fastq.gz $id/$R1",
+             "mv $id/clipped-trimmed-pair2.fastq.gz $id/$R2", ],
   };
   # we need this special rule to handle the 'double dependency' problem
   # http://www.gnu.org/software/automake/manual/html_node/Multiple-Outputs.html#Multiple-Outputs
   $make{$clipped[1]} = { 
     DEP => [ $clipped[0] ],
   };
-  $make{"$dir/$CTG"} = {
+  $make{"$id/$CTG"} = {
     DEP => [ @clipped ],
     CMD => [ 
       # v0.2.1 will not allow outputting to an existing folder
@@ -249,25 +249,25 @@ for my $s ($set->isolates) {
       "rm -f -v -r $id/megahit",
     ],
   };
-  $make{"$dir/kraken.tab"} = {
+  $make{"$id/kraken.tab"} = {
     DEP => [ @clipped ],
     CMD => "kraken --threads $cpus --preload --paired @clipped | kraken-report > $make_target",
   };
-  $make{"$dir/abricate.tab"} = {
-    DEP => "$dir/$CTG",
+  $make{"$id/abricate.tab"} = {
+    DEP => "$id/$CTG",
     CMD => "abricate $make_deps > $make_target",
   };
-  $make{"$dir/mlst.tab"} = {
-    DEP => "$dir/$CTG",
+  $make{"$id/mlst.tab"} = {
+    DEP => "$id/$CTG",
     CMD => "mlst --scheme $mlst $make_deps > $make_target",
   };
-  $make{"$dir/denovo.tab"} = {
-    DEP => "$dir/$CTG",
+  $make{"$id/denovo.tab"} = {
+    DEP => "$id/$CTG",
     CMD => "fa -e -t $make_deps > $make_target",
   };  
-  $make{"$dir/$id/snps.tab"} = {
+  $make{"$id/snps.tab"} = {
     DEP => [ $REF, @clipped ],
-    CMD => "snippy --cpus $cpus --force --outdir $dir/$id --ref $REF --R1 $clipped[0] --R2 $clipped[1]",
+    CMD => "snippy --cpus $cpus --force --outdir $id/$id --ref $REF --R1 $clipped[0] --R2 $clipped[1]",
   }
 }
 close ISOLATES;
@@ -285,34 +285,39 @@ $make{$REF} = {
 };
 
 $make{"folders"} = { 
-  DEP => [ map {"$outdir/$_"} $set->ids ],
+  DEP => [ map {"$_"} $set->ids ],
 };
 
 $make{"yields"} = { 
-  DEP => [ map { ("$outdir/$_/yield.dirty.tab", "$outdir/$_/yield.clean.tab") } $set->ids ],
+  DEP => [ map { ("$_/yield.dirty.tab", "$_/yield.clean.tab") } $set->ids ],
 };
 
 $make{"abricate"} = { 
-  DEP => [ map { "$outdir/$_/abricate.tab" } $set->ids ],
+  DEP => [ map { "$_/abricate.tab" } $set->ids ],
 };
 
 $make{"kraken"} = { 
-  DEP => [ map { "$outdir/$_/kraken.tab" } $set->ids ],
+  DEP => [ map { "$_/kraken.tab" } $set->ids ],
 };
 
 $make{"mlst.tab"} = {
-  DEP => [ map { "$outdir/$_/mlst.tab" } $set->ids ],
+  DEP => [ map { "$_/mlst.tab" } $set->ids ],
   CMD => "(head -n 1 $make_dep && tail -q -n +2 $make_deps) > $make_target",
 };
   
 $make{"denovo.tab"} = {
-  DEP => [ map { "$outdir/$_/denovo.tab" } $set->ids ],
+  DEP => [ map { "$_/denovo.tab" } $set->ids ],
   CMD => "(head -n 1 $make_dep && tail -q -n +2 $make_deps) > $make_target",
 };
 
 $make{'core.aln'} = {
   DEP => [ $IDFILE, map { ("$_/$_/snps.tab") } $set->ids ],
-  CMD => "snippy-core ".join(' ', map { "$_/$_" } $set->ids),
+  CMD => [
+    "snippy-core ".join(' ', map { "$_/$_" } $set->ids),
+
+    # unfortunately snippy-core seems to have no problem making a zero byte file and so that needs to be checked.
+    "\@if [[ ! -s '$make_target' ]]; then echo 'ERROR: Size of $make_target is zero bytes!'; rm -fv $make_target; exit 1; fi;",
+  ],
 };
 
 $make{'core.full.aln'} = {
@@ -328,6 +333,7 @@ $make{'tree.newick'} = {
   DEP => 'core.aln',
   CMD => [
     "env OMP_NUM_THREADS=$cpus OMP_THREAD_LIMIT=$cpus FastTree -gtr -nt $make_dep | nw_order -c n - > $make_target",
+    # unfortunately nw_order seems to have no problem making a zero byte file and so that needs to be checked.
     "\@if [[ ! -s '$make_target' ]]; then echo 'ERROR: Size of $make_target is zero bytes!'; rm -fv $make_target; exit 1; fi;",
   ],
 };
