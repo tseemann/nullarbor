@@ -25,7 +25,7 @@ use Nullarbor::Requirements qw(require_exe require_perlmod require_version);
 # constants
 
 my $EXE = "$FindBin::RealScript";
-my $VERSION = '0.5';
+my $VERSION = '0.6';
 my $AUTHOR = 'Torsten Seemann <torsten.seemann@gmail.com>';
 
 #-------------------------------------------------------------------
@@ -37,7 +37,7 @@ my $ref = '';
 my $mlst = '';
 my $input = '';
 my $outdir = '';
-my $cpus = 1;
+my $cpus = 8;
 my $force = 0;
 my $run = 0;
 my $report = 0;
@@ -66,25 +66,21 @@ GetOptions(
 ) 
 or usage();
 
-# At least megahit needs >1 cpu or else it will die.
-# So this will be the cpus for those programs.
-my $multicpus=$cpus;
-   $multicpus=2 if($multicpus < 2);
-
 Nullarbor::Logger->quiet($quiet);
 
 msg("Hello", $ENV{USER} || 'stranger');
 msg("This is $EXE $VERSION");
 msg("Send complaints to $AUTHOR");
 
-require_exe( qw'kraken snippy mlst abricate megahit nw_order nw_display trimal FastTree' );
-#require_exe( qw'fq fa afa-pairwise.pl' );
-require_exe( qw'fq afa-pairwise.pl' );
+require_exe( qw'prokka roary kraken snippy mlst abricate megahit nw_order nw_display trimal FastTree' );
+require_exe( qw'fq fa afa-pairwise.pl' );
 require_exe( qw'convert pandoc head cat install env' );
-require_perlmod( qw'Data::Dumper Moo Spreadsheet::Read SVG::Graph Bio::SeqIO File::Copy Time::Piece YAML::Tiny' );
+require_perlmod( qw'XML::Simple Data::Dumper Moo Spreadsheet::Read SVG::Graph Bio::SeqIO File::Copy Time::Piece YAML::Tiny' );
 
 require_version('megahit', 0.3);
 require_version('snippy', 2.5);
+require_version('prokka', 1.10);
+require_version('roary', 3.0);
 
 my $cfg;
 if (-r $conf_file) {
@@ -111,13 +107,10 @@ my %make;
 my $make_target = '$@';
 my $make_dep = '$<';
 my $make_deps = '$^';
-my $bash_dollar = '$$';
 
 $name or err("Please provide a --name for the project.");
 $name =~ m{/|\s} and err("The --name is not allowed to have spaces or slashes in it.");
 
-# TODO figure out whether the user has specified a reference genome:
-# if not, then one should be provided.
 $ref or err("Please provide a --ref reference genome in FASTA format");
 -r $ref or err("Can not read reference '$ref'");
 $ref = File::Spec->rel2abs($ref);
@@ -154,42 +147,38 @@ $outdir = File::Spec->rel2abs($outdir);
 msg("Making output folder: $outdir");
 make_path($outdir); 
 
-my $IDFILE     = 'isolates.txt';
-my $REF        = 'ref.fa';
-my $R1         = "R1.fq.gz";
-my $R2         = "R2.fq.gz";
-my $CTG        = "contigs.fa";
-my $reportfile = "report/index.html";
-my $zcat       = 'gzip -f -c -d';
+my $IDFILE = 'isolates.txt';
+my $REF = 'ref.fa';
+my $R1 = "R1.fq.gz";
+my $R2 = "R2.fq.gz";
+my $CTG = "contigs.fa";
+my $zcat = 'gzip -f -c -d';
 
 #...................................................................................................
 # Makefile logic
 
-my @PHONY = qw(folders yields abricate kraken);
+my @PHONY = qw(folders yields abricate kraken prokka);
 
 $make{'.PHONY'  } = { DEP => \@PHONY };
 $make{'.DEFAULT'} = { DEP => 'all'   };
 
 $make{'all'} = { 
-  DEP => [ $IDFILE, 'folders', $reportfile ],
+  DEP => [ $IDFILE, 'folders', 'report/index.html' ],
 };
 
-$make{$reportfile} = {
-  DEP => "$outdir/report/index.md",
-  #CMD => "pandoc --from markdown_github --to html --css 'nullarbor.css' $make_dep > $make_target"
-  CMD => [
-    qq(kramdown $make_dep | perl -lane 'if(/\\/head/){print "<style type=\\"text/css\\">"; system("cat $FindBin::RealBin/../conf/nullarbor.css"); print "</style>";} print;' > $make_target ),
-  ],
+$make{'report/index.html'} = {
+  DEP => 'report/index.md',
+  CMD => "pandoc --from markdown_github --to html --css 'nullarbor.css' $make_dep > $make_target"
 };
 
-$make{"$outdir/report/index.md"} = {
+$make{'report/index.md'} = {
   DEP => [ $REF, @PHONY, 'core.nogaps.aln', qw(mlst.tab denovo.tab tree.gif distances.tab) ],
   CMD => "$FindBin::RealBin/nullarbor.pl --name $name --report --indir $outdir --outdir $outdir/report",
 };
 
 if (my $dir = $cfg->{publish}) {
   $make{'publish'} = {
-    DEP => $reportfile,
+    DEP => 'report/index.html',
     CMD => [
       "mkdir -p \Q$dir/$name\E",
       "install -p -D -t \Q$dir/$name\E report/*",
@@ -197,14 +186,17 @@ if (my $dir = $cfg->{publish}) {
   };
 }
   
+$make{$REF} = { 
+  DEP => $ref, 
+  CMD => "cp $make_dep $make_target",
+};
 
 # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 # START per isolate
-open ISOLATES, '>', $IDFILE;
+open ISOLATES, '>', "$outdir/$IDFILE";
 for my $s ($set->isolates) {
   msg("Preparing rules for isolate:", $s->id);
   my $dir = File::Spec->rel2abs( File::Spec->catdir($outdir, $s->id) );
-  mkdir $dir;
   $s->folder($dir);
   my $id = $s->id;
   my @reads = @{$s->reads};
@@ -213,17 +205,16 @@ for my $s ($set->isolates) {
   print ISOLATES "$id\n";
 
 #  make_path($dir);
-  #$make{"$id"} = {
-  $make{$dir} = {
+  $make{"$id"} = {
     CMD => [ "mkdir -p $make_target" ],
   };
   $make{"$id/yield.dirty.tab"} = {
-    DEP => [$REF, @reads ],
-    CMD => "fq --quiet --ref $REF @reads > $make_target",
+    DEP => [ @reads ],
+    CMD => "fq --quiet --ref $ref @reads > $make_target",
   };
   $make{"$id/yield.clean.tab"} = {
-    DEP => [$REF, @clipped ],
-    CMD => "fq --quiet --ref $REF $make_deps > $make_target",
+    DEP => [ @clipped ],
+    CMD => "fq --quiet --ref $ref $make_deps > $make_target",
   };
   $make{$clipped[0]} = {
     DEP => [ @reads ],
@@ -243,7 +234,7 @@ for my $s ($set->isolates) {
       "rm -f -r $id/megahit",
       # FIXME: make --min-count a function of sequencing depth
 ##      "megahit -m 16E9 -l 610 --out-dir $id/megahit --input-cmd '$zcat $make_deps' --cpu-only -t $cpus --k-min 31 --k-max 71 --k-step 20 --min-count 3",
-      "megahit -t $multicpus -1 $clipped[0] -2 $clipped[1] --out-dir $id/megahit --k-min 41 --k-max 101 --k-step 20 --min-count 3 --min-contig-len 500 --no-mercy",
+      "megahit -t $cpus -1 $clipped[0] -2 $clipped[1] --out-dir $id/megahit --k-min 41 --k-max 101 --k-step 20 --min-count 3 --min-contig-len 500 --no-mercy",
       "mv $id/megahit/final.contigs.fa $make_target",
       "mv $id/megahit/log $id/megahit.log",
       "rm -f -v -r $id/megahit",
@@ -265,27 +256,21 @@ for my $s ($set->isolates) {
     DEP => "$id/$CTG",
     CMD => "fa -e -t $make_deps > $make_target",
   };  
-  $make{"$id/snps.tab"} = {
+  $make{"$id/$id/snps.tab"} = {
     DEP => [ $REF, @clipped ],
     CMD => "snippy --cpus $cpus --force --outdir $id/$id --ref $REF --R1 $clipped[0] --R2 $clipped[1]",
-  }
+  };
+  $make{"$id/prokka/$id.gff"} = {
+    DEP => "$id/$CTG",
+    CMD => "prokka --fast --locustag $id --prefix $id --outdir $id/prokka --cpus $cpus $make_deps",
+  };
 }
 close ISOLATES;
 #END per isolate
 #^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-# get the best reference assembly in denovo.tab
-$make{$REF} = { 
-  #DEP => $ref, 
-  #CMD => "cp $make_dep $make_target",
-  DEP => "denovo.tab",
-  CMD => [
-    "asm=$bash_dollar(tail -n +2 denovo.tab | sort -k10,10nr | cut -f 1 | head -n 1) && cp ${bash_dollar}asm $make_target",
-  ],
-};
-
 $make{"folders"} = { 
-  DEP => [ map {"$_"} $set->ids ],
+  DEP => [ $set->ids ],
 };
 
 $make{"yields"} = { 
@@ -300,6 +285,19 @@ $make{"kraken"} = {
   DEP => [ map { "$_/kraken.tab" } $set->ids ],
 };
 
+$make{"prokka"} = { 
+  DEP => [ map { "$_/prokka/$_.gff" } $set->ids ],
+};
+
+$make{"roary"} = { 
+  DEP => "gene_presence_absence.csv",
+};
+
+$make{"gene_presence_absence.csv"} = { 
+  DEP => [ map { "$_/prokka/$_.gff" } $set->ids ],
+  CMD => "roary -v -p $cpus $make_deps",
+};
+
 $make{"mlst.tab"} = {
   DEP => [ map { "$_/mlst.tab" } $set->ids ],
   CMD => "(head -n 1 $make_dep && tail -q -n +2 $make_deps) > $make_target",
@@ -312,12 +310,7 @@ $make{"denovo.tab"} = {
 
 $make{'core.aln'} = {
   DEP => [ $IDFILE, map { ("$_/$_/snps.tab") } $set->ids ],
-  CMD => [
-    "snippy-core ".join(' ', map { "$_/$_" } $set->ids),
-
-    # unfortunately snippy-core seems to have no problem making a zero byte file and so that needs to be checked.
-    "\@if [[ ! -s '$make_target' ]]; then echo 'ERROR: Size of $make_target is zero bytes!'; rm -fv $make_target; exit 1; fi;",
-  ],
+  CMD => "snippy-core ".join(' ', map { "$_/$_" } $set->ids),
 };
 
 $make{'core.full.aln'} = {
@@ -331,11 +324,7 @@ $make{'core.nogaps.aln'} = {
 
 $make{'tree.newick'} = {
   DEP => 'core.aln',
-  CMD => [
-    "env OMP_NUM_THREADS=$cpus OMP_THREAD_LIMIT=$cpus FastTree -gtr -nt $make_dep | nw_order -c n - > $make_target",
-    # unfortunately nw_order seems to have no problem making a zero byte file and so that needs to be checked.
-    "\@if [[ ! -s '$make_target' ]]; then echo 'ERROR: Size of $make_target is zero bytes!'; rm -fv $make_target; exit 1; fi;",
-  ],
+  CMD => "env OMP_NUM_THREADS=$cpus OMP_THREAD_LIMIT=$cpus FastTree -gtr -nt $make_dep | nw_order -c n - > $make_target",
 };
 
 $make{'tree.svg'} = {
@@ -357,7 +346,7 @@ $make{'distances.tab'} = {
 my $ptree = "parsnp/parsnp.tree";
 $make{"parsnp"} = { DEP => $ptree };
 $make{$ptree} = {
-  DEP => [ $REF, map { "$outdir/$_/$CTG" } $set->ids ],
+  DEP => [ $REF, map { "$_/$CTG" } $set->ids ],
   CMD => [ 
     "mkdir -p parsnp/genomes",
     (map { "ln -sf $outdir/$_/contigs.fa $outdir/parsnp/genomes/$_.fa" } $set->ids),
