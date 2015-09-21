@@ -25,7 +25,7 @@ use Nullarbor::Requirements qw(require_exe require_perlmod require_version);
 # constants
 
 my $EXE = "$FindBin::RealScript";
-my $VERSION = '0.5';
+my $VERSION = '0.6';
 my $AUTHOR = 'Torsten Seemann <torsten.seemann@gmail.com>';
 
 #-------------------------------------------------------------------
@@ -72,13 +72,15 @@ msg("Hello", $ENV{USER} || 'stranger');
 msg("This is $EXE $VERSION");
 msg("Send complaints to $AUTHOR");
 
-require_exe( qw'kraken snippy mlst abricate megahit nw_order nw_display trimal FastTree' );
+require_exe( qw'prokka roary kraken snippy mlst abricate megahit nw_order nw_display trimal FastTree' );
 require_exe( qw'fq fa afa-pairwise.pl' );
 require_exe( qw'convert pandoc head cat install env' );
-require_perlmod( qw'Data::Dumper Moo Spreadsheet::Read SVG::Graph Bio::SeqIO File::Copy Time::Piece YAML::Tiny' );
+require_perlmod( qw'XML::Simple Data::Dumper Moo Spreadsheet::Read SVG::Graph Bio::SeqIO File::Copy Time::Piece YAML::Tiny' );
 
 require_version('megahit', 0.3);
 require_version('snippy', 2.5);
+require_version('prokka', 1.10);
+require_version('roary', 3.0);
 
 my $cfg;
 if (-r $conf_file) {
@@ -155,7 +157,7 @@ my $zcat = 'gzip -f -c -d';
 #...................................................................................................
 # Makefile logic
 
-my @PHONY = qw(folders yields abricate kraken);
+my @PHONY = qw(folders yields abricate kraken prokka);
 
 $make{'.PHONY'  } = { DEP => \@PHONY };
 $make{'.DEFAULT'} = { DEP => 'all'   };
@@ -257,7 +259,11 @@ for my $s ($set->isolates) {
   $make{"$id/$id/snps.tab"} = {
     DEP => [ $REF, @clipped ],
     CMD => "snippy --cpus $cpus --force --outdir $id/$id --ref $REF --R1 $clipped[0] --R2 $clipped[1]",
-  }
+  };
+  $make{"$id/prokka/$id.gff"} = {
+    DEP => "$id/$CTG",
+    CMD => "prokka --locustag $id --prefix $id --outdir $id/prokka --cpus $cpus $make_deps",
+  };
 }
 close ISOLATES;
 #END per isolate
@@ -277,6 +283,19 @@ $make{"abricate"} = {
 
 $make{"kraken"} = { 
   DEP => [ map { "$_/kraken.tab" } $set->ids ],
+};
+
+$make{"prokka"} = { 
+  DEP => [ map { "$_/prokka/$_.gff" } $set->ids ],
+};
+
+$make{"roary"} = { 
+  DEP => "gene_presence_absence.csv",
+};
+
+$make{"gene_presence_absence.csv"} = { 
+  DEP => [ map { "$_/prokka/$_.gff" } $set->ids ],
+  CMD => "roary -v -p $cpus $make_deps",
 };
 
 $make{"mlst.tab"} = {
