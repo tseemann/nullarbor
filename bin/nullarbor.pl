@@ -175,17 +175,14 @@ $make{'all'} = {
 };
 
 $make{$reportfile} = {
-  DEP => 'report/index.md',
+  DEP => "$outdir/report/index.md",
   #CMD => "pandoc --from markdown_github --to html --css 'nullarbor.css' $make_dep > $make_target"
   CMD => [
-    "echo '<style type=\"text/css\">' > $make_target",
-    "cat $FindBin::RealBin/../conf/nullarbor.css >> $make_target",
-    "echo '</style>' >> $make_target",
-    "$FindBin::RealBin/../sbin/Markdown.pl < $make_dep >> $make_target",
+    qq(kramdown $make_dep | perl -lane 'if(/\\/head/){print "<style type=\"text/css\">"; system("cat $FindBin::RealBin/../conf/nullarbor.css"); print "</style>";} print;' > $make_target ),
   ],
 };
 
-$make{'report/index.md'} = {
+$make{"$outdir/report/index.md"} = {
   DEP => [ $REF, @PHONY, 'core.nogaps.aln', qw(mlst.tab denovo.tab tree.gif distances.tab) ],
   CMD => "$FindBin::RealBin/nullarbor.pl --name $name --report --indir $outdir --outdir $outdir/report",
 };
@@ -283,7 +280,7 @@ $make{$REF} = {
   #CMD => "cp $make_dep $make_target",
   DEP => "denovo.tab",
   CMD => [
-    "asm=$bash_dollar(tail -n +2 denovo.tab | sort -k10,10nr | cut -f 1 | head -n 1) && cp ${bash_dollar}asm $ref",
+    "asm=$bash_dollar(tail -n +2 denovo.tab | sort -k10,10nr | cut -f 1 | head -n 1) && cp ${bash_dollar}asm $make_target",
   ],
 };
 
@@ -314,8 +311,8 @@ $make{"denovo.tab"} = {
 };
 
 $make{'core.aln'} = {
-  DEP => [ $IDFILE, map { ("$outdir/$_/$_/snps.tab") } $set->ids ],
-  CMD => "snippy-core ".join(' ', map { "$outdir/$_/$_" } $set->ids),
+  DEP => [ $IDFILE, map { ("$_/$_/snps.tab") } $set->ids ],
+  CMD => "snippy-core ".join(' ', map { "$_/$_" } $set->ids),
 };
 
 $make{'core.full.aln'} = {
@@ -329,7 +326,10 @@ $make{'core.nogaps.aln'} = {
 
 $make{'tree.newick'} = {
   DEP => 'core.aln',
-  CMD => "env OMP_NUM_THREADS=$cpus OMP_THREAD_LIMIT=$cpus FastTree -gtr -nt $make_dep | nw_order -c n - > $make_target",
+  CMD => [
+    "env OMP_NUM_THREADS=$cpus OMP_THREAD_LIMIT=$cpus FastTree -gtr -nt $make_dep | nw_order -c n - > $make_target",
+    "\@if [[ ! -s '$make_target' ]]; then echo 'ERROR: Size of $make_target is zero bytes!'; rm -fv $make_target; exit 1; fi;",
+  ],
 };
 
 $make{'tree.svg'} = {
