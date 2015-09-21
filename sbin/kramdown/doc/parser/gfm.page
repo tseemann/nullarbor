@@ -1,0 +1,27 @@
+---
+title: GFM Parser
+---
+# GFM Parser
+
+## Introduction
+
+This parser can parse ["Github Flavored
+Markdown"](https://help.github.com/articles/github-flavored-markdown). This is a format of Markdown
+that is used on Github.com for most places where textual input is required, such as issues and
+comments. Some of the extensions, notably the "backtick fenced code blocks" are also used on other
+sites, for example StackOverflow.
+
+## Conformance
+
+At the moment this parser is based on the [kramdown parser](kramdown.html), with the following
+changes:
+
+* Support for fenced code blocks using three or more backticks has been added.
+* Hard line breaks in paragraphs are enforced by default (see option 'hard_wrap').
+* ATX headers need a whitespace character after the hash signs.
+
+## Options
+
+The GFM parser supports the following options:
+
+{options: {items: [hard_wrap]}}
