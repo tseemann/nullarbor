@@ -193,7 +193,7 @@ sub generate {
  
   #...........................................................................................
   # Core genome
-  print $fh "##Core genome\n\n";
+  print $fh "\n##Core genome\n\n";
   
   my $gin = Bio::SeqIO->new(-file=>"$indir/core.nogaps.aln", -format=>'fasta');
   my $core = $gin->next_seq;
@@ -221,7 +221,7 @@ sub generate {
 
   #...........................................................................................
   # Core SNP counts
-  print $fh "##Core SNP distances\n\n";
+  print $fh "\n##Core SNP distances\n\n";
   my $snps = load_tabular(-file=>"$indir/distances.tab", -sep=>"\t");
   print $fh table_to_markdown($snps, 1);
 
