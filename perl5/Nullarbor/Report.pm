@@ -52,7 +52,7 @@ sub generate {
   }
   $mlst->[0][0] = 'Isolate';
 
-  print $fh "##MLST\n\n";
+  print $fh "\n##MLST\n\n";
   save_tabular("$outdir/$name.mlst.csv", $mlst);
   print $fh "Download: [$name.mlst.csv]($name.mlst.csv)\n";
   print $fh table_to_markdown($mlst, 1);
