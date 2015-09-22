@@ -32,7 +32,7 @@ sub generate {
   #...........................................................................................
   # Heading
 
-  print  $fh "#MDU Report: $name\n";
+  print  $fh "#MDU Report: $name\n\n";
   print  $fh "__Date:__ ", qx(date);
   printf $fh "__Author:__ %s\n", $ENV{USER} || $ENV{LOGNAME} || 'anonymous';
   printf $fh "__Isolates:__ %d\n", scalar(@id);
@@ -52,7 +52,7 @@ sub generate {
   }
   $mlst->[0][0] = 'Isolate';
 
-  print $fh "##MLST\n";
+  print $fh "\n##MLST\n\n";
   save_tabular("$outdir/$name.mlst.csv", $mlst);
   print $fh "Download: [$name.mlst.csv]($name.mlst.csv)\n";
   print $fh table_to_markdown($mlst, 1);
@@ -62,7 +62,7 @@ sub generate {
 
   #for my $stage ('dirty', 'clean') {
   for my $stage ('clean') {
-    print $fh "##Sequence data\n";
+    print $fh "##Sequence data\n\n";
     my @wgs;
     my $first=1;
     for my $id (@id) {
@@ -81,7 +81,7 @@ sub generate {
     
   #...........................................................................................
   # Species ID
-  print $fh "##Sequence identification\n";
+  print $fh "##Sequence identification\n\n";
   my @spec;
   push @spec, [ 'Isolate', 'Predicted genus', '%matched', 'Predicted species', '%matched' ];
   for my $id (@id) {
@@ -101,7 +101,7 @@ sub generate {
 
   #...........................................................................................
   # Assembly
-  print $fh "##Assembly\n";
+  print $fh "##Assembly\n\n";
   my $ass = load_tabular(-file=>"$indir/denovo.tab", -sep=>"\t", -header=>1);
 #  print STDERR Dumper($ass);
   $ass->[0][0] = 'Isolate';
@@ -111,7 +111,7 @@ sub generate {
 
   #...........................................................................................
   # Annotation
-  print $fh "##Annotation\n";
+  print $fh "##Annotation\n\n";
   my %anno;
   for my $id (@id) {
     $anno{$id} = { 
@@ -135,7 +135,7 @@ sub generate {
 
   #...........................................................................................
   # ABR
-  print $fh "##Resistome\n";
+  print $fh "##Resistome\n\n";
   my %abr;
   for my $id (@id) {
     $abr{$id} = load_tabular(-file=>"$indir/$id/abricate.tab", -sep=>"\t",-header=>1, -key=>4);
@@ -169,7 +169,7 @@ sub generate {
 
   #...........................................................................................
   # Reference Genome
-  print $fh "##Reference genome\n";
+  print $fh "##Reference genome\n\n";
   my $fin = Bio::SeqIO->new(-file=>"$indir/ref.fa", -format=>'fasta');
   my $refsize;
   my @ref;
@@ -193,7 +193,7 @@ sub generate {
  
   #...........................................................................................
   # Core genome
-  print $fh "##Core genome\n";
+  print $fh "\n##Core genome\n\n";
   
   my $gin = Bio::SeqIO->new(-file=>"$indir/core.nogaps.aln", -format=>'fasta');
   my $core = $gin->next_seq;
@@ -206,7 +206,7 @@ sub generate {
 
   #...........................................................................................
   # Phylogeny
-  print $fh "##Phylogeny\n";
+  print $fh "##Phylogeny\n\n";
   
   my $aln = Bio::SeqIO->new(-file=>"$indir/core.aln", -format=>'fasta');
   $aln = $aln->next_seq;
@@ -221,13 +221,13 @@ sub generate {
 
   #...........................................................................................
   # Core SNP counts
-  print $fh "##Core SNP distances\n";
+  print $fh "\n##Core SNP distances\n\n";
   my $snps = load_tabular(-file=>"$indir/distances.tab", -sep=>"\t");
   print $fh table_to_markdown($snps, 1);
 
   #...........................................................................................
   # Software
-  print $fh "##Software\n";
+  print $fh "##Software\n\n";
   for my $tool (qw(nullarbor.pl mlst abricate snippy kraken samtools freebayes megahit prokka roary)) {
     print $fh "- $tool ```", qx($tool --version 2>&1), "```\n";
   }
