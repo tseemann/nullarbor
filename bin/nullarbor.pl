@@ -177,7 +177,15 @@ $make{'all'} = {
 $make{$reportfile} = {
   DEP => 'report/index.md',
   #CMD => "pandoc --from markdown_github --to html --css 'nullarbor.css' $make_dep > $make_target"
-  CMD => qq(kramdown $make_dep | perl -lane 'if(/\\/head/){print "<style type=\\"text/css\\">"; system("cat $FindBin::RealBin/../conf/nullarbor.css"); print "</style>";} print;' > $make_target ),
+  CMD => [
+	   'echo -n "" > '.$make_target, # truncate or make an empty file
+           'echo -e "<html>\n  <head>\n  <title>Nullarbor report for '.$name.'</title>" >> '. $make_target,
+           'echo "<style type=\"text/css\">" >> '.$make_target,
+           "cat $FindBin::RealBin/../conf/nullarbor.css >> $make_target",
+           'echo -e "</style>\n</head>\n<body>" >> '.$make_target,
+           "kramdown $make_dep >> $make_target",
+	   'echo -e "</body>\n</html> >> " '.$make_target,
+         ],
 };
 
 $make{'report/index.md'} = {
