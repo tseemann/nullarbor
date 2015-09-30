@@ -77,7 +77,7 @@ require_exe( qw'fq fa afa-pairwise.pl' );
 require_exe( qw'convert pandoc head cat install env' );
 require_perlmod( qw'XML::Simple Data::Dumper Moo Spreadsheet::Read SVG::Graph Bio::SeqIO File::Copy Time::Piece YAML::Tiny' );
 
-require_version('megahit', 0.3);
+require_version('megahit', 1.0);
 require_version('snippy', 2.5);
 require_version('prokka', 1.10);
 require_version('roary', 3.0);
@@ -234,7 +234,8 @@ for my $s ($set->isolates) {
       "rm -f -r $id/megahit",
       # FIXME: make --min-count a function of sequencing depth
 ##      "megahit -m 16E9 -l 610 --out-dir $id/megahit --input-cmd '$zcat $make_deps' --cpu-only -t $cpus --k-min 31 --k-max 71 --k-step 20 --min-count 3",
-      "megahit -t $cpus -1 $clipped[0] -2 $clipped[1] --out-dir $id/megahit --k-min 41 --k-max 101 --k-step 20 --min-count 3 --min-contig-len 500 --no-mercy",
+##      "megahit -t $cpus -1 $clipped[0] -2 $clipped[1] --out-dir $id/megahit --k-min 41 --k-max 101 --k-step 20 --min-count 3 --min-contig-len 500 --no-mercy",
+      "megahit -t $cpus --memory 0.5 -1 $clipped[0] -2 $clipped[1] --out-dir $id/megahit --presets bulk --min-contig-len 500",
       "mv $id/megahit/final.contigs.fa $make_target",
       "mv $id/megahit/log $id/megahit.log",
       "rm -f -v -r $id/megahit",
