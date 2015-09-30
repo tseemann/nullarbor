@@ -262,7 +262,7 @@ for my $s ($set->isolates) {
   };
   $make{"$id/prokka/$id.gff"} = {
     DEP => "$id/$CTG",
-    CMD => "prokka --fast --locustag $id --prefix $id --outdir $id/prokka --cpus $cpus $make_deps",
+    CMD => "prokka --force --fast --locustag $id --prefix $id --outdir $id/prokka --cpus $cpus $make_deps",
   };
 }
 close ISOLATES;
