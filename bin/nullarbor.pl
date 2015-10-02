@@ -19,7 +19,7 @@ use lib "$FindBin::RealBin/../perl5";
 use Nullarbor::IsolateSet;
 use Nullarbor::Logger qw(msg err);
 use Nullarbor::Report;
-use Nullarbor::Requirements qw(require_exe require_perlmod require_version);
+use Nullarbor::Requirements qw(require_exe require_perlmod require_version require_var require_file);
 
 #-------------------------------------------------------------------
 # constants
@@ -75,12 +75,17 @@ msg("Send complaints to $AUTHOR");
 require_exe( qw'prokka roary kraken snippy mlst abricate megahit nw_order nw_display trimal FastTree' );
 require_exe( qw'fq fa afa-pairwise.pl' );
 require_exe( qw'convert pandoc head cat install env' );
+
 require_perlmod( qw'Data::Dumper Moo SVG::Graph Bio::SeqIO File::Copy Time::Piece YAML::Tiny' );
 
 require_version('megahit', 1.0);
 require_version('snippy', 2.5);
 require_version('prokka', 1.10);
 require_version('roary', 3.0);
+
+my $value = require_var('KRAKEN_DEFAULT_DB', 'kraken');
+require_file("$value/database.idx", 'kraken');
+require_file("$value/database.kdb", 'kraken');
 
 my $cfg;
 if (-r $conf_file) {

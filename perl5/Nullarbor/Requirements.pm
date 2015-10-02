@@ -1,10 +1,38 @@
 package Nullarbor::Requirements;
 
 use base Exporter;
-@EXPORT_OK = qw(require_exe require_perlmod require_version);
+@EXPORT_OK = qw(require_exe require_perlmod require_version require_var require_file);
 
 use File::Spec;
 use Nullarbor::Logger qw(err msg);
+use strict;
+
+#----------------------------------------------------------------------
+sub require_var {
+  my($var, $reason) = @_;
+  $reason ||= 'nullarbor';
+  my $value = $ENV{$var};
+  if ($value) {
+    msg("Found $reason environmental variable $var=$value");
+  }
+  else {
+    err("Please set $var appropriately.");
+  }
+  return $value;
+}
+
+#----------------------------------------------------------------------
+sub require_file {
+  my($fname, $reason) = @_;
+  $reason || 'nullarbor';
+  if (-r $fname) {
+    msg("Found file required by $reason: $fname");
+  }
+  else {
+    err("Can not find file $fname required by $reason.");
+  }
+  return;
+}
 
 #----------------------------------------------------------------------
 sub require_version {
