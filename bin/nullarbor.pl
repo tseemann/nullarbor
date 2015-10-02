@@ -75,7 +75,7 @@ msg("Send complaints to $AUTHOR");
 require_exe( qw'prokka roary kraken snippy mlst abricate megahit nw_order nw_display trimal FastTree' );
 require_exe( qw'fq fa afa-pairwise.pl' );
 require_exe( qw'convert pandoc head cat install env' );
-require_perlmod( qw'XML::Simple Data::Dumper Moo Spreadsheet::Read SVG::Graph Bio::SeqIO File::Copy Time::Piece YAML::Tiny' );
+require_perlmod( qw'Data::Dumper Moo SVG::Graph Bio::SeqIO File::Copy Time::Piece YAML::Tiny' );
 
 require_version('megahit', 1.0);
 require_version('snippy', 2.5);
