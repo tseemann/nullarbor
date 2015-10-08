@@ -20,6 +20,7 @@ use Nullarbor::IsolateSet;
 use Nullarbor::Logger qw(msg err);
 use Nullarbor::Report;
 use Nullarbor::Requirements qw(require_exe require_perlmod require_version require_var require_file);
+use Nullarbor::Utils qw(num_cpus);
 
 #-------------------------------------------------------------------
 # constants
@@ -37,7 +38,7 @@ my $ref = '';
 my $mlst = '';
 my $input = '';
 my $outdir = '';
-my $cpus = 8;
+my $cpus = num_cpus();
 my $force = 0;
 my $run = 0;
 my $report = 0;
@@ -402,7 +403,7 @@ sub usage {
 #  print "(1) Analyse samples\n";
   print "  $EXE [options] --name NAME --mlst SCHEME --ref REF.FA --input SAMPLES.TAB --outdir DIR\n";
   print "    --force     Overwrite --outdir (useful for adding samples to existing analysis)\n";
-  print "    --cpus      Maximum number of CPUs to allow one command to use\n";
+  print "    --cpus      Maximum number of CPUs to use in total ($cpus)\n";
   print "    --quiet     No output\n";
   print "    --verbose   More output\n";
   print "    --version   Tool version\n";
