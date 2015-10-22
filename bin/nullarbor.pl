@@ -82,7 +82,7 @@ require_perlmod( qw'Data::Dumper Moo SVG::Graph Bio::SeqIO File::Copy Time::Piec
 require_version('megahit', 1.0);
 require_version('snippy', 2.5);
 require_version('prokka', 1.10);
-require_version('roary', 3.0);
+require_version('roary', 3.4);
 
 my $value = require_var('KRAKEN_DEFAULT_DB', 'kraken');
 require_file("$value/database.idx", 'kraken');
@@ -382,6 +382,7 @@ sub write_makefile {
   print $fh "SHELL := /bin/bash\n";
   print $fh "MAKEFLAGS += --no-builtin-rules\n";
   print $fh "MAKEFLAGS += --no-builtin-variables\n";
+#  print $fh "MAKEFLAGS += --load-average=$cpus\n";
   print $fh ".SUFFIXES:\n";
 
   for my $target ('all', sort grep { $_ ne 'all' } keys %$make) {
