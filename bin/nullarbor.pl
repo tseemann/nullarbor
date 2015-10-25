@@ -44,6 +44,7 @@ my $run = 0;
 my $report = 0;
 my $indir = '';
 my $name = '';
+my $accurate = 0;
 my $conf_file = "$FindBin::RealBin/../conf/nullarbor.conf";
 
 @ARGV or usage();
@@ -62,6 +63,7 @@ GetOptions(
   "force!"   => \$force,
   "run!"     => \$run,
   "report!"  => \$report,
+  "accurate!"=> \$accurate,
   "indir=s"  => \$indir,
   "name=s"   => \$name,
 ) 
@@ -73,9 +75,9 @@ msg("Hello", $ENV{USER} || 'stranger');
 msg("This is $EXE $VERSION");
 msg("Send complaints to $AUTHOR");
 
-require_exe( qw'prokka roary kraken snippy mlst abricate megahit nw_order nw_display trimal FastTree' );
-require_exe( qw'fq fa afa-pairwise.pl' );
 require_exe( qw'convert pandoc head cat install env' );
+require_exe( qw'prokka roary kraken snippy mlst abricate megahit spades.py nw_order nw_display trimal FastTree' );
+require_exe( qw'fq fa afa-pairwise.pl' );
 
 require_perlmod( qw'Data::Dumper Moo SVG::Graph Bio::SeqIO File::Copy Time::Piece YAML::Tiny' );
 
@@ -83,6 +85,7 @@ require_version('megahit', 1.0);
 require_version('snippy', 2.5);
 require_version('prokka', 1.10);
 require_version('roary', 3.4);
+#require_version('spades.py', 3.5); # does not have a --version flag
 
 my $value = require_var('KRAKEN_DEFAULT_DB', 'kraken');
 require_file("$value/database.idx", 'kraken');
@@ -233,20 +236,31 @@ for my $s ($set->isolates) {
   $make{$clipped[1]} = { 
     DEP => [ $clipped[0] ],
   };
-  $make{"$id/$CTG"} = {
-    DEP => [ @clipped ],
-    CMD => [ 
-      # v0.2.1 will not allow outputting to an existing folder
-      "rm -f -r $id/megahit",
-      # FIXME: make --min-count a function of sequencing depth
-##      "megahit -m 16E9 -l 610 --out-dir $id/megahit --input-cmd '$zcat $make_deps' --cpu-only -t $cpus --k-min 31 --k-max 71 --k-step 20 --min-count 3",
-##      "megahit -t $cpus -1 $clipped[0] -2 $clipped[1] --out-dir $id/megahit --k-min 41 --k-max 101 --k-step 20 --min-count 3 --min-contig-len 500 --no-mercy",
-      "megahit -t $cpus --memory 0.5 -1 $clipped[0] -2 $clipped[1] --out-dir $id/megahit --presets bulk --min-contig-len 500",
-      "mv $id/megahit/final.contigs.fa $make_target",
-      "mv $id/megahit/log $id/megahit.log",
-      "rm -f -v -r $id/megahit",
-    ],
-  };
+  
+  if ($accurate) {
+    $make{"$id/$CTG"} = {
+      DEP => [ @clipped ],
+      CMD => [ 
+        "rm -f -r $id/spades",
+        "spades.py -t $cpus -1 $clipped[0] -2 $clipped[1] -o $id/spades --only-assembler --careful --cov-cutoff auto",
+        "mv $id/spades/scaffolds.fasta $make_target",
+        "mv $id/spades/spades.log $id/spades.log",
+        "rm -f -v -r $id/spades",
+      ],
+    };
+  }
+  else {
+    $make{"$id/$CTG"} = {
+      DEP => [ @clipped ],
+      CMD => [ 
+        "rm -f -r $id/megahit",
+        "megahit -t $cpus --memory 0.5 -1 $clipped[0] -2 $clipped[1] --out-dir $id/megahit --presets bulk --min-contig-len 500",
+        "mv $id/megahit/final.contigs.fa $make_target",
+        "mv $id/megahit/log $id/megahit.log",
+        "rm -f -v -r $id/megahit",
+      ],
+    };
+  }
   $make{"$id/kraken.tab"} = {
     DEP => [ @clipped ],
     CMD => "kraken --threads $cpus --preload --paired @clipped | kraken-report > $make_target",
@@ -403,6 +417,7 @@ sub usage {
   print "USAGE\n";
 #  print "(1) Analyse samples\n";
   print "  $EXE [options] --name NAME --mlst SCHEME --ref REF.FA --input SAMPLES.TAB --outdir DIR\n";
+  print "    --accurate  Invest more effort in the de novo assembly\n";
   print "    --force     Overwrite --outdir (useful for adding samples to existing analysis)\n";
   print "    --cpus      Maximum number of CPUs to use in total ($cpus)\n";
   print "    --quiet     No output\n";
