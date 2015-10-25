@@ -82,18 +82,21 @@ sub generate {
   #...........................................................................................
   # Species ID
   print $fh "##Sequence identification\n";
+  sub trim { 
+    my($s) = @_; 
+    $s =~ s/^\s+//; 
+    $s =~ s/\s+$//; 
+    return $s; 
+  }
+  my $NM = 3;
   my @spec;
-  push @spec, [ 'Isolate', 'Predicted genus', '%matched', 'Predicted species', '%matched' ];
+  push @spec, [ 'Isolate', map { ("#$_ Match", "%") } (1.. $NM) ];
   for my $id (@id) {
     my $t = load_tabular(-file=>"$indir/$id/kraken.tab", -sep=>"\t");
-    my @g = grep { $_->[3] eq 'G' } @$t;
     my @s = grep { $_->[3] eq 'S' } @$t;
-    $g[0][5] =~ s/^\s+//;
-    $s[0][5] =~ s/^\s+//;
     push @spec, [ 
       $id, 
-      '_'.$g[0][5].'_', $g[0][0],
-      '_'.$s[0][5].'_', $s[0][0],
+      map { '_'.trim($s[$_][5] || 'None').'_', trim($s[$_][0] || '-') } (0 .. $NM-1)
     ];  # _italics_ taxa names
   }
 #  print Dumper(\@spec);
