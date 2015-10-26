@@ -97,7 +97,11 @@ if (-r $conf_file) {
   $cfg = $yaml->[0];
 #  print Dumper($cfg);
   msg("Loaded YAML config: $conf_file");
-  msg("Options set:", keys %$cfg);
+#  msg("Options set:", keys %$cfg);
+  for my $opt (keys %$cfg) {
+    $cfg->{$opt} =~ s/\$HOME/$ENV{HOME}/g;
+    msg("- $opt = $cfg->{$opt}");
+  }
 }
 else {
   msg("Could not read config file: $conf_file");
