@@ -102,6 +102,7 @@ sub generate {
 #  print Dumper(\@spec);
   print $fh table_to_markdown(\@spec, 1);
 
+
   #...........................................................................................
   # Assembly
   print $fh "##Assembly\n";
@@ -110,6 +111,12 @@ sub generate {
   $ass->[0][0] = 'Isolate';
   $ass->[0][1] = 'Contigs';
   map { $_->[0] =~ s{/contigs.fa}{} } @$ass;
+  # extract insert size from BWA output in Snippy folder
+  push @{$ass->[0]}, "Insert size (25,50,75)%";
+  for my $row (1 .. @$ass-1) {
+    my $id = $ass->[$row][0];
+    push @{ $ass->[$row] }, extract_insert_size("$indir/$id/$id/snps.log");
+  }
   print $fh table_to_markdown($ass,1);
 
   #...........................................................................................
@@ -238,6 +245,24 @@ sub generate {
   #...........................................................................................
   # Done!
   msg("Report can be viewed in $outdir/index.md");
+}
+
+#.................................................................................
+
+sub extract_insert_size {
+  my($fname) = @_;
+  open BWALOG, '<', $fname or return 'n/a';
+  while (<BWALOG>) {
+    if (m/insert size distribution for orientation FR/) {
+      # [M::mem_pestat] (25, 50, 75) percentile: (143, 214, 323)
+      my $stats = <BWALOG>;
+      chomp $stats;
+      $stats =~ s/^.*\(/\(/;
+      return $stats;
+    }
+  }
+  close BWALOG;
+  return 'N/A';
 }
 
 #.................................................................................
