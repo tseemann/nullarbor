@@ -28,6 +28,7 @@ use Nullarbor::Utils qw(num_cpus);
 my $EXE = "$FindBin::RealScript";
 my $VERSION = '0.6';
 my $AUTHOR = 'Torsten Seemann <torsten.seemann@gmail.com>';
+my @CMDLINE = ($0, @ARGV);
 
 #-------------------------------------------------------------------
 # parameters
@@ -177,6 +178,10 @@ $make{'.DEFAULT'} = { DEP => 'all'   };
 
 $make{'all'} = { 
   DEP => [ $IDFILE, 'folders', 'report/index.html' ],
+};
+
+$make{'again'} = {
+  CMD => "(cd .. && @CMDLINE)",
 };
 
 $make{'report/index.html'} = {
