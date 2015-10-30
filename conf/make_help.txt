@@ -1,0 +1,21 @@
+Synopsis:
+  Nullarbor job runner makefile syntax
+
+Usage:
+  make [command]
+
+Commands:
+
+  denovo.tab	Just do enough to get genome assemblies
+  mlst.tab	Just do enought to do MLST
+  prokka	Just do enough to get annotated genomes
+  roary		Just do enough to Generate the pan-genome
+
+  help		Show this help
+  all		Do all the analyses and generate the report
+  again		Re-generate the Makefile, useful if Nullarbor now has new featues
+  list		List the isolates in this analysis
+  publish	Place web report in folder specified in nullarbor.conf file
+
+More help:
+  https://github.com/tseemann/nullarbor#nullarbor

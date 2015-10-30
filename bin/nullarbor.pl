@@ -76,8 +76,8 @@ msg("Hello", $ENV{USER} || 'stranger');
 msg("This is $EXE $VERSION");
 msg("Send complaints to $AUTHOR");
 
-require_exe( qw'convert pandoc head cat install env readseq' );
-require_exe( qw'prokka roary kraken snippy mlst abricate megahit spades.py nw_order nw_display trimal FastTree' );
+require_exe( qw'convert pandoc head cat install env nl' );
+require_exe( qw'readseq prokka roary kraken snippy mlst abricate megahit spades.py nw_order nw_display trimal FastTree' );
 require_exe( qw'fq fa afa-pairwise.pl' );
 
 require_perlmod( qw'Data::Dumper Moo SVG::Graph Bio::SeqIO File::Copy Time::Piece YAML::Tiny' );
@@ -181,6 +181,7 @@ $make{'all'} = {
 };
 
 $make{'again'} = {
+  PHONY => 1,
   CMD => "(cd .. && @CMDLINE)",
 };
 
@@ -384,6 +385,17 @@ $make{$ptree} = {
   ],
 };
 
+my $help_file = "$FindBin::RealBin/../conf/make_help.txt";
+$make{"help"} = {
+  DEP => $help_file,
+  CMD => "\@cat $make_dep",
+};
+
+$make{"list"} = {
+  DEP => $IDFILE,
+  CMD => "\@nl $make_dep",
+};
+
 #print Dumper(\%make);
 my $makefile = "$outdir/Makefile";
 open my $make_fh, '>', $makefile or err("Could not write $makefile");
@@ -413,6 +425,7 @@ sub write_makefile {
     my $dep = $make->{$target}{DEP};
     $dep = ref($dep) eq 'ARRAY' ? (join ' ', @$dep) : $dep;
     $dep ||= '';
+    print $fh ".PHONY: $target\n" if $make->{$target}{PHONY};
     print $fh "$target: $dep\n";
     if (my $cmd = $make->{$target}{CMD}) {
       my @cmd = ref $cmd eq 'ARRAY' ? @$cmd : ($cmd);
