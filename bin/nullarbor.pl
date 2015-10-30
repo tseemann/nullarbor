@@ -76,7 +76,7 @@ msg("Hello", $ENV{USER} || 'stranger');
 msg("This is $EXE $VERSION");
 msg("Send complaints to $AUTHOR");
 
-require_exe( qw'convert pandoc head cat install env' );
+require_exe( qw'convert pandoc head cat install env readseq' );
 require_exe( qw'prokka roary kraken snippy mlst abricate megahit spades.py nw_order nw_display trimal FastTree' );
 require_exe( qw'fq fa afa-pairwise.pl' );
 
@@ -125,7 +125,7 @@ my $make_deps = '$^';
 $name or err("Please provide a --name for the project.");
 $name =~ m{/|\s} and err("The --name is not allowed to have spaces or slashes in it.");
 
-$ref or err("Please provide a --ref reference genome in FASTA format");
+$ref or err("Please provide a --ref reference genome");
 -r $ref or err("Can not read reference '$ref'");
 $ref = File::Spec->rel2abs($ref);
 msg("Using reference genome: $ref");
@@ -206,7 +206,7 @@ if (my $dir = $cfg->{publish}) {
   
 $make{$REF} = { 
   DEP => $ref, 
-  CMD => "cp $make_dep $make_target",
+  CMD => "readseq -verbose -f8 -pipe < $make_dep > $make_target",
 };
 
 # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
@@ -228,11 +228,11 @@ for my $s ($set->isolates) {
   };
   $make{"$id/yield.dirty.tab"} = {
     DEP => [ @reads ],
-    CMD => "fq --quiet --ref $ref @reads > $make_target",
+    CMD => "fq --quiet --ref $REF @reads > $make_target",
   };
   $make{"$id/yield.clean.tab"} = {
     DEP => [ @clipped ],
-    CMD => "fq --quiet --ref $ref $make_deps > $make_target",
+    CMD => "fq --quiet --ref $REF $make_deps > $make_target",
   };
   $make{$clipped[0]} = {
     DEP => [ @reads ],
@@ -287,8 +287,8 @@ for my $s ($set->isolates) {
     CMD => "fa -e -t $make_deps > $make_target",
   };  
   $make{"$id/$id/snps.tab"} = {
-    DEP => [ $REF, @clipped ],
-    CMD => "snippy --cpus $cpus --force --outdir $id/$id --ref $REF --R1 $clipped[0] --R2 $clipped[1]",
+    DEP => [ $ref, @clipped ],
+    CMD => "snippy --cpus $cpus --force --outdir $id/$id --ref $ref --R1 $clipped[0] --R2 $clipped[1]",
   };
   $make{"$id/prokka/$id.gff"} = {
     DEP => "$id/$CTG",
@@ -380,7 +380,7 @@ $make{$ptree} = {
   CMD => [ 
     "mkdir -p parsnp/genomes",
     (map { "ln -sf $outdir/$_/contigs.fa $outdir/parsnp/genomes/$_.fa" } $set->ids),
-    "parsnp -p $cpus -c -d parsnp/genomes -r $ref -o parsnp",
+    "parsnp -p $cpus -c -d parsnp/genomes -r $REF -o parsnp",
   ],
 };
 
