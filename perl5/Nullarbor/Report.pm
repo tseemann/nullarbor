@@ -276,9 +276,16 @@ sub generate {
   #...........................................................................................
   # Software
   print $fh "##Software\n";
+  my @inv = ( [ "Tool", "Version" ] );
   for my $tool (qw(nullarbor.pl mlst abricate snippy kraken samtools freebayes megahit prokka roary)) {
-    print $fh "- $tool ```", qx($tool --version 2>&1), "```\n";
+    # print $fh "- $tool ```", qx($tool --version 2>&1), "```\n";
+    my($ver) = qx($tool --version 2>&1);
+    chomp $ver;
+    $ver =~ s/$tool\s*//i;
+    $ver =~ s/version\s*//i;
+    push @inv, [ "`$tool`", $ver ];
   }
+  print $fh table_to_markdown(\@inv, 1);
   
   #...........................................................................................
   # Done!
