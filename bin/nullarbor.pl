@@ -324,12 +324,12 @@ $make{"prokka"} = {
 };
 
 $make{"roary"} = { 
-  DEP => "gene_presence_absence.csv",
+  DEP => "roary/gene_presence_absence.csv",
 };
 
-$make{"gene_presence_absence.csv"} = { 
+$make{"roary/gene_presence_absence.csv"} = { 
   DEP => [ map { "$_/prokka/$_.gff" } $set->ids ],
-  CMD => "roary -v -p $cpus $make_deps",
+  CMD => "roary -f roary -v -p $cpus $make_deps",
 };
 
 $make{"mlst.tab"} = {
