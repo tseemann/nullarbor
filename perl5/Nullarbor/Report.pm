@@ -264,13 +264,18 @@ sub generate {
   }
 
   #...........................................................................................
-  # Core SNP density
+  # Pan Genome
   my $roary_ss = "roary/summary_statistics.txt";
   if (-r $roary_ss) {
     print $fh "##Pan genome\n";
     my $ss = load_tabular(-file=>$roary_ss, -sep=>":");
     unshift @$ss, [ "Ortholog class", "Count" ];
     print $fh table_to_markdown($ss, 1);
+    my $panpic = "$indir/roary/roary.png";
+    if (-r $panpic) {
+      copy($panpic, "$outdir/$name.pan.png");
+      print $fh "![Pan genome]($name.pan.png)\n";
+    }
   }
 
   #...........................................................................................

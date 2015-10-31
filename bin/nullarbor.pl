@@ -78,7 +78,7 @@ msg("Send complaints to $AUTHOR");
 
 require_exe( qw'convert pandoc head cat install env nl' );
 require_exe( qw'prokka roary kraken snippy mlst abricate megahit spades.py nw_order nw_display trimal FastTree' );
-require_exe( qw'fq fa afa-pairwise.pl any2fasta.pl' );
+require_exe( qw'fq fa afa-pairwise.pl any2fasta.pl roary2svg.pl' );
 
 require_perlmod( qw'Data::Dumper Moo SVG::Graph Bio::SeqIO File::Copy Time::Piece YAML::Tiny' );
 
@@ -324,7 +324,15 @@ $make{"prokka"} = {
 };
 
 $make{"roary"} = { 
+  DEP => "roary/roary.png",
+};
+
+$make{"roary/roary.png"} = { 
   DEP => "roary/gene_presence_absence.csv",
+  CMD => [
+    "roary2svg.pl $make_dep > $make_target.svg",
+    "convert $make_target.svg $make_target",
+  ],
 };
 
 $make{"roary/gene_presence_absence.csv"} = { 
