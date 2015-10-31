@@ -236,6 +236,44 @@ sub generate {
   print $fh table_to_markdown($snps, 1);
 
   #...........................................................................................
+  # Core SNP density
+  my $ref_fai = "$indir/ref.fa.fai";
+  if (0 and -r $ref_fai) {
+    print $fh "##Core SNP density\n";
+    my $len_of = load_tabular_as_hash($ref_fai);
+    my @coord;
+    open VCF, '<', "$indir/core.vcf";
+    my $prevseq = '';
+    my $offset = 0;
+    while (<VCF>) {
+      next if m/^#/;
+      next unless m/^(\S+)\t(\d+)/;
+      my($seq,$pos) = ($1,$2);
+      if ($prevseq && $seq ne $prevseq) {
+        $offset += $len_of->{$prevseq};
+        $prevseq = $seq;
+        print STDERR Dumper($offset);
+      }
+      push @coord, $offset + $pos;
+    }
+    @coord = sort { $a <=> $b } @coord;
+    print STDERR "# ", $coord[0], "..", $coord[-1], "\n";
+    open HIST, '>', 'snps.hist';
+    print HIST map { "$_\n" } @coord;
+    close HIST;
+  }
+
+  #...........................................................................................
+  # Core SNP density
+  my $roary_ss = "roary/summary_statistics.txt";
+  if (-r $roary_ss) {
+    print $fh "##Pan genome\n";
+    my $ss = load_tabular(-file=>$roary_ss, -sep=>":");
+    unshift @$ss, [ "Ortholog class", "Count" ];
+    print $fh table_to_markdown($ss, 1);
+  }
+
+  #...........................................................................................
   # Software
   print $fh "##Software\n";
   for my $tool (qw(nullarbor.pl mlst abricate snippy kraken samtools freebayes megahit prokka roary)) {
@@ -343,6 +381,25 @@ sub save_tabular {
   }
   close TABLE;
 }
+
+#.................................................................................
+
+sub load_tabular_as_hash {
+  my($infile, $key_col, $val_col, $sep, $skip) = @_;
+  $key_col ||= 0;
+  $val_col ||= 1;
+  $sep ||= "\t";
+  my $result = {};
+  open IN, '<', $infile;
+  while (<IN>) {
+    next if $skip and m/$skip/;
+    chomp;
+    my @row = split m/$sep/;
+    $result->{ $row[ $key_col ] } = $row[ $val_col ];
+  }
+  return $result;
+}
+
 
 #.................................................................................
 
