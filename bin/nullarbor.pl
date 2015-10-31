@@ -77,8 +77,8 @@ msg("This is $EXE $VERSION");
 msg("Send complaints to $AUTHOR");
 
 require_exe( qw'convert pandoc head cat install env nl' );
-require_exe( qw'readseq prokka roary kraken snippy mlst abricate megahit spades.py nw_order nw_display trimal FastTree' );
-require_exe( qw'fq fa afa-pairwise.pl' );
+require_exe( qw'prokka roary kraken snippy mlst abricate megahit spades.py nw_order nw_display trimal FastTree' );
+require_exe( qw'fq fa afa-pairwise.pl any2fasta.pl' );
 
 require_perlmod( qw'Data::Dumper Moo SVG::Graph Bio::SeqIO File::Copy Time::Piece YAML::Tiny' );
 
@@ -207,7 +207,10 @@ if (my $dir = $cfg->{publish}) {
   
 $make{$REF} = { 
   DEP => $ref, 
-  CMD => "readseq -verbose -f8 -pipe < $make_dep > $make_target",
+  CMD => [
+    "any2fasta.pl $make_dep > $make_target",
+    "samtools faidx $make_target",
+  ],
 };
 
 # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
