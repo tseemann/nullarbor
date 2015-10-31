@@ -329,7 +329,10 @@ $make{"roary"} = {
 
 $make{"roary/gene_presence_absence.csv"} = { 
   DEP => [ map { "$_/prokka/$_.gff" } $set->ids ],
-  CMD => "roary -f roary -v -p $cpus $make_deps",
+  CMD => [
+    "rm -fr roary",
+    "roary -f roary -v -p $cpus $make_deps",
+  ],
 };
 
 $make{"mlst.tab"} = {
