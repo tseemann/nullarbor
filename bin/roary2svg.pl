@@ -9,7 +9,7 @@ use SVG;
 
 use constant FONT_ASPECT => 0.8;
 
-my(@Options, $verbose, $taxacol, $width, $height, $panonly, $consensus, $border);
+my(@Options, $verbose, $taxacol, $width, $height, $panonly, $consensus, $border, $colour);
 setOptions();
 
 # read gene_presence_absence.csv from stdin
@@ -36,7 +36,8 @@ while (my $row = $csv->getline(\*ARGV) ) {
 }
 print STDERR "Found $C clusters.\n";
 
-my $svg = SVG->new(width=>$width, height=>$height*($N+1));
+my $real_height = $height*($N+1);
+my $svg = SVG->new(width=>$width, height=>$real_height);
 my $dy = $height;
 my $fontsize = 0.75 * $dy;
 my $lchars = max( map { length($_) } @id );
@@ -53,7 +54,7 @@ for my $j (0 .. $N-1) {
       # box for each present gene
       $svg->rectangle( 
           'x' => $llen+$i*$dx, 'y' => $j*$dy, 'width' => $dx,'height' => $dy-1, 
-          'style' => { fill=>'red' },
+          'style' => { fill=>$colour },
       );      
     }
   }
@@ -69,6 +70,14 @@ $svg->text(
   x=>$llen, y=>($N+0.75)*$dy, -cdata=>"$N taxa, $C clusters",
   style=>{ 'font-family'=>'sans-serif', 'fill'=>'black', 'font-size'=>$fontsize },
 );
+
+# border
+if ($border) {
+  $svg->rectangle( 
+    'x' => 0, 'y' => 0, 'width' => $width, 'height' => $real_height, 
+    'style' => { stroke=>'black', fill=>'none' },
+  );      
+}
 
 print STDERR "Writing SVG file\n";
 print STDOUT $svg->xmlify;
@@ -86,10 +95,11 @@ sub setOptions {
     {OPT=>"verbose!",  VAR=>\$verbose, DEFAULT=>0, DESC=>"Verbose output"},
     {OPT=>"width=i",  VAR=>\$width, DEFAULT=>1024, DESC=>"Canvas width"},
     {OPT=>"height=i",  VAR=>\$height, DEFAULT=>20, DESC=>"Row height (and ~ font height)"},
-    {OPT=>"taxacol=i",  VAR=>\$taxacol, DEFAULT=>14, DESC=>"Column in gpa.csv where taxa begin"},
+    {OPT=>"taxacolumn=i",  VAR=>\$taxacol, DEFAULT=>14, DESC=>"Column in gpa.csv where taxa begin"},
+    {OPT=>"colour=s",  VAR=>\$colour, DEFAULT=>'gray', DESC=>"Colour of pan genome cells"},
     {OPT=>"panonly!",  VAR=>\$panonly, DEFAULT=>0, DESC=>"Only non-core genes"},
 #    {OPT=>"consensus!",  VAR=>\$consensus, DEFAULT=>0, DESC=>"Add consensus row"},
-#    {OPT=>"border!",  VAR=>\$border, DEFAULT=>0, DESC=>"Add border to delimit genome"},
+    {OPT=>"border!",  VAR=>\$border, DEFAULT=>0, DESC=>"Add outline border"},
   );
 
   (!@ARGV) && (usage());
