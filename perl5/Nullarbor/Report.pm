@@ -274,6 +274,8 @@ sub generate {
     my $panpic = "$indir/roary/roary.png";
     if (-r $panpic) {
       copy($panpic, "$outdir/$name.pan.png");
+      copy("$indir/roary/roary.png.svg", "$outdir/$name.pan.svg");
+      print $fh "Download: [$name.pan.svg]($name.pan.svg)\n\n";
       print $fh "![Pan genome]($name.pan.png)\n";
     }
   }
