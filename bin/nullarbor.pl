@@ -26,7 +26,7 @@ use Nullarbor::Utils qw(num_cpus);
 # constants
 
 my $EXE = "$FindBin::RealScript";
-my $VERSION = '0.7';
+my $VERSION = '0.8-dev';
 my $AUTHOR = 'Torsten Seemann <torsten.seemann@gmail.com>';
 my @CMDLINE = ($0, @ARGV);
 
@@ -182,7 +182,7 @@ $make{'all'} = {
 
 $make{'again'} = {
   PHONY => 1,
-  CMD => "(cd .. && @CMDLINE)",
+  CMD => "(cd .. && @CMDLINE --force)",
 };
 
 $make{'report/index.html'} = {
