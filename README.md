@@ -75,15 +75,23 @@ This is a file, one line per isolate, with 3 tab separated columns: ID, R1, R2.
     Isolate3	/data/old/s_3_1_sequence.txt	/data/old/s_3_2_sequence.txt
     Isolate3b	/data/reads/Isolate3b_R1.fastq	/data/reads/Isolate3b_R2.fastq
 
-### Choose a reference genome (FASTA)
+### Choose a reference genome (FASTA, GENBANK)
 
 This is just a regular FASTA file. Try and choose a reference phylogenomically similar to your isolates.    
+If you use a GENBANK or EMBL file the annotations will be used to annotate SNPs by Snippy.
 
 ### Generate the run folder
 
 This command will create a new folder with a Makefile in it:
 
     nullarbor.pl --name PROJNAME --mlst saureus --ref US300.fna --input samples.tab --outdir OUTDIR
+
+### See some options
+
+Once set up, a Nullarbor folder can be used in a few different ways. 
+See what's available with this command:
+
+    make help
 
 ### Run
 
@@ -100,9 +108,7 @@ Or if you want to run parallel jobs:
 
     firefox OUTDIR/report/index.html
 
-## Example report
-
-FIXME
+An example report will be made available soon.
 
 ## Etymology
 
@@ -120,3 +126,6 @@ Submit problems to the [Issues Page](https://github.com/tseemann/nullarbor/issue
 
 Nullarbor is not published yet. Please use this URL: https://github.com/tseemann/nullarbor
 
+## Example report
+
+FIXME
