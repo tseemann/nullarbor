@@ -88,15 +88,28 @@ sub generate {
     $s =~ s/\s+$//; 
     return $s; 
   }
-  my $NM = 3;
+  sub font_prop {
+    my($text, $p) = @_;
+    return $text if !defined($p) or $p !~ m/^\d/;
+    my $extra = $p > 0.5 ? " font-weight: bold;" : "";
+#    my $i = int( 60 * (1-$p) );
+#    my $color = "rgb($i%,$i%,$i%)";
+    my $color = $p < 0.01 ? "lightgray" : $p < 0.10 ? "gray" : "black";
+    return "<SPAN STYLE='color: $color;$extra'>$text</SPAN>";
+  }
+  my $NM = 4;
   my @spec;
   push @spec, [ 'Isolate', map { ("#$_ Match", "%") } (1.. $NM) ];
   for my $id (@id) {
     my $t = load_tabular(-file=>"$indir/$id/kraken.tab", -sep=>"\t");
-    my @s = grep { $_->[3] eq 'S' } @$t;
+    # sort by proportion
+    my @s = sort { $b->[0] <=> $a->[0] } (grep { $_->[3] =~ m/^[US]$/ } @$t);
     push @spec, [ 
       $id, 
-      map { '_'.trim($s[$_][5] || 'None').'_', trim($s[$_][0] || '-') } (0 .. $NM-1)
+      map { 
+        font_prop( '_'.trim($s[$_][5] || 'None').'_' , $s[$_][0]/100.0 ), 
+        font_prop( trim($s[$_][0] || '-'), $s[$_][0]/100.0 ) 
+      } (0 .. $NM-1)
     ];  # _italics_ taxa names
   }
 #  print Dumper(\@spec);

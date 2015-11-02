@@ -25,3 +25,10 @@ TH {
   -ms-writing-mode: tb-rl; 
   writing-mode: vertical-rl; 
 }
+
+.binomial {
+  text-align: left;
+  font-family: serif;
+  font-style: italic;
+}
+
