@@ -32,3 +32,21 @@ TH {
   font-style: italic;
 }
 
+.pass {
+  color: green;
+  font-size: larger; 
+  font-weight: bold;
+}
+
+.fail {
+  color: red;
+  font-size: larger; 
+  font-weight: bold;
+}
+
+.dunno {
+  color: orange;
+  font-size: larger; 
+  font-weight: bold;
+}
+

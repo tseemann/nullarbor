@@ -60,6 +60,7 @@ sub generate {
   #...........................................................................................
   # Yields
 
+
   #for my $stage ('dirty', 'clean') {
   for my $stage ('clean') {
     print $fh "##Sequence data\n";
@@ -68,12 +69,18 @@ sub generate {
     for my $id (@id) {
       my $t = load_tabular(-file=>"$indir/$id/yield.$stage.tab", -sep=>"\t");
       if ($first) {
+        # make the headings for the table
         $t->[0][0] = 'Isolate';
         push @wgs, [ map { $_->[0] } @$t ];
+        push @{$wgs[-1]}, "Quality";
         $first=0;
       }
+      # copy the yield.tab fields across
       $t->[0][1] = $id;
       push @wgs, [ map { $_->[1] } @$t ];
+      my $depth = $wgs[-1][-1];
+      $depth =~ s/\D+$//;
+      push @{$wgs[-1]}, pass_fail( $depth < 25 ? -1 : $depth < 50 ? 0 : +1 );
     }
   #  print Dumper(\@wgs);
     print $fh table_to_markdown(\@wgs, 1);
@@ -427,6 +434,23 @@ sub load_tabular_as_hash {
   return $result;
 }
 
+#.................................................................................
+
+sub pass_fail {
+    my($level) = @_;
+    $level ||= 0;
+    my $sym = '?';
+    my $class = 'dunno';
+    if ($level < 0) {
+      $sym = "&#10008;";
+      $class = 'fail';
+    }
+    elsif ($level > 0) {
+      $sym = "&#10004;";
+      $class = 'pass';
+    }
+    return "<SPAN CLASS='$class'>$sym</SPAN>";
+}
 
 #.................................................................................
 
