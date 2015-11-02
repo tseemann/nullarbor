@@ -54,8 +54,13 @@ sub load {
     $id = _clean_id($id);
     exists $set{$id} and die "Duplicate ID '$id' in dataset '$fname'";
     for my $i (0 ..$#reads) {
+#      $reads[$i] or die "Sample '$id' read file #$i is null!";
+#      my $old = $reads[$i];
+#      print STDERR "# abs_path($old) = $reads[$i]\n";
+      my $which = sprintf "#%d of %d", $i+1, $#reads;
+      -r $reads[$i] or die "ERROR:\nIsolate '$id' - can not read sequence $which files:\n'$reads[$i]'";
       $reads[$i] = abs_path($reads[$i]);
-      -r $reads[$i] or die "$id sequence file '$reads[$i]' is not readable";
+      $reads[$i] or die "Isolate '$id' read file #$i did not survive absolution!";
     }
     my $isolate = Nullarbor::Isolate->new( id=>$id, reads=>[ @reads ]);
     $set{$id} = $isolate;
