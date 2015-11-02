@@ -146,10 +146,10 @@ $outdir or err("Please provide an --outdir folder.");
 if (-d $outdir) {
   if ($force) {
     msg("Re-using existing folder: $outdir");
-    for my $file (<$outdir/*.tab>, <$outdir/*.aln>) {
-      msg("Removing previous run file: $file");
-      unlink $file;
-    }
+#    for my $file (<$outdir/*.tab>, <$outdir/*.aln>) {
+#      msg("Removing previous run file: $file");
+#      unlink $file;
+#    }
 #    msg("Forced removal of existing --outdir $outdir");
 #    remove_tree($outdir);
   }
@@ -177,7 +177,7 @@ $make{'.PHONY'  } = { DEP => \@PHONY };
 $make{'.DEFAULT'} = { DEP => 'all'   };
 
 $make{'all'} = { 
-  DEP => [ $IDFILE, 'folders', 'report/index.html' ],
+  DEP => [ 'folders', 'report/index.html' ],
 };
 
 $make{'again'} = {
@@ -354,7 +354,7 @@ $make{"denovo.tab"} = {
 };
 
 $make{'core.aln'} = {
-  DEP => [ $IDFILE, map { ("$_/$_/snps.tab") } $set->ids ],
+  DEP => [ map { ("$_/$_/snps.tab") } $set->ids ],
   CMD => "snippy-core ".join(' ', map { "$_/$_" } $set->ids),
 };
 
