@@ -76,7 +76,7 @@ msg("Hello", $ENV{USER} || 'stranger');
 msg("This is $EXE $VERSION");
 msg("Send complaints to $AUTHOR");
 
-require_exe( qw'convert pandoc head cat install env nl' );
+require_exe( qw'convert pandoc head cat install env nl date' );
 require_exe( qw'prokka roary kraken snippy mlst abricate megahit spades.py nw_order nw_display trimal FastTree' );
 require_exe( qw'fq fa afa-pairwise.pl any2fasta.pl roary2svg.pl' );
 
@@ -187,7 +187,7 @@ $make{'again'} = {
 
 $make{'report/index.html'} = {
   DEP => 'report/index.md',
-  CMD => "pandoc --from markdown_github --to html --css 'nullarbor.css' $make_dep > $make_target"
+  CMD => "pandoc --standalone --toc --from markdown_github+pandoc_title_block --to html --css 'nullarbor.css' $make_dep > $make_target"
 };
 
 $make{'report/index.md'} = {

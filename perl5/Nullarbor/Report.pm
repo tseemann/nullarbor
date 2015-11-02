@@ -33,16 +33,29 @@ sub generate {
   #...........................................................................................
   # Heading
 
-  print  $fh "#MDU Report: $name\n";
-  print  $fh "__Date:__ ", qx(date);
-  printf $fh "__Author:__ %s\n", $ENV{USER} || $ENV{LOGNAME} || 'anonymous';
-  printf $fh "__Isolates:__ %d\n", scalar(@id);
+  my $user = $ENV{USER} || $ENV{LOGNAME} || 'anonymous';
+  my $date = qx(date);
+  chomp $date;
+  
+  # special +pandoc_title_block extension 
+  print $fh "% Report: $name\n\n"; 
+
+  my $meta_data = [
+    [ "Report", "Isolates", "Author", "Date" ],
+    [ $name, scalar(@id), $user, $date ],
+  ];
+  print $fh table_to_markdown($meta_data, 1);
+
+#  print $fh "__Report:__ $name\n";
+#  print $fh "__Date:__ $date\n";
+#  print $fh "__Author:__ $user\n";
+#  printf $fh "__Isolates:__ %d\n", scalar(@id);
 
   #...........................................................................................
   # MLST
   
   my $mlst = load_tabular(-file=>"$indir/mlst.tab", -sep=>"\t", -header=>1);
-  #print STDERR Dumper($mlst);
+#  print STDERR Dumper($mlst);
   
   for my $row (@$mlst) {
     $row->[0] =~ s{/contigs.fa}{};
@@ -339,6 +352,17 @@ sub generate {
     push @inv, [ "`$tool`", $ver ];
   }
   print $fh table_to_markdown(\@inv, 1);
+
+  #...........................................................................................
+  # Software
+  print $fh <<"EOF";
+##Information
+* This software was primarily written by [Torsten Seemann](http://tseemann.github.io/)
+* You can download the software from the [Nullarbor GitHub page](https://github.com/tseemann/nullarbor)
+* Please report bugs to the [Nullarbor Issues page](https://github.com/tseemann/nullarbor/issues)
+* If you this Nullarbor, please cite: Seemann T, Bulach DM, Kwong JK (2015) _Nullarbor_. **GitHub** github.com/tseemann/nullarbor
+EOF
+            
   
   #...........................................................................................
   # Done!
