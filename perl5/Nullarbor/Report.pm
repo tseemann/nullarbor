@@ -5,6 +5,7 @@ use Nullarbor::Logger qw(msg err);
 use Data::Dumper;
 use File::Copy;
 use Bio::SeqIO;
+use List::Util qw(sum);
 
 #.................................................................................
 
@@ -43,14 +44,17 @@ sub generate {
   my $mlst = load_tabular(-file=>"$indir/mlst.tab", -sep=>"\t", -header=>1);
   #print STDERR Dumper($mlst);
   
-  foreach (@$mlst) {
-    $_->[0] =~ s{/contigs.fa}{};
-    $_->[0] =~ s/ref.fa/Reference/;
+  for my $row (@$mlst) {
+    $row->[0] =~ s{/contigs.fa}{};
+    $row->[0] =~ s/ref.fa/Reference/;
     # move ST column to end to match MDU LIMS
-    my($ST) = splice @$_, 2, 1;
-    push @$_, $ST;
+    my($ST) = splice @$row, 2, 1;
+    my $missing = sum( map { $row->[$_] eq '-' ? 1 : 0 } (1 .. $#$row) );
+    push @$row, "**${ST}**";
+    push @$row, pass_fail( $missing==0 && $ST ne '-' ? +1 : $missing <= 1 ? 0 : -1 );
   }
   $mlst->[0][0] = 'Isolate';
+  $mlst->[0][-1] = 'Quality';
 
   print $fh "##MLST\n";
   save_tabular("$outdir/$name.mlst.csv", $mlst);
@@ -106,17 +110,18 @@ sub generate {
   }
   my $NM = 4;
   my @spec;
-  push @spec, [ 'Isolate', map { ("#$_ Match", "%") } (1.. $NM) ];
+  push @spec, [ 'Isolate', (map { ("#$_ Match", "%") } (1.. $NM)), "Quality" ];
   for my $id (@id) {
     my $t = load_tabular(-file=>"$indir/$id/kraken.tab", -sep=>"\t");
     # sort by proportion
     my @s = sort { $b->[0] <=> $a->[0] } (grep { $_->[3] =~ m/^[US]$/ } @$t);
     push @spec, [ 
       $id, 
-      map { 
+      (map { 
         font_prop( '_'.trim($s[$_][5] || 'None').'_' , $s[$_][0]/100.0 ), 
         font_prop( trim($s[$_][0] || '-'), $s[$_][0]/100.0 ) 
-      } (0 .. $NM-1)
+       } (0 .. $NM-1)),
+      pass_fail( $s[0][3] eq 'U' || $s[0][0] < 65 ? -1 : $s[0][0] < 80 ? 0 : +1 ),
     ];  # _italics_ taxa names
   }
 #  print Dumper(\@spec);
@@ -133,9 +138,11 @@ sub generate {
   map { $_->[0] =~ s{/contigs.fa}{} } @$ass;
   # extract insert size from BWA output in Snippy folder
   push @{$ass->[0]}, "Insert size (25,50,75)%";
+  push @{$ass->[0]}, "Quality";
   for my $row (1 .. @$ass-1) {
     my $id = $ass->[$row][0];
     push @{ $ass->[$row] }, extract_insert_size("$indir/$id/$id/snps.log");
+    push @{$ass->[$row] }, pass_fail( $ass->[$row][1] > 1000 ? -1 : +1 );
   }
   print $fh table_to_markdown($ass,1);
 
@@ -151,13 +158,16 @@ sub generate {
 #  print STDERR Dumper(\%anno);
   
   if (1) {
+    #                1      2    3    4   5     6
     my @feat = qw(contigs bases CDS rRNA tRNA tmRNA);
-    my @grid = ( [ 'Isolate', @feat ] );
+    my @grid = ( [ 'Isolate', @feat, 'Quality' ] );
     for my $id (@id) {
       my @row = ($id);
       for my $f (@feat) {
         push @row, $anno{$id}{$f} || '-';
       }
+      # fail if #CDS >> #kbp 
+      push @row, pass_fail( $row[3] > 2*$row[2]/1000 ? -1 : +1 );
       push @grid, \@row;
     }
     print $fh table_to_markdown(\@grid, 1); 
@@ -180,6 +190,15 @@ sub generate {
   }
 #  print $fh table_to_markdown(\@abr, 1);
 
+  sub percent_cover {
+    my($pc, $threshold) = @_;
+    $threshold ||= 50;
+    if ($pc >= $threshold) { 
+      return pass_fail(+1);
+    }
+    return "$pc%";
+  }
+
   if (1) {
     print $fh "\n";
     my %gene;
@@ -190,7 +209,7 @@ sub generate {
 #    my @vertgene = map { '__'.join(' ', split m//, $_).'__' } @gene;
     push @grid, [ 'Isolate', 'Found', @gene ];
     for my $id (@id) {
-      my @abr = map { exists $abr{$id}{$_} ? int($abr{$id}{$_}{'%COVERAGE'}).'%' : '.' } @gene;
+      my @abr = map { exists $abr{$id}{$_} ? percent_cover( int($abr{$id}{$_}{'%COVERAGE'}), 100) : '.' } @gene;
       my $found = scalar( grep { $_ ne '.' } @abr );
       push @grid, [ $id, $found, @abr ];
     }
@@ -231,6 +250,13 @@ sub generate {
     scalar(@id), $core->length, $refsize, $core->length*100/$refsize;
   my $core_stats = load_tabular(-file=>"$indir/core.txt", -sep=>"\t");
   $core_stats->[0][0] = 'Isolate';
+  # add QC
+  push @{$core_stats->[0]}, 'Quality';
+  for my $row (1 .. @id) {
+    my $C = $core_stats->[$row][3];
+    push @{$core_stats->[$row]}, 
+      pass_fail( $C < 50 ? -1 : $C < 75 ? 0 : +1 );
+  }
 #  unshift @$core_stats, [ 'Isolate', 'Aligned bases', 'Reference length', 'Aligned bases %' ];
   print $fh table_to_markdown($core_stats, 1);
 
