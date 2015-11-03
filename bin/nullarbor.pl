@@ -87,7 +87,7 @@ if ($report) {
 }
 
 require_exe( qw'convert pandoc head cat install env nl date' );
-require_exe( qw'prokka roary kraken snippy mlst abricate megahit spades.py nw_order nw_display trimal FastTree' );
+require_exe( qw'mash prokka roary kraken snippy mlst abricate megahit spades.py nw_order nw_display trimal FastTree' );
 require_exe( qw'fq fa afa-pairwise.pl any2fasta.pl roary2svg.pl' );
 
 require_perlmod( qw'Data::Dumper Moo SVG::Graph Bio::SeqIO File::Copy Time::Piece YAML::Tiny' );
@@ -178,12 +178,17 @@ $make{'.PHONY'  } = { DEP => \@PHONY };
 $make{'.DEFAULT'} = { DEP => 'all'   };
 
 $make{'all'} = { 
-  DEP => [ 'folders', 'report/index.html' ],
+  DEP => [ 'folders', 'report' ],
 };
 
 $make{'again'} = {
   PHONY => 1,
   CMD => "(cd .. && @CMDLINE --force)",
+};
+
+$make{'report'} = {
+  DEP => 'report/index.html',
+  PHONY => 1,
 };
 
 $make{'report/index.html'} = {
@@ -192,7 +197,7 @@ $make{'report/index.html'} = {
 };
 
 $make{'report/index.md'} = {
-  DEP => [ $REF, @PHONY, qw(core.nogaps.aln mlst.tab denovo.tab tree.gif distances.tab roary/roary.png) ],
+  DEP => [ $REF, qw(core.nogaps.aln mlst.tab denovo.tab tree.gif distances.tab roary/roary.png) ],
   CMD => "$FindBin::RealBin/nullarbor.pl --name $name --report --indir $outdir --outdir $outdir/report",
 };
 
@@ -203,6 +208,7 @@ if (my $dir = $cfg->{publish}) {
       "mkdir -p \Q$dir/$name\E",
       "install -p -D -t \Q$dir/$name\E report/*",
     ],
+    PHONY => 1,
   };
 }
   
@@ -299,6 +305,10 @@ for my $s ($set->isolates) {
     DEP => "$id/$CTG",
     CMD => "prokka --centre X --compliant --force --fast --locustag $id --prefix $id --outdir $id/prokka --cpus $cpus $make_deps",
   };
+  $make{"$id/$id.msh"} = { 
+    DEP => [ @clipped ],
+    CMD => "mash sketch -o $id/$id $make_deps",
+  };
 }
 close ISOLATES;
 #END per isolate
@@ -306,26 +316,37 @@ close ISOLATES;
 
 $make{"folders"} = { 
   DEP => [ $set->ids ],
+  PHONY => 1,
 };
 
 $make{"yields"} = { 
   DEP => [ map { ("$_/yield.dirty.tab", "$_/yield.clean.tab") } $set->ids ],
+  PHONY => 1,
 };
 
 $make{"abricate"} = { 
   DEP => [ map { "$_/abricate.tab" } $set->ids ],
+  PHONY => 1,
 };
 
 $make{"kraken"} = { 
   DEP => [ map { "$_/kraken.tab" } $set->ids ],
+  PHONY => 1,
 };
 
 $make{"prokka"} = { 
   DEP => [ map { "$_/prokka/$_.gff" } $set->ids ],
+  PHONY => 1,
+};
+
+$make{"mash"} = { 
+  DEP => [ map { "$_/$_.msh" } $set->ids ],
+  PHONY => 1,
 };
 
 $make{"roary"} = { 
   DEP => "roary/roary.png",
+  PHONY => 1,
 };
 
 $make{"roary/roary.png"} = { 
@@ -390,7 +411,11 @@ $make{'distances.tab'} = {
 };
 
 my $ptree = "parsnp/parsnp.tree";
-$make{"parsnp"} = { DEP => $ptree };
+$make{"parsnp"} = { 
+  DEP => $ptree,
+  PHONY => 1,
+};
+
 $make{$ptree} = {
   DEP => [ $REF, map { "$_/$CTG" } $set->ids ],
   CMD => [ 
@@ -410,6 +435,23 @@ $make{"list"} = {
   DEP => $IDFILE,
   CMD => "\@nl $make_dep",
 };
+
+my $panic_file = "$FindBin::RealBin/../conf/motd.txt";
+$make{'panic'} = {
+  DEP => $panic_file,
+  CMD => "\@cat $make_dep",
+};
+
+my $DELETE = "rm -v -f";
+$make{'space'} = {
+  CMD => [
+    "$DELETE core.full.aln core.nogaps.aln\n",
+    "$DELETE roary/*.{tab,embl,dot,Rtab}\n",
+    (map { "$DELETE $_/prokka/*.{err,ffn,fsa,sqn,tbl} $_/$_/*consensus*fa $_/$_/*.{vcf,vcf.gz,vcf.tbi,bed,bam,bai,html}\n" } $set->ids),
+  ],
+};
+
+#.............................................................................
 
 #print Dumper(\%make);
 my $makefile = "$outdir/Makefile";
