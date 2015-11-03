@@ -76,6 +76,16 @@ msg("Hello", $ENV{USER} || 'stranger');
 msg("This is $EXE $VERSION");
 msg("Send complaints to $AUTHOR");
 
+if ($report) {
+  msg("Running in --report mode");
+  $indir or err("Please set the --indir folder to a $EXE output folder");
+  $outdir or err("Please set the --outdir output folder.");
+  $name or err("Please specify a report --name");
+  make_path($outdir) unless -f $outdir;
+  Nullarbor::Report->generate($indir, $outdir, $name);
+  exit;
+}
+
 require_exe( qw'convert pandoc head cat install env nl date' );
 require_exe( qw'prokka roary kraken snippy mlst abricate megahit spades.py nw_order nw_display trimal FastTree' );
 require_exe( qw'fq fa afa-pairwise.pl any2fasta.pl roary2svg.pl' );
@@ -108,14 +118,6 @@ else {
   msg("Could not read config file: $conf_file");
 }
 
-if ($report) {
-  $indir or err("Please set the --indir folder to a $EXE output folder");
-  $outdir or err("Please set the --outdir output folder.");
-  $name or err("Please specify a report --name");
-  make_path($outdir) unless -f $outdir;
-  Nullarbor::Report->generate($indir, $outdir, $name);
-  exit;
-}
 
 my %make;
 my $make_target = '$@';
