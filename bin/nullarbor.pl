@@ -118,12 +118,6 @@ else {
   msg("Could not read config file: $conf_file");
 }
 
-
-my %make;
-my $make_target = '$@';
-my $make_dep = '$<';
-my $make_deps = '$^';
-
 $name or err("Please provide a --name for the project.");
 $name =~ m{/|\s} and err("The --name is not allowed to have spaces or slashes in it.");
 
@@ -163,15 +157,20 @@ $outdir = File::Spec->rel2abs($outdir);
 msg("Making output folder: $outdir");
 make_path($outdir); 
 
+#...................................................................................................
+# Makefile logic
+
+my %make;
+my $make_target = '$@';
+my $make_dep = '$<';
+my $make_deps = '$^';
+
 my $IDFILE = 'isolates.txt';
 my $REF = 'ref.fa';
 my $R1 = "R1.fq.gz";
 my $R2 = "R2.fq.gz";
 my $CTG = "contigs.fa";
 my $zcat = 'gzip -f -c -d';
-
-#...................................................................................................
-# Makefile logic
 
 my @PHONY = qw(folders yields abricate kraken prokka);
 
@@ -193,7 +192,7 @@ $make{'report/index.html'} = {
 };
 
 $make{'report/index.md'} = {
-  DEP => [ $REF, @PHONY, 'core.nogaps.aln', qw(mlst.tab denovo.tab tree.gif distances.tab) ],
+  DEP => [ $REF, @PHONY, qw(core.nogaps.aln mlst.tab denovo.tab tree.gif distances.tab roary/roary.png) ],
   CMD => "$FindBin::RealBin/nullarbor.pl --name $name --report --indir $outdir --outdir $outdir/report",
 };
 
