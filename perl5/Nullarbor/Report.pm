@@ -193,7 +193,7 @@ sub generate {
   for my $id (@id) {
     $abr{$id} = load_tabular(-file=>"$indir/$id/abricate.tab", -sep=>"\t",-header=>1, -key=>4);
   }
-#  print STDERR Dumper(\%abr);
+#  print STDERR Dumper(\%abr); exit;
   my @abr;
   push @abr, [ qw(Isolate Genes) ];
   for my $id (@id) {
@@ -222,7 +222,22 @@ sub generate {
 #    my @vertgene = map { '__'.join(' ', split m//, $_).'__' } @gene;
     push @grid, [ 'Isolate', 'Found', @gene ];
     for my $id (@id) {
-      my @abr = map { exists $abr{$id}{$_} ? percent_cover( int($abr{$id}{$_}{'%COVERAGE'}), 100) : '.' } @gene;
+      my @abr;
+      for my $g (@gene) {
+        my $hit = '.';
+        if ($abr{$id}{$g}) {
+          my @hits = @{ $abr{$id}{$g} };
+          $hit = join("+", 
+            map { percent_cover( int $_->{'%COVERAGE'}, 100) } 
+              sort { $b->{'%COVERAGE'} <=> $a->{'%COVERAGE'} } @hits
+          );
+#          $hit = join("+", map { int $_->{'%COVERAGE'} } @hits);
+#          $hit = percent_cover( $hit, 100) if @hits == 1;
+        }
+        push @abr, $hit;
+      }      
+#      my @abr = map { exists $abr{$id}{$_} ? percent_cover( int($abr{$id}{$_}{'%COVERAGE'}), 100) : '.' } @gene;
+#      print Dumper($id, \@abr); exit;
       my $found = scalar( grep { $_ ne '.' } @abr );
       push @grid, [ $id, $found, @abr ];
     }
@@ -464,7 +479,9 @@ sub load_tabular {
       push @{$res}, [ @col ];
     }
     elsif ($row_no != 0) {
-      $res->{ $col[$key_col] } = { map { ($hdr[$_] => $col[$_]) } 0 .. $#hdr };
+#      this code fails when there are duplicate keys!!! eg. genes in abricate.
+#      $res->{ $col[$key_col] } = { map { ($hdr[$_] => $col[$_]) } 0 .. $#hdr };
+      push @{ $res->{ $col[$key_col] } } , { map { ($hdr[$_] => $col[$_]) } 0 .. $#hdr };
     }
     $row_no++;
   }
