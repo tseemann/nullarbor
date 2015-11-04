@@ -257,20 +257,39 @@ sub generate {
   # Core genome
   print $fh "##Core genome\n";
   
-  my $gin = Bio::SeqIO->new(-file=>"$indir/core.nogaps.aln", -format=>'fasta');
-  my $core = $gin->next_seq;
-  printf $fh "Core genome of %d taxa is %d of %d bp (%2.f%%)\n", 
-    scalar(@id), $core->length, $refsize, $core->length*100/$refsize;
+  sub column_average {
+    my($matrix, $col, $format) = @_;
+    $col ||= 0;
+    $format ||= "%f";
+    my $nrows = $#$matrix;
+    my $sum = sum( map { $matrix -> [$_] [$col] } 1 .. $nrows-1 ); # skip header
+    return sprintf $format, $sum/$nrows;
+  }
+  
+#  my $gin = Bio::SeqIO->new(-file=>"$indir/core.nogaps.aln", -format=>'fasta');
+#  my $core = $gin->next_seq;
+#  printf $fh "Core genome of %d taxa is %d of %d bp (%2.f%%)\n", 
+#    scalar(@id), $core->length, $refsize, $core->length*100/$refsize;
   my $core_stats = load_tabular(-file=>"$indir/core.txt", -sep=>"\t");
   $core_stats->[0][0] = 'Isolate';
-  # add QC
   push @{$core_stats->[0]}, 'Quality';
-  for my $row (1 .. @id) {
+  
+  # add AVG
+  push @{$core_stats}, [
+    "AVERAGE",
+    column_average($core_stats, 1, "%d"),
+    $refsize,
+    column_average($core_stats, 3, "%.2f"),
+  ];
+
+  # add QC
+  for my $row (1 .. $#$core_stats) {
     my $C = $core_stats->[$row][3];
     push @{$core_stats->[$row]}, 
       pass_fail( $C < 50 ? -1 : $C < 75 ? 0 : +1 );
   }
 #  unshift @$core_stats, [ 'Isolate', 'Aligned bases', 'Reference length', 'Aligned bases %' ];
+
   print $fh table_to_markdown($core_stats, 1);
 
   #...........................................................................................

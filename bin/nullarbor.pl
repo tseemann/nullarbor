@@ -87,7 +87,8 @@ if ($report) {
 }
 
 require_exe( qw'convert pandoc head cat install env nl date' );
-require_exe( qw'mash prokka roary kraken snippy mlst abricate megahit spades.py nw_order nw_display trimal FastTree' );
+#require_exe( qw'mash prokka roary kraken snippy mlst abricate megahit spades.py nw_order nw_display trimal FastTree' );
+require_exe( qw'mash prokka roary kraken snippy mlst abricate megahit spades.py nw_order nw_display FastTree' );
 require_exe( qw'fq fa afa-pairwise.pl any2fasta.pl roary2svg.pl' );
 
 require_perlmod( qw'Data::Dumper Moo SVG::Graph Bio::SeqIO File::Copy Time::Piece YAML::Tiny' );
@@ -192,7 +193,7 @@ $make{'report/index.html'} = {
 };
 
 $make{'report/index.md'} = {
-  DEP => [ $REF, qw(yields kraken abricate mlst.tab denovo.tab core.nogaps.aln tree.gif distances.tab roary/roary.png) ],
+  DEP => [ $REF, qw(yields kraken abricate mlst.tab denovo.tab core.aln tree.gif distances.tab roary/roary.png) ],
   CMD => "$FindBin::RealBin/nullarbor.pl --name $name --report --indir $outdir --outdir $outdir/report",
 };
 
@@ -368,14 +369,14 @@ $make{'core.aln'} = {
   CMD => "snippy-core ".join(' ', map { "$_/$_" } $set->ids),
 };
 
-$make{'core.full.aln'} = {
-  DEP => 'core.aln',
-};
+#$make{'core.full.aln'} = {
+#  DEP => 'core.aln',
+#};
 
-$make{'core.nogaps.aln'} = {
-  DEP => 'core.full.aln',
-  CMD => "trimal -in $make_deps -out $make_target -nogaps",
-};
+#$make{'core.nogaps.aln'} = {
+#  DEP => 'core.full.aln',
+#  CMD => "trimal -in $make_dep -out $make_target -nogaps",
+#};
 
 $make{'tree.newick'} = {
   DEP => 'core.aln',
@@ -432,7 +433,8 @@ $make{'panic'} = {
 my $DELETE = "rm -v -f";
 $make{'space'} = {
   CMD => [
-    "$DELETE core.full.aln core.nogaps.aln\n",
+#    "$DELETE core.full.aln core.nogaps.aln\n",
+    "$DELETE core.full.aln core.vcf\n",
     "$DELETE roary/*.{tab,embl,dot,Rtab}\n",
     (map { "$DELETE $_/prokka/*.{err,ffn,fsa,sqn,tbl} $_/$_/*consensus*fa $_/$_/*.{vcf,vcf.gz,vcf.tbi,bed,bam,bai,html}\n" } $set->ids),
   ],
