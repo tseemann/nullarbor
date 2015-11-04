@@ -181,8 +181,9 @@ $make{'all'} = {
   DEP => [ 'folders', 'report' ],
 };
 
+my @CMDLINE_NO_FORCE = grep !m/^--?f\S*$/, @CMDLINE; # remove --force / -f etc
 $make{'again'} = {
-  CMD => "(cd .. && @CMDLINE --force)",
+  CMD => "(cd .. && @CMDLINE_NO_FORCE --force)",
 };
 
 $make{'report'} = {
