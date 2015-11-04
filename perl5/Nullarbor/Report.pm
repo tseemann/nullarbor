@@ -360,7 +360,7 @@ sub generate {
 * This software was primarily written by [Torsten Seemann](http://tseemann.github.io/)
 * You can download the software from the [Nullarbor GitHub page](https://github.com/tseemann/nullarbor)
 * Please report bugs to the [Nullarbor Issues page](https://github.com/tseemann/nullarbor/issues)
-* If you this Nullarbor, please cite: Seemann T, Bulach DM, Kwong JC (2015) _Nullarbor_. **GitHub** github.com/tseemann/nullarbor
+* If you use Nullarbor please cite: Seemann T, Bulach DM, Kwong JC (2015) _Nullarbor_. **GitHub** github.com/tseemann/nullarbor
 EOF
             
   
