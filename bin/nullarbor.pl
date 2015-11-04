@@ -86,6 +86,47 @@ if ($report) {
   exit;
 }
 
+
+$name or err("Please provide a --name for the project.");
+$name =~ m{/|\s} and err("The --name is not allowed to have spaces or slashes in it.");
+
+$ref or err("Please provide a --ref reference genome");
+-r $ref or err("Can not read reference '$ref'");
+$ref = File::Spec->rel2abs($ref);
+msg("Using reference genome: $ref");
+
+$input or err("Please specify an dataset with --input <dataset.tab>");
+-r $input or err("Can not read dataset file '$input'");
+my $set = Nullarbor::IsolateSet->new();
+$set->load($input);
+msg("Loaded", $set->num, "isolates:", $set->ids);
+
+$mlst or err("Please provide an MLST scheme");
+my %scheme = ( map { $_=>1 } split ' ', qx(mlst --list) );
+$mlst or err("Invalid --mlst scheme. Please choose from:\n", sort keys %scheme);
+msg("Found", scalar(keys %scheme), "MLST schemes");
+err("Invalid --mlst '$mlst'") if ! exists $scheme{$mlst}; 
+msg("Using scheme: $mlst");
+
+$outdir or err("Please provide an --outdir folder.");
+if (-d $outdir) {
+  if ($force) {
+    msg("Re-using existing folder: $outdir");
+#    for my $file (<$outdir/*.tab>, <$outdir/*.aln>) {
+#      msg("Removing previous run file: $file");
+#      unlink $file;
+#    }
+#    msg("Forced removal of existing --outdir $outdir");
+#    remove_tree($outdir);
+  }
+  else {
+    err("The --outdir '$outdir' already exists. Try using --force");
+  }
+}
+$outdir = File::Spec->rel2abs($outdir);
+msg("Making output folder: $outdir");
+make_path($outdir); 
+
 require_exe( qw'convert pandoc head cat install env nl date' );
 #require_exe( qw'mash prokka roary kraken snippy mlst abricate megahit spades.py nw_order nw_display trimal FastTree' );
 require_exe( qw'mash prokka roary kraken snippy mlst abricate megahit spades.py nw_order nw_display FastTree' );
@@ -118,45 +159,6 @@ if (-r $conf_file) {
 else {
   msg("Could not read config file: $conf_file");
 }
-
-$name or err("Please provide a --name for the project.");
-$name =~ m{/|\s} and err("The --name is not allowed to have spaces or slashes in it.");
-
-$ref or err("Please provide a --ref reference genome");
--r $ref or err("Can not read reference '$ref'");
-$ref = File::Spec->rel2abs($ref);
-msg("Using reference genome: $ref");
-
-$input or err("Please specify an dataset with --input <dataset.tab>");
--r $input or err("Can not read dataset file '$input'");
-my $set = Nullarbor::IsolateSet->new();
-$set->load($input);
-msg("Loaded", $set->num, "isolates:", $set->ids);
-
-my %scheme = ( map { $_=>1 } split ' ', qx(mlst --list) );
-msg("Found", scalar(keys %scheme), "MLST schemes");
-$mlst or err("Please provide an --mlst <scheme> from this list:\n", sort keys %scheme);
-err("Invalid --mlst '$mlst'") if ! exists $scheme{$mlst}; 
-msg("Using scheme: $mlst");
-
-$outdir or err("Please provide an --outdir folder.");
-if (-d $outdir) {
-  if ($force) {
-    msg("Re-using existing folder: $outdir");
-#    for my $file (<$outdir/*.tab>, <$outdir/*.aln>) {
-#      msg("Removing previous run file: $file");
-#      unlink $file;
-#    }
-#    msg("Forced removal of existing --outdir $outdir");
-#    remove_tree($outdir);
-  }
-  else {
-    err("The --outdir '$outdir' already exists. Try using --force");
-  }
-}
-$outdir = File::Spec->rel2abs($outdir);
-msg("Making output folder: $outdir");
-make_path($outdir); 
 
 #...................................................................................................
 # Makefile logic
