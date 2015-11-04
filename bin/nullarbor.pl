@@ -172,9 +172,6 @@ my $R2 = "R2.fq.gz";
 my $CTG = "contigs.fa";
 my $zcat = 'gzip -f -c -d';
 
-my @PHONY = qw(folders yields abricate kraken prokka);
-
-$make{'.PHONY'  } = { DEP => \@PHONY };
 $make{'.DEFAULT'} = { DEP => 'all'   };
 
 $make{'all'} = { 
@@ -182,13 +179,11 @@ $make{'all'} = {
 };
 
 $make{'again'} = {
-  PHONY => 1,
   CMD => "(cd .. && @CMDLINE --force)",
 };
 
 $make{'report'} = {
   DEP => 'report/index.html',
-  PHONY => 1,
 };
 
 $make{'report/index.html'} = {
@@ -197,7 +192,7 @@ $make{'report/index.html'} = {
 };
 
 $make{'report/index.md'} = {
-  DEP => [ $REF, qw(core.nogaps.aln mlst.tab denovo.tab tree.gif distances.tab roary/roary.png) ],
+  DEP => [ $REF, qw(yields kraken abricate mlst.tab denovo.tab core.nogaps.aln tree.gif distances.tab roary/roary.png) ],
   CMD => "$FindBin::RealBin/nullarbor.pl --name $name --report --indir $outdir --outdir $outdir/report",
 };
 
@@ -316,37 +311,30 @@ close ISOLATES;
 
 $make{"folders"} = { 
   DEP => [ $set->ids ],
-  PHONY => 1,
 };
 
 $make{"yields"} = { 
   DEP => [ map { ("$_/yield.dirty.tab", "$_/yield.clean.tab") } $set->ids ],
-  PHONY => 1,
 };
 
 $make{"abricate"} = { 
   DEP => [ map { "$_/abricate.tab" } $set->ids ],
-  PHONY => 1,
 };
 
 $make{"kraken"} = { 
   DEP => [ map { "$_/kraken.tab" } $set->ids ],
-  PHONY => 1,
 };
 
 $make{"prokka"} = { 
   DEP => [ map { "$_/prokka/$_.gff" } $set->ids ],
-  PHONY => 1,
 };
 
 $make{"mash"} = { 
   DEP => [ map { "$_/$_.msh" } $set->ids ],
-  PHONY => 1,
 };
 
 $make{"roary"} = { 
   DEP => "roary/roary.png",
-  PHONY => 1,
 };
 
 $make{"roary/roary.png"} = { 
@@ -413,7 +401,6 @@ $make{'distances.tab'} = {
 my $ptree = "parsnp/parsnp.tree";
 $make{"parsnp"} = { 
   DEP => $ptree,
-  PHONY => 1,
 };
 
 $make{$ptree} = {
@@ -479,12 +466,13 @@ sub write_makefile {
 
   for my $target ('all', sort grep { $_ ne 'all' } keys %$make) {
     print $fh "\n";
-    my $dep = $make->{$target}{DEP};
+    my $rule = $make->{$target}; # short-hand
+    my $dep = $rule->{DEP};
     $dep = ref($dep) eq 'ARRAY' ? (join ' ', @$dep) : $dep;
     $dep ||= '';
-    print $fh ".PHONY: $target\n" if $make->{$target}{PHONY};
+    print $fh ".PHONY: $target\n" if $rule->{PHONY} or ! $rule->{DEP};
     print $fh "$target: $dep\n";
-    if (my $cmd = $make->{$target}{CMD}) {
+    if (my $cmd = $rule->{CMD}) {
       my @cmd = ref $cmd eq 'ARRAY' ? @$cmd : ($cmd);
       print $fh map { "\t$_\n" } @cmd;
     }
