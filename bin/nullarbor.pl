@@ -9,6 +9,7 @@ use Data::Dumper;
 use Getopt::Long;
 use File::Path qw(make_path remove_tree);
 use File::Spec qw(catfile);
+use List::Util qw(min max);
 use YAML::Tiny;
 
 #-------------------------------------------------------------------
@@ -86,7 +87,6 @@ if ($report) {
   exit;
 }
 
-
 $name or err("Please provide a --name for the project.");
 $name =~ m{/|\s} and err("The --name is not allowed to have spaces or slashes in it.");
 
@@ -159,6 +159,12 @@ if (-r $conf_file) {
 else {
   msg("Could not read config file: $conf_file");
 }
+
+my $nsamp = $set->num or err("Data set appears to have no isolates?");
+msg("Optimizing use of $cpus cores for $nsamp isolates.");
+my $threads = max( min(4, $cpus), int($cpus/$nsamp) );  # try and use 4 cpus per job if possible
+my $jobs = min( $nsamp, int($cpus/$threads) );
+msg("Will run concurrent $jobs jobs with $threads threads each.");
 
 #...................................................................................................
 # Makefile logic
@@ -246,7 +252,7 @@ for my $s ($set->isolates) {
   };
   $make{$clipped[0]} = {
     DEP => [ @reads ],
-    CMD => [ "skewer --quiet -t $cpus -n -q 10 -z -o $id/clipped @reads ".($cfg->{skewer} || ''),
+    CMD => [ "skewer --quiet -t $threads -n -q 10 -z -o $id/clipped @reads ".($cfg->{skewer} || ''),
              "mv $id/clipped-trimmed-pair1.fastq.gz $id/$R1",
              "mv $id/clipped-trimmed-pair2.fastq.gz $id/$R2", ],
   };
@@ -261,7 +267,7 @@ for my $s ($set->isolates) {
       DEP => [ @clipped ],
       CMD => [ 
         "rm -f -r $id/spades",
-        "spades.py -t $cpus -1 $clipped[0] -2 $clipped[1] -o $id/spades --only-assembler --careful --cov-cutoff auto",
+        "spades.py -t $threads -1 $clipped[0] -2 $clipped[1] -o $id/spades --only-assembler --careful --cov-cutoff auto",
         "mv $id/spades/scaffolds.fasta $make_target",
         "mv $id/spades/spades.log $id/spades.log",
         "rm -f -v -r $id/spades",
@@ -273,8 +279,8 @@ for my $s ($set->isolates) {
       DEP => [ @clipped ],
       CMD => [ 
         "rm -f -r $id/megahit",
-#        "megahit -t $cpus --memory 0.5 -1 $clipped[0] -2 $clipped[1] --out-dir $id/megahit --presets bulk --min-contig-len 500",
-        "megahit -t $cpus --memory 0.5 -1 $clipped[0] -2 $clipped[1] --out-dir $id/megahit --presets bulk",
+#        "megahit -t $threads --memory 0.5 -1 $clipped[0] -2 $clipped[1] --out-dir $id/megahit --presets bulk --min-contig-len 500",
+        "megahit -t $threads --memory 0.5 -1 $clipped[0] -2 $clipped[1] --out-dir $id/megahit --presets bulk",
         "mv $id/megahit/final.contigs.fa $make_target",
         "mv $id/megahit/log $id/megahit.log",
         "rm -f -v -r $id/megahit",
@@ -283,7 +289,7 @@ for my $s ($set->isolates) {
   }
   $make{"$id/kraken.tab"} = {
     DEP => [ @clipped ],
-    CMD => "kraken --threads $cpus --preload --paired @clipped | kraken-report > $make_target",
+    CMD => "kraken --threads $threads --preload --paired @clipped | kraken-report > $make_target",
   };
   $make{"$id/abricate.tab"} = {
     DEP => "$id/$CTG",
@@ -299,11 +305,11 @@ for my $s ($set->isolates) {
   };  
   $make{"$id/$id/snps.tab"} = {
     DEP => [ $ref, @clipped ],
-    CMD => "snippy --cpus $cpus --force --outdir $id/$id --ref $ref --R1 $clipped[0] --R2 $clipped[1]",
+    CMD => "snippy --threads $threads --force --outdir $id/$id --ref $ref --R1 $clipped[0] --R2 $clipped[1]",
   };
   $make{"$id/prokka/$id.gff"} = {
     DEP => "$id/$CTG",
-    CMD => "prokka --centre X --compliant --force --fast --locustag $id --prefix $id --outdir $id/prokka --cpus $cpus $make_deps",
+    CMD => "prokka --centre X --compliant --force --fast --locustag $id --prefix $id --outdir $id/prokka --cpus $threads $make_deps",
   };
   $make{"$id/$id.msh"} = { 
     DEP => [ @clipped ],
@@ -354,7 +360,7 @@ $make{"roary/gene_presence_absence.csv"} = {
   DEP => [ map { "$_/prokka/$_.gff" } $set->ids ],
   CMD => [
     "rm -fr roary",
-    "roary -f roary -v -p $cpus $make_deps",
+    "roary -f roary -v -p $threads $make_deps",
   ],
 };
 
@@ -384,7 +390,7 @@ $make{'core.aln'} = {
 
 $make{'tree.newick'} = {
   DEP => 'core.aln',
-  CMD => "env OMP_NUM_THREADS=$cpus OMP_THREAD_LIMIT=$cpus FastTree -gtr -nt $make_dep | nw_order -c n - > $make_target",
+  CMD => "env OMP_NUM_THREADS=$threads OMP_THREAD_LIMIT=$threads FastTree -gtr -nt $make_dep | nw_order -c n - > $make_target",
 };
 
 $make{'tree.svg'} = {
@@ -413,7 +419,7 @@ $make{$ptree} = {
   CMD => [ 
     "mkdir -p parsnp/genomes",
     (map { "ln -sf $outdir/$_/contigs.fa $outdir/parsnp/genomes/$_.fa" } $set->ids),
-    "parsnp -p $cpus -c -d parsnp/genomes -r $REF -o parsnp",
+    "parsnp -p $threads -c -d parsnp/genomes -r $REF -o parsnp",
   ],
 };
 
@@ -451,11 +457,11 @@ my $makefile = "$outdir/Makefile";
 open my $make_fh, '>', $makefile or err("Could not write $makefile");
 write_makefile(\%make, $make_fh);
 if ($run) {
-  exec("nice make -C $outdir") or err("Could not run pipeline's Makefile");
+  exec("nice make -j $jobs -C $outdir") or err("Could not run pipeline's Makefile");
 }
 else {
   #msg("Run the pipeline with: nohup nice make -C $outdir 1> $outdir/log.out $outdir/log.err");
-  msg("Run the pipeline with: nice make -C $outdir");
+  msg("Run the pipeline with: nice make -j $jobs -C $outdir");
 }
 msg("Done");
 
@@ -467,7 +473,7 @@ sub write_makefile {
   print $fh "SHELL := /bin/bash\n";
   print $fh "MAKEFLAGS += --no-builtin-rules\n";
   print $fh "MAKEFLAGS += --no-builtin-variables\n";
-#  print $fh "MAKEFLAGS += --load-average=$cpus\n";
+#  print $fh "MAKEFLAGS += --load-average=$threads\n";
   print $fh ".SUFFIXES:\n";
 
   for my $target ('all', sort grep { $_ ne 'all' } keys %$make) {
