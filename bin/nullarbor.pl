@@ -101,6 +101,14 @@ my $set = Nullarbor::IsolateSet->new();
 $set->load($input);
 msg("Loaded", $set->num, "isolates:", $set->ids);
 
+if (not $mlst) {
+  my($line) = qx(mash dist '$FindBin::RealBin/../db/mlst.msh' '$ref' | sort -k3g | head -n 1);
+  chomp $line;
+  my @col = split m/\t/, $line;
+  $mlst = $col[0] || '';
+  msg( $mlst ? "Auto-detected MLST scheme: $mlst" : "Could not auto-detect MLST scheme" );
+}
+
 $mlst or err("Please provide an MLST scheme");
 my %scheme = ( map { $_=>1 } split ' ', qx(mlst --list) );
 $mlst or err("Invalid --mlst scheme. Please choose from:\n", sort keys %scheme);
@@ -305,7 +313,7 @@ for my $s ($set->isolates) {
   };  
   $make{"$id/$id/snps.tab"} = {
     DEP => [ $ref, @clipped ],
-    CMD => "snippy --threads $threads --force --outdir $id/$id --ref $ref --R1 $clipped[0] --R2 $clipped[1]",
+    CMD => "snippy --cpus $threads --force --outdir $id/$id --ref $ref --R1 $clipped[0] --R2 $clipped[1]",
   };
   $make{"$id/prokka/$id.gff"} = {
     DEP => "$id/$CTG",
