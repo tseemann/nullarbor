@@ -277,7 +277,7 @@ sub generate {
     $col ||= 0;
     $format ||= "%f";
     my $nrows = $#$matrix;
-    my $sum = sum( map { $matrix -> [$_] [$col] } 1 .. $nrows-1 ); # skip header
+    my $sum = sum( map { $matrix -> [$_] [$col] } 1 .. $nrows ); # skip header
     return sprintf $format, $sum/$nrows;
   }
   
