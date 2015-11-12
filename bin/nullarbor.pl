@@ -102,14 +102,17 @@ $set->load($input);
 msg("Loaded", $set->num, "isolates:", $set->ids);
 
 if (not $mlst) {
-  my($line) = qx(mash dist '$FindBin::RealBin/../db/mlst.msh' '$ref' | sort -k3g | head -n 1);
+  require_exe( qw'any2fasta.pl bash mash sort head' );
+  msg("No --mlst specified, attempting to auto-detect using $ref ...");
+  my($line) = qx{bash -c "mash dist '$FindBin::RealBin/../db/mlst.msh' <(any2fasta.pl '$ref') | sort -k3g | head -n 1"};
   chomp $line;
   my @col = split m/\t/, $line;
   $mlst = $col[0] || '';
-  msg( $mlst ? "Auto-detected MLST scheme: $mlst" : "Could not auto-detect MLST scheme" );
+  msg( $mlst ? "Chose MLST scheme: $mlst" : "Could not auto-detect MLST scheme" );
 }
 
 $mlst or err("Please provide an MLST scheme");
+require_exe('mlst');
 my %scheme = ( map { $_=>1 } split ' ', qx(mlst --list) );
 $mlst or err("Invalid --mlst scheme. Please choose from:\n", sort keys %scheme);
 msg("Found", scalar(keys %scheme), "MLST schemes");
@@ -136,7 +139,6 @@ msg("Making output folder: $outdir");
 make_path($outdir); 
 
 require_exe( qw'convert pandoc head cat install env nl date' );
-#require_exe( qw'mash prokka roary kraken snippy mlst abricate megahit spades.py nw_order nw_display trimal FastTree' );
 require_exe( qw'mash prokka roary kraken snippy mlst abricate megahit spades.py nw_order nw_display FastTree' );
 require_exe( qw'fq fa afa-pairwise.pl any2fasta.pl roary2svg.pl' );
 
