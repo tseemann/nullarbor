@@ -212,7 +212,7 @@ $make{'report/index.html'} = {
 };
 
 $make{'report/index.md'} = {
-  DEP => [ $REF, qw(yields kraken abricate mlst.tab denovo.tab core.aln tree.gif distances.tab roary/roary.png) ],
+  DEP => [ $REF, qw(yields kraken abricate mlst.tab mlst2.tab denovo.tab core.aln tree.gif distances.tab roary/roary.png) ],
   CMD => "$FindBin::RealBin/nullarbor.pl --name $name --report --indir $outdir --outdir $outdir/report",
 };
 
@@ -309,6 +309,10 @@ for my $s ($set->isolates) {
     DEP => "$id/$CTG",
     CMD => "mlst --scheme $mlst $make_deps > $make_target",
   };
+  $make{"$id/mlst2.tab"} = {
+    DEP => "$id/$CTG",
+    CMD => "mlst2 $make_deps > $make_target",
+  };
   $make{"$id/denovo.tab"} = {
     DEP => "$id/$CTG",
     CMD => "fa -e -t $make_deps > $make_target",
@@ -377,6 +381,11 @@ $make{"roary/gene_presence_absence.csv"} = {
 $make{"mlst.tab"} = {
   DEP => [ map { "$_/mlst.tab" } $set->ids ],
   CMD => "(head -n 1 $make_dep && tail -q -n +2 $make_deps) > $make_target",
+};
+
+$make{"mlst2.tab"} = {
+  DEP => [ map { "$_/mlst2.tab" } $set->ids ],
+  CMD => "cat $make_deps > $make_target",
 };
   
 $make{"denovo.tab"} = {

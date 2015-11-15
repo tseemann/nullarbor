@@ -5,7 +5,7 @@ use Nullarbor::Logger qw(msg err);
 use Data::Dumper;
 use File::Copy;
 use Bio::SeqIO;
-use List::Util qw(sum);
+use List::Util qw(sum min max);
 
 #.................................................................................
 
@@ -73,10 +73,39 @@ sub generate {
   save_tabular("$outdir/$name.mlst.csv", $mlst);
   print $fh "Download: [$name.mlst.csv]($name.mlst.csv)\n";
   print $fh table_to_markdown($mlst, 1);
+
+  #...........................................................................................
+  # MLST2
+  
+  my $mlst2 = load_tabular(-file=>"$indir/mlst2.tab", -sep=>"\t", -header=>0);
+#  print STDERR Dumper($mlst);
+  
+  my $width=0;
+  
+  for my $row (@$mlst2) {
+    $row->[0] =~ s{/contigs.fa}{};
+    $row->[0] =~ s/ref.fa/Reference/;
+    $width = max($width, scalar(@$row));
+    my $ST = $row->[2];
+    my $missing = sum( map { $row->[$_] =~ m/[-~]/ ? 1 : 0 } (3 .. $#$row) );
+    for my $i (3 .. $#$row) {
+      $row->[$i] = "<SPAN CLASS='dimmed'>".$row->[$i]."</SPAN>" if $row->[$i] =~ m/~/;
+    }
+#    push @$row, "**${ST}**";
+    push @$row, pass_fail( $missing==0 && $ST ne '-' ? +1 : $missing <= 1 ? 0 : -1 );
+  }
+#  $mlst->[0][0] = 'Isolate';
+#  $mlst->[0][-1] = 'Quality';
+
+  unshift @{$mlst2}, [ "Isolate", "Scheme", "Sequence<BR>Type", ("Allele")x($width-3), "Quality" ];
+
+  print $fh "##MLST (new)\n";
+#  save_tabular("$outdir/$name.mlst.csv", $mlst);
+#  print $fh "Download: [$name.mlst.csv]($name.mlst.csv)\n";
+  print $fh table_to_markdown($mlst2, 1);
     
   #...........................................................................................
   # Yields
-
 
   #for my $stage ('dirty', 'clean') {
   for my $stage ('clean') {
