@@ -50,6 +50,20 @@ TH {
   font-weight: bold;
 }
 
-.dimmed {
-  color: Orange;
+.allele {
+  font-style: italic;
 }
+
+.missing {
+  color: red;
+  font-weight: bold;
+}
+
+.novel {
+  color: orange;
+}
+
+.known {
+  
+}
+
