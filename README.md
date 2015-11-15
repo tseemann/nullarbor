@@ -61,7 +61,7 @@ Please first install the [Linuxbrew](https://github.com/Homebrew/linuxbrew) pack
 
     brew tap homebrew/science
     brew tap chapmanb/cbl
-    brew tap tseemann/homebrew-bioinformatics-linux
+    brew tap tseemann/bioinformatics-linux
     brew install nullarbor
 
 ## Usage
