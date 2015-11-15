@@ -41,8 +41,8 @@ sub generate {
   print $fh "% Report: $name\n\n"; 
 
   my $meta_data = [
-    [ "Report", "Isolates", "Author", "Date" ],
-    [ $name, scalar(@id), $user, $date ],
+    [ "Report", "Isolates", "Author", "Date", "Folder" ],
+    [ $name, scalar(@id), $user, $date, "<TT>$indir</TT>" ],
   ];
   print $fh table_to_markdown($meta_data, 1);
 
