@@ -100,6 +100,23 @@ sub generate {
 
   print $fh "##MLST (new)\n";
   print $fh table_to_markdown($mlst2, 1);
+
+  #...........................................................................................
+  # (OPTIONAL) MENINGOTYPE
+
+  my $menin_file = "$indir/meningotype.tab";
+  if (-r $menin_file) {
+    my $menin = load_tabular(-file=>$menin_file, -sep=>"\t", -header=>1);
+    my $row_no = 0;
+    for my $row (@$menin) {
+      $row->[0] =~ s{/contigs.fa}{};
+      my $missing = sum( map { $row->[$_] eq '-' ? 1 : 0 } (1 .. $#$row) );
+      push @$row, $row_no++ == 0 ? "Quality" 
+                                 : pass_fail( $missing==0 ? +1 : $missing==3 ? -1 : 0 );
+    }
+    print $fh "##Meningotype\n";
+    print $fh table_to_markdown($menin, 1);
+  }
     
   #...........................................................................................
   # Yields
