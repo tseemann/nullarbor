@@ -9,6 +9,14 @@ use List::Util qw(sum min max);
 
 #.................................................................................
 
+sub heading {
+  my($fh, $title) = @_;
+  msg("Generating report section: $title");
+  print $fh "##$title\n";
+}
+
+#.................................................................................
+
 sub generate {
   my($self, $indir, $outdir, $name) = @_;
 
@@ -63,19 +71,20 @@ sub generate {
     # move ST column to end to match MDU LIMS
     my($ST) = splice @$row, 2, 1;
     my $missing = sum( map { $row->[$_] eq '-' ? 1 : 0 } (1 .. $#$row) );
-    push @$row, "**${ST}**";
-    push @$row, pass_fail( $missing==0 && $ST ne '-' ? +1 : $missing <= 1 ? 0 : -1 );
+    push @$row, $ST;
+#    push @$row, "**${ST}**";
+#    push @$row, pass_fail( $missing==0 && $ST ne '-' ? +1 : $missing <= 1 ? 0 : -1 );
   }
   $mlst->[0][0] = 'Isolate';
-  $mlst->[0][-1] = 'Quality';
+  $mlst->[0][-1] = 'ST';
 
-  print $fh "##MLST\n";
-  save_tabular("$outdir/$name.mlst.csv", $mlst);
+  heading($fh, "MLST");
+  save_tabular("$outdir/$name.mlst.csv", $mlst, ",");
   print $fh "Download: [$name.mlst.csv]($name.mlst.csv)\n";
   print $fh table_to_markdown($mlst, 1);
 
   #...........................................................................................
-  # MLST2
+  # MLST (new)
   
   my $mlst2 = load_tabular(-file=>"$indir/mlst2.tab", -sep=>"\t", -header=>0);
   
@@ -86,10 +95,10 @@ sub generate {
     $row->[0] =~ s/ref.fa/Reference/;
     $width = max($width, scalar(@$row));
     my $ST = $row->[2];
-    my $missing = sum( map { $row->[$_] =~ m/[-~]/ ? 1 : 0 } (3 .. $#$row) );
+    my $missing = sum( map { $row->[$_] =~ m/[-~?]/ ? 1 : 0 } (3 .. $#$row) );
     for my $i (3 .. $#$row) {
       my $g = $row->[$i];
-      my $class = $g =~ m/-/ ? "missing" : $g =~ m/~/ ? "novel" : "known";
+      my $class = $g =~ m/[-?]/ ? "missing" : $g =~ m/~/ ? "novel" : "known";
       $row->[$i] = "<SPAN CLASS='allele $class'>$g</SPAN>";
     }
     push @$row, pass_fail( $missing==0 && $ST ne '-' ? +1 : $missing <= 1 ? 0 : -1 );
@@ -98,7 +107,7 @@ sub generate {
   # add header
   unshift @{$mlst2}, [ "Isolate", "Scheme", "Sequence<BR>Type", ("Allele")x($width-3), "Quality" ];
 
-  print $fh "##MLST (new)\n";
+  heading($fh, "MLST (new)");
   print $fh table_to_markdown($mlst2, 1);
 
   #...........................................................................................
@@ -114,7 +123,7 @@ sub generate {
       push @$row, $row_no++ == 0 ? "Quality" 
                                  : pass_fail( $missing==0 ? +1 : $missing==3 ? -1 : 0 );
     }
-    print $fh "##Meningotype\n";
+    heading($fh, "Meningotype");
     print $fh table_to_markdown($menin, 1);
   }
     
@@ -123,7 +132,7 @@ sub generate {
 
   #for my $stage ('dirty', 'clean') {
   for my $stage ('clean') {
-    print $fh "##Sequence data\n";
+    heading($fh, "Sequence data");
     my @wgs;
     my $first=1;
     for my $id (@id) {
@@ -148,7 +157,7 @@ sub generate {
     
   #...........................................................................................
   # Species ID
-  print $fh "##Sequence identification\n";
+  heading($fh, "Sequence identification");
   sub trim { 
     my($s) = @_; 
     $s =~ s/^\s+//; 
@@ -186,7 +195,7 @@ sub generate {
 
   #...........................................................................................
   # Assembly
-  print $fh "##Assembly\n";
+  heading($fh, "Assembly");
   my $ass = load_tabular(-file=>"$indir/denovo.tab", -sep=>"\t", -header=>1);
 #  print STDERR Dumper($ass);
   $ass->[0][0] = 'Isolate';
@@ -204,7 +213,7 @@ sub generate {
 
   #...........................................................................................
   # Annotation
-  print $fh "##Annotation\n";
+  heading($fh, "Annotation");
   my %anno;
   for my $id (@id) {
     $anno{$id} = { 
@@ -231,7 +240,7 @@ sub generate {
 
   #...........................................................................................
   # ABR
-  print $fh "##Resistome\n";
+  heading($fh, "Resistome");
   my %abr;
   for my $id (@id) {
     $abr{$id} = load_tabular(-file=>"$indir/$id/abricate.tab", -sep=>"\t",-header=>1, -key=>4);
@@ -289,7 +298,7 @@ sub generate {
 
   #...........................................................................................
   # Reference Genome
-  print $fh "##Reference genome\n";
+  heading($fh, "Reference genome");
   my $fin = Bio::SeqIO->new(-file=>"$indir/ref.fa", -format=>'fasta');
   my $refsize;
   my @ref;
@@ -313,7 +322,7 @@ sub generate {
  
   #...........................................................................................
   # Core genome
-  print $fh "##Core genome\n";
+  heading($fh, "Core genome");
   
   sub column_average {
     my($matrix, $col, $format) = @_;
@@ -352,7 +361,7 @@ sub generate {
 
   #...........................................................................................
   # Phylogeny
-  print $fh "##Phylogeny\n";
+  heading($fh, "Phylogeny");
   
   my $aln = Bio::SeqIO->new(-file=>"$indir/core.aln", -format=>'fasta');
   $aln = $aln->next_seq;
@@ -367,7 +376,7 @@ sub generate {
 
   #...........................................................................................
   # Core SNP counts
-  print $fh "##Core SNP distances\n";
+  heading($fh, "Core SNP distances");
   my $snps = load_tabular(-file=>"$indir/distances.tab", -sep=>"\t");
   print $fh table_to_markdown($snps, 1);
 
@@ -375,7 +384,7 @@ sub generate {
   # Core SNP density
   my $ref_fai = "$indir/ref.fa.fai";
   if (0 and -r $ref_fai) {
-    print $fh "##Core SNP density\n";
+    heading($fh, "Core SNP density");
     my $len_of = load_tabular_as_hash($ref_fai);
     my @coord;
     open VCF, '<', "$indir/core.vcf";
@@ -403,7 +412,7 @@ sub generate {
   # Pan Genome
   my $roary_ss = "roary/summary_statistics.txt";
   if (-r $roary_ss) {
-    print $fh "##Pan genome\n";
+    heading($fh, "Pan genome");
     my $ss = load_tabular(-file=>$roary_ss, -sep=>":");
     unshift @$ss, [ "Ortholog class", "Count" ];
     print $fh table_to_markdown($ss, 1);
@@ -418,7 +427,7 @@ sub generate {
 
   #...........................................................................................
   # Software
-  print $fh "##Software\n";
+  heading($fh, "Software");
   my @inv = ( [ "Tool", "Version" ] );
   for my $tool (qw(nullarbor.pl mlst abricate snippy kraken samtools freebayes megahit prokka roary)) {
     # print $fh "- $tool ```", qx($tool --version 2>&1), "```\n";
@@ -432,8 +441,8 @@ sub generate {
 
   #...........................................................................................
   # Software
+  heading($fh, "Information");
   print $fh <<"EOF";
-##Information
 * This software was primarily written by [Torsten Seemann](http://tseemann.github.io/)
 * You can download the software from the [Nullarbor GitHub page](https://github.com/tseemann/nullarbor)
 * Please report bugs to the [Nullarbor Issues page](https://github.com/tseemann/nullarbor/issues)
