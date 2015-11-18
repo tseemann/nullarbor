@@ -289,8 +289,8 @@ for my $s ($set->isolates) {
       DEP => [ @clipped ],
       CMD => [ 
         "rm -f -r $id/megahit",
-#        "megahit -t $threads --memory 0.5 -1 $clipped[0] -2 $clipped[1] --out-dir $id/megahit --presets bulk --min-contig-len 500",
-        "megahit -t $threads --memory 0.5 -1 $clipped[0] -2 $clipped[1] --out-dir $id/megahit --presets bulk",
+        "megahit -t $threads --memory 0.5 -1 $clipped[0] -2 $clipped[1] --out-dir $id/megahit --presets bulk --min-contig-len 500",
+#        "megahit -t $threads --memory 0.5 -1 $clipped[0] -2 $clipped[1] --out-dir $id/megahit --presets bulk",
         "mv $id/megahit/final.contigs.fa $make_target",
         "mv $id/megahit/log $id/megahit.log",
         "rm -f -v -r $id/megahit",
