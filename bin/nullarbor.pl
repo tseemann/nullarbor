@@ -148,6 +148,7 @@ require_version('megahit', 1.0);
 require_version('snippy', 2.5);
 require_version('prokka', 1.10);
 require_version('roary', 3.4);
+require_version('mlst', 1.4);
 #require_version('spades.py', 3.5); # does not have a --version flag
 
 my $value = require_var('KRAKEN_DEFAULT_DB', 'kraken');
@@ -250,6 +251,7 @@ for my $s ($set->isolates) {
 
 #  make_path($dir);
   $make{"$id"} = {
+#    CMD => [ "if [ ! -d '$make_target' ]; then mkdir -p $make_target ; fi" ],
     CMD => [ "mkdir -p $make_target" ],
   };
   $make{"$id/yield.dirty.tab"} = {
@@ -311,7 +313,7 @@ for my $s ($set->isolates) {
   };
   $make{"$id/mlst2.tab"} = {
     DEP => "$id/$CTG",
-    CMD => "mlst2 $make_deps > $make_target",
+    CMD => "mlst $make_deps > $make_target",
   };
   $make{"$id/denovo.tab"} = {
     DEP => "$id/$CTG",
