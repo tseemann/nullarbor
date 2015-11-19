@@ -100,6 +100,7 @@ $input or err("Please specify an dataset with --input <dataset.tab>");
 my $set = Nullarbor::IsolateSet->new();
 $set->load($input);
 msg("Loaded", $set->num, "isolates:", $set->ids);
+$input = File::Spec->rel2abs($input);
 
 if (not $mlst) {
   require_exe( qw'any2fasta.pl bash mash sort head' );
@@ -204,7 +205,7 @@ $make{'again'} = {
 };
 
 $make{'report'} = {
-  DEP => 'report/index.html',
+  DEP => [ 'report/index.html' ],
 };
 
 $make{'report/index.html'} = {
@@ -213,7 +214,7 @@ $make{'report/index.html'} = {
 };
 
 $make{'report/index.md'} = {
-  DEP => [ $REF, qw(yields kraken abricate mlst.tab mlst2.tab denovo.tab core.aln tree.gif distances.tab roary/roary.png) ],
+  DEP => [ $REF, qw(yields kraken abricate mlst.tab mlst2.tab denovo.tab parsnp core.aln tree.gif distances.tab roary) ],
   CMD => "$FindBin::RealBin/nullarbor.pl --name $name --report --indir $outdir --outdir $outdir/report",
 };
 
@@ -361,7 +362,7 @@ $make{"mash"} = {
 };
 
 $make{"roary"} = { 
-  DEP => "roary/roary.png",
+  DEP => [ "roary/roary.png" ],   
 };
 
 $make{"roary/roary.png"} = { 
@@ -430,17 +431,26 @@ $make{'distances.tab'} = {
   CMD => "afa-pairwise.pl $make_dep > $make_target",
 };
 
-my $ptree = "parsnp/parsnp.tree";
 $make{"parsnp"} = { 
-  DEP => $ptree,
+  DEP => "parsnp/parsnp.png",
 };
 
-$make{$ptree} = {
+$make{"parsnp/parsnp.png"} = {
+  DEP => "parsnp/parsnp.svg",
+  CMD => "convert $make_dep $make_target"
+};
+
+$make{"parsnp/parsnp.svg"} = {
+  DEP => "parsnp/parsnp.tree",
+  CMD => "nw_display -S -s -w 1024 -l 'font-size:12' -i 'opacity:0' -b 'opacity:0' $make_dep > $make_target",
+};
+
+$make{"parsnp/parsnp.tree"} = {
   DEP => [ $REF, map { "$_/$CTG" } $set->ids ],
   CMD => [ 
     "mkdir -p parsnp/genomes",
     (map { "ln -sf $outdir/$_/contigs.fa $outdir/parsnp/genomes/$_.fa" } $set->ids),
-    "parsnp -p $threads -c -d parsnp/genomes -r $REF -o parsnp",
+    "parsnp -x -p $threads -c -d parsnp/genomes -r $REF -o parsnp",
   ],
 };
 

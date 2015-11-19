@@ -62,6 +62,15 @@ sub generate {
   #...........................................................................................
   # MLST
   
+  my $mlst_legend = [
+    [ "Legend", "Meaning" ],
+    [ "n", "exact intact allele" ],
+    [ "~n", "novel allele similar to n" ],
+    [ "n?", "partial match to known allele" ],
+    [ "n,m", "multiple alleles" ],
+    [ "-", "allele missing" ],
+  ];
+  
   my $mlst = load_tabular(-file=>"$indir/mlst.tab", -sep=>"\t", -header=>1);
 #  print STDERR Dumper($mlst);
   
@@ -81,6 +90,8 @@ sub generate {
   heading($fh, "MLST");
   save_tabular("$outdir/$name.mlst.csv", $mlst, ",");
   print $fh "Download: [$name.mlst.csv]($name.mlst.csv)\n";
+  print $fh table_to_markdown($mlst_legend, 1);
+  print $fh "<P>\n";
   print $fh table_to_markdown($mlst, 1);
 
   #...........................................................................................
@@ -108,6 +119,8 @@ sub generate {
   unshift @{$mlst2}, [ "Isolate", "Scheme", "Sequence<BR>Type", ("Allele")x($width-3), "Quality" ];
 
   heading($fh, "MLST (new)");
+  print $fh table_to_markdown($mlst_legend, 1);
+  print $fh "<P>\n";
   print $fh table_to_markdown($mlst2, 1);
 
   #...........................................................................................
@@ -380,6 +393,7 @@ sub generate {
   my $snps = load_tabular(-file=>"$indir/distances.tab", -sep=>"\t");
   print $fh table_to_markdown($snps, 1);
 
+
   #...........................................................................................
   # Core SNP density
   my $ref_fai = "$indir/ref.fa.fai";
@@ -408,6 +422,7 @@ sub generate {
     close HIST;
   }
 
+
   #...........................................................................................
   # Pan Genome
   my $roary_ss = "roary/summary_statistics.txt";
@@ -426,12 +441,27 @@ sub generate {
   }
 
   #...........................................................................................
+  # ParSNP
+  heading($fh, "ParSNP");
+  
+  print $fh "ParSNP aligns assembled contigs and does simplistic recombination filtering\n";
+  print $fh qx(grep 'Total coverage among' $indir/parsnp/parsnpAligner.log);
+  
+  copy("$indir/parsnp/parsnp.tree", "$outdir/$name.parsnp.tree");
+  print $fh "Download: [$name.parsnp.tree]($name.parsnp.tree)\n";
+
+  copy("$indir/parsnp/parsnp.png", "$outdir/$name.parsnp.png");
+  print $fh "![ParSNP tree]($name.parsnp.png)\n";
+
+  #...........................................................................................
   # Software
   heading($fh, "Software");
   my @inv = ( [ "Tool", "Version" ] );
-  for my $tool (qw(nullarbor.pl mlst abricate snippy kraken samtools freebayes megahit prokka roary)) {
+  for my $tool (qw(nullarbor.pl mlst abricate snippy kraken samtools freebayes megahit prokka roary parsnp spades.py)) {
     # print $fh "- $tool ```", qx($tool --version 2>&1), "```\n";
     my($ver) = qx($tool --version 2>&1);
+#    ($ver) = qx($tool -V 2>&1) unless $ver =~ m/$tool/i;
+#    ($ver) = qx($tool 2>&1) unless $ver =~ m/$tool/i;
     chomp $ver;
     $ver =~ s/$tool\s*//i;
     $ver =~ s/version\s*//i;
