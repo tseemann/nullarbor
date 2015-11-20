@@ -306,6 +306,13 @@ sub generate {
       my $found = scalar( grep { $_ ne '.' } @abr );
       push @grid, [ $id, $found, @abr ];
     }
+    
+    # add CSS to help rotate the labels to this big table!
+    my $W = scalar( @{$grid[0]} );
+    for my $i (0 .. $W-1) {
+      $grid[0][$i] = " <DIV CLASS='vertical'>$grid[0][$i]</DIV>";
+    }
+    
     print $fh table_to_markdown(\@grid, 1);
   }
 

@@ -17,13 +17,20 @@ TABLE {
 TH {
   font-weight: bold;
   background: LemonChiffon;
+  vertical-align: middle;
 }
 
-/* not working */
-#antibiotic-resistance-genes > TABLE { 
+/* for vertical TH elements */
+DIV.vertical {
+  white-space: nowrap;
+  /* try different ways to make it vertical */
   -webkit-writing-mode: vertical-rl; 
   -ms-writing-mode: tb-rl; 
   writing-mode: vertical-rl; 
+  filter: flipv fliph; 
+  /* make it centered */
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .binomial {
