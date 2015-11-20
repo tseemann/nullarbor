@@ -292,6 +292,7 @@ for my $s ($set->isolates) {
       DEP => [ @clipped ],
       CMD => [ 
         "rm -f -r $id/megahit",
+        "mkdir -p $id",
         "megahit -t $threads --memory 0.5 -1 $clipped[0] -2 $clipped[1] --out-dir $id/megahit --presets bulk --min-contig-len 500",
 #        "megahit -t $threads --memory 0.5 -1 $clipped[0] -2 $clipped[1] --out-dir $id/megahit --presets bulk",
         "mv $id/megahit/final.contigs.fa $make_target",
@@ -361,6 +362,10 @@ $make{"mash"} = {
   DEP => [ map { "$_/$_.msh" } $set->ids ],
 };
 
+$make{"clip"} = { 
+  DEP => [ map { "$_/yield.clean.tab" } $set->ids ],
+};
+
 $make{"roary"} = { 
   DEP => [ "roary/roary.png" ],   
 };
@@ -381,6 +386,10 @@ $make{"roary/gene_presence_absence.csv"} = {
   ],
 };
 
+$make{"mlst"} = {
+  DEP => "mlst.tab",
+};
+
 $make{"mlst.tab"} = {
   DEP => [ map { "$_/mlst.tab" } $set->ids ],
   CMD => "(head -n 1 $make_dep && tail -q -n +2 $make_deps) > $make_target",
@@ -389,6 +398,10 @@ $make{"mlst.tab"} = {
 $make{"mlst2.tab"} = {
   DEP => [ map { "$_/mlst2.tab" } $set->ids ],
   CMD => "cat $make_deps > $make_target",
+};
+  
+$make{"denovo"} = {
+  DEP => "denovo.tab",
 };
   
 $make{"denovo.tab"} = {
