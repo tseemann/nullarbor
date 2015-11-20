@@ -293,7 +293,8 @@ for my $s ($set->isolates) {
       CMD => [ 
         "rm -f -r $id/megahit",
         "mkdir -p $id",
-        "megahit -t $threads --memory 0.5 -1 $clipped[0] -2 $clipped[1] --out-dir $id/megahit --presets bulk --min-contig-len 500",
+        "megahit --min-count 3 --k-list 21,31,41,53,75,97,111,127 -t $threads --memory 0.5 -1 $clipped[0] -2 $clipped[1] --out-dir $id/megahit --min-contig-len 500",
+#        "megahit -t $threads --memory 0.5 -1 $clipped[0] -2 $clipped[1] --out-dir $id/megahit --presets bulk --min-contig-len 500",
 #        "megahit -t $threads --memory 0.5 -1 $clipped[0] -2 $clipped[1] --out-dir $id/megahit --presets bulk",
         "mv $id/megahit/final.contigs.fa $make_target",
         "mv $id/megahit/log $id/megahit.log",
@@ -387,7 +388,7 @@ $make{"roary/gene_presence_absence.csv"} = {
 };
 
 $make{"mlst"} = {
-  DEP => "mlst.tab",
+  DEP => [ "mlst.tab", "mlst2.tab" ],
 };
 
 $make{"mlst.tab"} = {
