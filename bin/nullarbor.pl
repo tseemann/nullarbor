@@ -214,7 +214,7 @@ $make{'report/index.html'} = {
 };
 
 $make{'report/index.md'} = {
-  DEP => [ $REF, qw(yields kraken abricate mlst.tab mlst2.tab denovo.tab parsnp core.aln tree.gif distances.tab roary) ],
+  DEP => [ $REF, qw(yields kraken abricate mlst.tab mlst2.tab denovo.tab core.aln tree.gif distances.tab roary) ],
   CMD => "$FindBin::RealBin/nullarbor.pl --name $name --report --indir $outdir --outdir $outdir/report",
 };
 
@@ -462,6 +462,7 @@ $make{"parsnp/parsnp.svg"} = {
 $make{"parsnp/parsnp.tree"} = {
   DEP => [ $REF, map { "$_/$CTG" } $set->ids ],
   CMD => [ 
+    "rm -fr parsnp",
     "mkdir -p parsnp/genomes",
     (map { "ln -sf $outdir/$_/contigs.fa $outdir/parsnp/genomes/$_.fa" } $set->ids),
     "parsnp -x -p $threads -c -d parsnp/genomes -r $REF -o parsnp",

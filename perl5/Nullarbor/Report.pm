@@ -449,17 +449,19 @@ sub generate {
 
   #...........................................................................................
   # ParSNP
-  heading($fh, "ParSNP");
-  
-  print $fh "ParSNP aligns assembled contigs and does simplistic recombination filtering\n";
-  print $fh qx(grep 'Total coverage among' $indir/parsnp/parsnpAligner.log);
-  
-  copy("$indir/parsnp/parsnp.tree", "$outdir/$name.parsnp.tree");
-  print $fh "Download: [$name.parsnp.tree]($name.parsnp.tree)\n";
+  if (-r "$indir/parsnp/$name.parsnp.png") {
+    heading($fh, "ParSNP");
+    
+    print $fh "ParSNP aligns assembled contigs and does simplistic recombination filtering\n";
+    print $fh qx(grep 'Total coverage among' $indir/parsnp/parsnpAligner.log);
+    
+    copy("$indir/parsnp/parsnp.tree", "$outdir/$name.parsnp.tree");
+    print $fh "Download: [$name.parsnp.tree]($name.parsnp.tree)\n";
 
-  copy("$indir/parsnp/parsnp.png", "$outdir/$name.parsnp.png");
-  print $fh "![ParSNP tree]($name.parsnp.png)\n";
-
+    copy("$indir/parsnp/parsnp.png", "$outdir/$name.parsnp.png");
+    print $fh "![ParSNP tree]($name.parsnp.png)\n";
+  }
+  
   #...........................................................................................
   # Software
   heading($fh, "Software");
