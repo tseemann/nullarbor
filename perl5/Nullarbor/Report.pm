@@ -483,7 +483,7 @@ sub generate {
   # Software
   heading($fh, "Software");
   my @inv = ( [ "Tool", "Version" ] );
-  for my $tool (qw(nullarbor.pl mlst abricate snippy kraken samtools freebayes megahit prokka roary parsnp spades.py)) {
+  for my $tool (qw(nullarbor.pl mlst abricate snippy kraken samtools freebayes megahit prokka roary)) {
     # print $fh "- $tool ```", qx($tool --version 2>&1), "```\n";
     my($ver) = qx($tool --version 2>&1);
 #    ($ver) = qx($tool -V 2>&1) unless $ver =~ m/$tool/i;
