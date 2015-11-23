@@ -27,7 +27,7 @@ use Nullarbor::Utils qw(num_cpus);
 # constants
 
 my $EXE = "$FindBin::RealScript";
-my $VERSION = '0.8-dev';
+my $VERSION = '0.9-dev';
 my $AUTHOR = 'Torsten Seemann <torsten.seemann@gmail.com>';
 my @CMDLINE = ($0, @ARGV);
 
