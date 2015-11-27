@@ -27,7 +27,7 @@ use Nullarbor::Utils qw(num_cpus);
 # constants
 
 my $EXE = "$FindBin::RealScript";
-my $VERSION = '0.9-dev';
+my $VERSION = '0.10-dev';
 my $AUTHOR = 'Torsten Seemann <torsten.seemann@gmail.com>';
 my @CMDLINE = ($0, @ARGV);
 
@@ -48,12 +48,14 @@ my $indir = '';
 my $name = '';
 my $accurate = 0;
 my $conf_file = "$FindBin::RealBin/../conf/nullarbor.conf";
+my $check = 0;
 
 @ARGV or usage();
 
 GetOptions(
   "help"     => \&usage,
   "version"  => \&version, 
+  "check"    => \$check, 
   "verbose"  => \$verbose,
   "quiet"    => \$quiet,
   "conf=s"   => \$conf_file,
@@ -76,6 +78,11 @@ Nullarbor::Logger->quiet($quiet);
 msg("Hello", $ENV{USER} || 'stranger');
 msg("This is $EXE $VERSION");
 msg("Send complaints to $AUTHOR");
+
+if ($check) {
+  check_deps();
+  exit(0);
+}
 
 if ($report) {
   msg("Running in --report mode");
@@ -139,23 +146,10 @@ $outdir = File::Spec->rel2abs($outdir);
 msg("Making output folder: $outdir");
 make_path($outdir); 
 
-require_exe( qw'convert pandoc head cat install env nl date' );
-require_exe( qw'skewer prokka roary kraken snippy mlst abricate megahit spades.py nw_order nw_display FastTree' );
-require_exe( qw'fq fa afa-pairwise.pl any2fasta.pl roary2svg.pl' );
+# check dependencies and return here if all goes well
+check_deps(); 
 
-require_perlmod( qw'Data::Dumper Moo Bio::SeqIO File::Copy Time::Piece YAML::Tiny' );
-
-require_version('megahit', 1.0);
-require_version('snippy', 2.5);
-require_version('prokka', 1.10);
-require_version('roary', 3.4);
-require_version('mlst', 1.4);
-#require_version('spades.py', 3.5); # does not have a --version flag
-
-my $value = require_var('KRAKEN_DEFAULT_DB', 'kraken');
-require_file("$value/database.idx", 'kraken');
-require_file("$value/database.kdb", 'kraken');
-
+# load config file 
 my $cfg;
 if (-r $conf_file) {
   my $yaml = YAML::Tiny->read( $conf_file );
@@ -542,6 +536,7 @@ sub usage {
   print "USAGE\n";
 #  print "(1) Analyse samples\n";
   print "  $EXE [options] --name NAME --mlst SCHEME --ref REF.FA --input SAMPLES.TAB --outdir DIR\n";
+  print "    --check     Check dependencies only\n";
   print "    --accurate  Invest more effort in the de novo assembly\n";
   print "    --force     Overwrite --outdir (useful for adding samples to existing analysis)\n";
   print "    --cpus      Maximum number of CPUs to use in total ($cpus)\n";
@@ -559,4 +554,26 @@ sub usage {
 sub version {
   print "$EXE $VERSION\n";
   exit;
+}
+
+#-------------------------------------------------------------------
+sub check_deps { 
+  my($self) = @_;
+
+  require_exe( qw'convert pandoc head cat install env nl date' );
+  require_exe( qw'skewer prokka roary kraken snippy mlst abricate megahit spades.py nw_order nw_display FastTree' );
+  require_exe( qw'fq fa afa-pairwise.pl any2fasta.pl roary2svg.pl' );
+
+  require_perlmod( qw'Data::Dumper Moo Bio::SeqIO File::Copy Time::Piece YAML::Tiny' );
+
+  require_version('megahit', 1.0);
+  require_version('snippy', 2.5);
+  require_version('prokka', 1.10);
+  require_version('roary', 3.4);
+  require_version('mlst', 1.4);
+  #require_version('spades.py', 3.5); # does not have a --version flag
+
+  my $value = require_var('KRAKEN_DEFAULT_DB', 'kraken');
+  require_file("$value/database.idx", 'kraken');
+  require_file("$value/database.kdb", 'kraken');
 }
