@@ -452,8 +452,8 @@ sub generate {
   my $roary_ss = "roary/summary_statistics.txt";
   if (-r $roary_ss) {
     heading($fh, "Pan genome");
-    my $ss = load_tabular(-file=>$roary_ss, -sep=>":");
-    unshift @$ss, [ "Ortholog class", "Count" ];
+    my $ss = load_tabular(-file=>$roary_ss, -sep=>"\t");
+    unshift @$ss, [ "Ortholog class", "Definition", "Count" ];
     print $fh table_to_markdown($ss, 1);
     my $panpic = "$indir/roary/roary.png";
     if (-r $panpic) {

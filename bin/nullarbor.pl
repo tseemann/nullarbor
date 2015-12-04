@@ -569,7 +569,7 @@ sub check_deps {
   require_version('megahit', 1.0);
   require_version('snippy', 2.5);
   require_version('prokka', 1.10);
-  require_version('roary', 3.4);
+  require_version('roary', 3.5);
   require_version('mlst', 1.4);
   #require_version('spades.py', 3.5); # does not have a --version flag
 
