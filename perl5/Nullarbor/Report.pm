@@ -29,8 +29,8 @@ sub generate {
   #...........................................................................................
   # Load isolate list
 
-  my $isolates_fname = 'isolates.txt';
-  open ISOLATES, '<', $isolates_fname or err("Can not open $indir/$isolates_fname");
+  my $isolates_fname = "$indir/isolates.txt";
+  open ISOLATES, '<', $isolates_fname or err("Can not open $isolates_fname");
   my @id = <ISOLATES>;
   chomp @id;
   close ISOLATES;
