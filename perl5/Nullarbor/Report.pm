@@ -98,21 +98,24 @@ sub generate {
   # MLST (new)
   
   my $mlst2 = load_tabular(-file=>"$indir/mlst2.tab", -sep=>"\t", -header=>0);
-  
-  my $width=0; # keep track of largest number of alleles
-  
+
+  # find maximum width (#columns) amongst the rows  
+  my $width = max( map { scalar(@$_) } @$mlst );
+
   for my $row (@$mlst2) {
-#    print STDERR join("  ", @$row),"\n";
     $row->[0] =~ s{/contigs.fa}{};
     $row->[0] =~ s/ref.fa/Reference/;
-    $width = max($width, scalar(@$row));
     my $ST = $row->[2];
-    my $ngene = scalar(@$row)-3; # don't count first 3 columns
     my $missing = $row->[2] eq '-' ? 1E9 : sum( map { $row->[$_] =~ m/[-~?]/ ? 1 : 0 } (3 .. $#$row) );
     for my $i (3 .. $#$row) {
       my $g = $row->[$i];
+      $g =~ s/^_//; # fix bold bug for alleles ending in _ !
+      $g =~ s/_$//;
       my $class = $g =~ m/[-?]/ ? "missing" : $g =~ m/~/ ? "novel" : "known";
       $row->[$i] = "<SPAN CLASS='allele $class'>$g</SPAN>";
+    }
+    while (@$row < $width) {
+      push @$row, '.';  # padding
     }
 #    print STDERR "ST=$ST N=$ngene missing=$missing\n";
     push @$row, pass_fail( $missing==0 && $ST ne '-' ? +1 : $missing <= 1 ? 0 : -1 );
@@ -535,13 +538,21 @@ sub extract_insert_size {
 #.................................................................................
 
 sub table_to_markdown {
-  my($table, $header) = @_;
+  my($table, $header, $width) = @_;
   my $res = "\n";
   my $row_no=0;
   for my $row (@{$table}) {
-    $res .= join(' | ', @$row)."\n";
+    if ($width) {
+      # pad to this width
+      my $extra = $width - @$row;
+      if ($extra > 0) {
+#        print STDERR "Padding $extra columns\n";
+        push @$row, (map { "." } (1..$extra));
+      }
+    }
+    $res .= join(' | ', @$row) . "\n";
     if ($header and $row_no++ == 0) {
-      $res .= join(' | ', map { '---' } @$row)."\n";
+      $res .= join(' | ', map { '---' } @$row) . "\n";
     }
   }
   return $res."\n";
