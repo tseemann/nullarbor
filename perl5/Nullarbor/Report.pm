@@ -102,16 +102,19 @@ sub generate {
   my $width=0; # keep track of largest number of alleles
   
   for my $row (@$mlst2) {
+#    print STDERR join("  ", @$row),"\n";
     $row->[0] =~ s{/contigs.fa}{};
     $row->[0] =~ s/ref.fa/Reference/;
     $width = max($width, scalar(@$row));
     my $ST = $row->[2];
-    my $missing = sum( map { $row->[$_] =~ m/[-~?]/ ? 1 : 0 } (3 .. $#$row) );
+    my $ngene = scalar(@$row)-3; # don't count first 3 columns
+    my $missing = $row->[2] eq '-' ? 1E9 : sum( map { $row->[$_] =~ m/[-~?]/ ? 1 : 0 } (3 .. $#$row) );
     for my $i (3 .. $#$row) {
       my $g = $row->[$i];
       my $class = $g =~ m/[-?]/ ? "missing" : $g =~ m/~/ ? "novel" : "known";
       $row->[$i] = "<SPAN CLASS='allele $class'>$g</SPAN>";
     }
+#    print STDERR "ST=$ST N=$ngene missing=$missing\n";
     push @$row, pass_fail( $missing==0 && $ST ne '-' ? +1 : $missing <= 1 ? 0 : -1 );
   }
 
