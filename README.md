@@ -82,9 +82,30 @@ If you use a GENBANK or EMBL file the annotations will be used to annotate SNPs 
 
 ### Generate the run folder
 
-This command will create a new folder with a Makefile in it:
+This command will create a new folder with a `Makefile` in it:
 
     nullarbor.pl --name PROJNAME --mlst saureus --ref US300.fna --input samples.tab --outdir OUTDIR
+
+This will check that everything is okay. One of the last lines it prints is the command you need to run
+to actually perform the analysis _e.g._
+
+    Run the pipeline with: nice make -j 4 -C OUTDIR
+
+So you can just cut and paste that:
+
+    nice make -j 4 -C OUTDIR
+
+The `-C` option just means to change into the `/home/maria/listeria/nullarbor` folder first, so you could 
+do this instead:
+
+    cd OUTDIR
+    make 
+
+### View the report
+
+    firefox OUTDIR/report/index.html
+
+An example report will be made available soon.
 
 ### See some options
 
@@ -92,23 +113,6 @@ Once set up, a Nullarbor folder can be used in a few different ways.
 See what's available with this command:
 
     make help
-
-### Run
-
-To actually run the analysis:
-
-    cd OUTDIR
-    make 
-
-Or if you want to run parallel jobs:
-
-    make -C OUTDIR -j 8
-
-### View the report
-
-    firefox OUTDIR/report/index.html
-
-An example report will be made available soon.
 
 ## Etymology
 
