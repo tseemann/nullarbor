@@ -244,7 +244,9 @@ for my $s ($set->isolates) {
   my @clipped = ("$id/$R1", "$id/$R2");
   print ISOLATES "$id\n";
 
-#  make_path($dir);
+  # Solve a lot of issues by just making the paths here instead of the makefile!
+  make_path($dir);
+
   $make{"$id"} = {
 #    CMD => [ "if [ ! -d '$make_target' ]; then mkdir -p $make_target ; fi" ],
     CMD => [ "mkdir -p $make_target" ],
