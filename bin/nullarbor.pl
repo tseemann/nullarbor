@@ -186,8 +186,9 @@ my $R1 = "R1.fq.gz";
 my $R2 = "R2.fq.gz";
 my $CTG = "contigs.fa";
 my $zcat = 'gzip -f -c -d';
+my $CPUS = '$(CPUS)';
 
-$make{'.DEFAULT'} = { DEP => 'all'   };
+$make{'.DEFAULT'} = { DEP => 'all' };
 
 $make{'all'} = { 
   DEP => [ 'folders', 'report' ],
@@ -195,7 +196,7 @@ $make{'all'} = {
 
 my @CMDLINE_NO_FORCE = grep !m/^--?f\S*$/, @CMDLINE; # remove --force / -f etc
 $make{'again'} = {
-  CMD => "(cd .. && @CMDLINE_NO_FORCE --force)",
+  CMD => "(rm -fr roary/ core.* *.tab tree.* && cd .. && @CMDLINE_NO_FORCE --force)",
 };
 
 $make{'report'} = {
@@ -261,7 +262,7 @@ for my $s ($set->isolates) {
   };
   $make{$clipped[0]} = {
     DEP => [ @reads ],
-    CMD => [ "skewer --quiet -t $threads -n -q 10 -z -o $id/clipped @reads ".($cfg->{skewer} || ''),
+    CMD => [ "skewer --quiet -t $CPUS -n -q 10 -z -o $id/clipped @reads ".($cfg->{skewer} || ''),
              "mv $id/clipped-trimmed-pair1.fastq.gz $id/$R1",
              "mv $id/clipped-trimmed-pair2.fastq.gz $id/$R2", ],
   };
@@ -276,7 +277,7 @@ for my $s ($set->isolates) {
       DEP => [ @clipped ],
       CMD => [ 
         "rm -f -r $id/spades",
-        "spades.py -t $threads -1 $clipped[0] -2 $clipped[1] -o $id/spades --only-assembler --careful --cov-cutoff auto",
+        "spades.py -t $CPUS -1 $clipped[0] -2 $clipped[1] -o $id/spades --only-assembler --careful --cov-cutoff auto",
         "mv $id/spades/scaffolds.fasta $make_target",
         "mv $id/spades/spades.log $id/spades.log",
         "rm -f -v -r $id/spades",
@@ -289,9 +290,9 @@ for my $s ($set->isolates) {
       CMD => [ 
         "rm -f -r $id/megahit",
         "mkdir -p $id",
-        "megahit --min-count 3 --k-list 21,31,41,53,75,97,111,127 -t $threads --memory 0.5 -1 $clipped[0] -2 $clipped[1] --out-dir $id/megahit --min-contig-len 500",
-#        "megahit -t $threads --memory 0.5 -1 $clipped[0] -2 $clipped[1] --out-dir $id/megahit --presets bulk --min-contig-len 500",
-#        "megahit -t $threads --memory 0.5 -1 $clipped[0] -2 $clipped[1] --out-dir $id/megahit --presets bulk",
+        "megahit --min-count 3 --k-list 21,31,41,53,75,97,111,127 -t $CPUS --memory 0.5 -1 $clipped[0] -2 $clipped[1] --out-dir $id/megahit --min-contig-len 500",
+#        "megahit -t $CPUS --memory 0.5 -1 $clipped[0] -2 $clipped[1] --out-dir $id/megahit --presets bulk --min-contig-len 500",
+#        "megahit -t $CPUS --memory 0.5 -1 $clipped[0] -2 $clipped[1] --out-dir $id/megahit --presets bulk",
         "mv $id/megahit/final.contigs.fa $make_target",
         "mv $id/megahit/log $id/megahit.log",
         "rm -f -v -r $id/megahit",
@@ -300,7 +301,7 @@ for my $s ($set->isolates) {
   }
   $make{"$id/kraken.tab"} = {
     DEP => [ @clipped ],
-    CMD => "kraken --threads $threads --preload --paired @clipped | kraken-report > $make_target",
+    CMD => "kraken --threads $CPUS --preload --paired @clipped | kraken-report > $make_target",
   };
   $make{"$id/abricate.tab"} = {
     DEP => "$id/$CTG",
@@ -320,11 +321,11 @@ for my $s ($set->isolates) {
   };  
   $make{"$id/$id/snps.tab"} = {
     DEP => [ $ref, @clipped ],
-    CMD => "snippy --cpus $threads --force --outdir $id/$id --ref $ref --R1 $clipped[0] --R2 $clipped[1]",
+    CMD => "snippy --cpus $CPUS --force --outdir $id/$id --ref $ref --R1 $clipped[0] --R2 $clipped[1]",
   };
   $make{"$id/prokka/$id.gff"} = {
     DEP => "$id/$CTG",
-    CMD => "prokka --centre X --compliant --force --fast --locustag $id --prefix $id --outdir $id/prokka --cpus $threads $make_deps",
+    CMD => "prokka --centre X --compliant --force --fast --locustag $id --prefix $id --outdir $id/prokka --cpus $CPUS $make_deps",
   };
   $make{"$id/$id.msh"} = { 
     DEP => [ @clipped ],
@@ -364,7 +365,19 @@ $make{"clip"} = {
 };
 
 $make{"roary"} = { 
-  DEP => [ "roary/roary.png" ],   
+  DEP => [ "roary/roary.png", "roary/accessory_tree.png" ],   
+};
+
+$make{'roary/accessory_binary_genes.fa.newick'} = {
+  DEP => 'roary/gene_presence_absence.csv',
+};
+
+$make{'roary/accessory_tree.png'} = {
+  DEP => 'roary/accessory_binary_genes.fa.newick',
+  CMD => [
+    "nw_order -c n $make_dep | nw_display -S -s -w 1024 -l 'font-size:12' -i 'opacity:0' -b 'opacity:0' - > $make_dep.svg",
+    "convert $make_dep.svg $make_target",
+  ],
 };
 
 $make{"roary/roary.png"} = { 
@@ -379,7 +392,7 @@ $make{"roary/gene_presence_absence.csv"} = {
   DEP => [ map { "$_/prokka/$_.gff" } $set->ids ],
   CMD => [
     "rm -fr roary",
-    "roary -f roary -v -p $threads $make_deps",
+    "roary -f roary -v -p $CPUS $make_deps",
   ],
 };
 
@@ -415,19 +428,13 @@ $make{'core.aln'} = {
 #  DEP => 'core.aln',
 #};
 
-#$make{'core.nogaps.aln'} = {
-#  DEP => 'core.full.aln',
-#  CMD => "trimal -in $make_dep -out $make_target -nogaps",
-#};
-
 $make{'tree.newick'} = {
   DEP => 'core.aln',
-  CMD => "env OMP_NUM_THREADS=$threads OMP_THREAD_LIMIT=$threads FastTree -gtr -nt $make_dep | nw_order -c n - > $make_target",
+  CMD => "env OMP_NUM_THREADS=$CPUS OMP_THREAD_LIMIT=$CPUS FastTree -gtr -nt $make_dep | nw_order -c n - > $make_target",
 };
 
 $make{'tree.svg'} = {
   DEP => 'tree.newick',
-#  CMD => "figtree -graphic GIF -width 1024 -height 1024 $make_dep $make_target",
   CMD => "nw_display -S -s -w 1024 -l 'font-size:12' -i 'opacity:0' -b 'opacity:0' $make_dep > $make_target",
 };
 
@@ -461,7 +468,7 @@ $make{"parsnp/parsnp.tree"} = {
     "rm -fr parsnp",
     "mkdir -p parsnp/genomes",
     (map { "ln -sf $outdir/$_/contigs.fa $outdir/parsnp/genomes/$_.fa" } $set->ids),
-    "parsnp -x -p $threads -c -d parsnp/genomes -r $REF -o parsnp",
+    "parsnp -x -p $CPUS -c -d parsnp/genomes -r $REF -o parsnp",
   ],
 };
 
@@ -485,10 +492,10 @@ $make{'panic'} = {
 my $DELETE = "rm -v -f";
 $make{'space'} = {
   CMD => [
-#    "$DELETE core.full.aln core.nogaps.aln\n",
-    "$DELETE core.full.aln core.vcf\n",
-    "$DELETE roary/*.{tab,embl,dot,Rtab}\n",
-    (map { "$DELETE $_/prokka/*.{err,ffn,fsa,sqn,tbl} $_/$_/*consensus*fa $_/$_/*.{vcf,vcf.gz,vcf.tbi,bed,bam,bai,html}\n" } $set->ids),
+#    "$DELETE core.full.aln core.nogaps.aln",
+    "$DELETE core.full.aln core.vcf",
+    "$DELETE roary/*.{tab,embl,dot,Rtab}",
+    (map { "$DELETE $_/prokka/*.{err,ffn,fsa,sqn,tbl} $_/$_/*consensus*fa $_/$_/*.{vcf,vcf.gz,vcf.tbi,bed,bam,bai,html}" } $set->ids),
   ],
 };
 
@@ -511,12 +518,26 @@ msg("Done");
 sub write_makefile {
   my($make, $fh) = @_;
   $fh = \*STDOUT if not defined $fh;
+
+  # copy any header stuff from the __DATA__ block at the end of this script
+  while (<DATA>) {
+    print $fh $_;
+  }
   
   print $fh "SHELL := /bin/bash\n";
   print $fh "MAKEFLAGS += --no-builtin-rules\n";
   print $fh "MAKEFLAGS += --no-builtin-variables\n";
-#  print $fh "MAKEFLAGS += --load-average=$threads\n";
+  print $fh "CPUS=$threads\n";
+#  print $fh "MAKEFLAGS += --load-average=$CPUS\n";
   print $fh ".SUFFIXES:\n";
+#  print $fh ".SUFFIXES: .newick .tree .aln .png .svg\n";
+  
+  print $fh "%.png : %.svg\n",
+            "\tconvert $make_dep $make_target\n";
+  print $fh "%.svg : %.newick\n",
+            "\tnw_display -S -s -w 1024 -l 'font-size:12' -i 'opacity:0' -b 'opacity:0' $make_dep > $make_target\n"; 
+  print $fh "%.newick : %.aln\n",
+            "\tenv OMP_NUM_THREADS=$CPUS OMP_THREAD_LIMIT=$CPUS FastTree -gtr -nt $< | nw_order -c n - > $@";
 
   for my $target ('all', sort grep { $_ ne 'all' } keys %$make) {
     print $fh "\n";
@@ -579,3 +600,9 @@ sub check_deps {
   require_file("$value/database.idx", 'kraken');
   require_file("$value/database.kdb", 'kraken');
 }
+
+#-------------------------------------------------------------------
+
+__DATA__
+# This file is automatically generated by the Nullarbor software
+
