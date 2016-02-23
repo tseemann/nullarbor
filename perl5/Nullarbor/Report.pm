@@ -469,6 +469,18 @@ sub generate {
       print $fh "![Pan genome]($name.pan.png)\n";
     }
   }
+  
+  #...........................................................................................
+  # Accessory Genome Tree
+  my $acctree = "$indir/roary/accessory_tree.png";
+  if (-r $acctree) {
+    heading($fh, "Accessory Genome Tree");
+    print $fh "*Note:* This tree is based on **binary** gene presence/absence of **non-singleton** accessory genes.\n\n";
+    copy("$indir/roary/accessory_binary_genes.fa.newick", "$outdir/$name.acc.tree");
+    print $fh "Download: [$name.acc.tree]($name.acc.tree)\n\n";
+    copy($acctree, "$outdir/$name.acc.tree.png");
+    print $fh "![Accessory Gene Tree]($name.acc.tree.png)\n";
+  }
 
   #...........................................................................................
   # ParSNP
