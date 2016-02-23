@@ -188,6 +188,7 @@ my $R2 = "R2.fq.gz";
 my $CTG = "contigs.fa";
 my $zcat = 'gzip -f -c -d';
 my $CPUS = '$(CPUS)';
+my $NW_DISPLAY = "nw_display ".($cfg->{nw_display} || '');
 
 $make{'.DEFAULT'} = { DEP => 'all' };
 
@@ -377,7 +378,7 @@ $make{'roary/accessory_binary_genes.fa.newick'} = {
 $make{'roary/accessory_tree.png'} = {
   DEP => 'roary/accessory_binary_genes.fa.newick',
   CMD => [
-    "nw_order -c n $make_dep | nw_display -S -s -w 1024 -l 'font-size:12' -i 'opacity:0' -b 'opacity:0' - > $make_dep.svg",
+    "nw_order -c n $make_dep | $NW_DISPLAY - > $make_dep.svg",
     "convert $make_dep.svg $make_target",
   ],
 };
@@ -437,7 +438,7 @@ $make{'tree.newick'} = {
 
 $make{'tree.svg'} = {
   DEP => 'tree.newick',
-  CMD => "nw_display -S -s -w 1024 -l 'font-size:12' -i 'opacity:0' -b 'opacity:0' $make_dep > $make_target",
+  CMD => "$NW_DISPLAY $make_dep > $make_target",
 };
 
 $make{'tree.gif'} = {
@@ -461,7 +462,7 @@ $make{"parsnp/parsnp.png"} = {
 
 $make{"parsnp/parsnp.svg"} = {
   DEP => "parsnp/parsnp.tree",
-  CMD => "nw_display -S -s -w 1024 -l 'font-size:12' -i 'opacity:0' -b 'opacity:0' $make_dep > $make_target",
+  CMD => "$NW_DISPLAY $make_dep > $make_target",
 };
 
 $make{"parsnp/parsnp.tree"} = {
@@ -537,7 +538,7 @@ sub write_makefile {
   print $fh "%.png : %.svg\n",
             "\tconvert $make_dep $make_target\n";
   print $fh "%.svg : %.newick\n",
-            "\tnw_display -S -s -w 1024 -l 'font-size:12' -i 'opacity:0' -b 'opacity:0' $make_dep > $make_target\n"; 
+            "\t$NW_DISPLAY $make_dep > $make_target\n"; 
   print $fh "%.newick : %.aln\n",
             "\tenv OMP_NUM_THREADS=$CPUS OMP_THREAD_LIMIT=$CPUS FastTree -gtr -nt $< | nw_order -c n - > $@";
 
