@@ -511,6 +511,9 @@ sub generate {
     $ver =~ s/version\s*//i;
     push @inv, [ "`$tool`", $ver ];
   }
+  push @inv, [ "`spades`", "?" ];        # --version coming in 3.6.3
+  push @inv, [ "`trimmomatic`", "?" ];   # not sure, need to file issue with them
+  
   print $fh table_to_markdown(\@inv, 1);
 
   #...........................................................................................

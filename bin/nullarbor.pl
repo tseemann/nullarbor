@@ -159,6 +159,7 @@ if (-r $conf_file) {
 #  msg("Options set:", keys %$cfg);
   for my $opt (keys %$cfg) {
     $cfg->{$opt} =~ s/\$HOME/$ENV{HOME}/g;
+    $cfg->{$opt} =~ s{\$NULLARBOR}{$FindBin::RealBin/..}g;
     msg("- $opt = $cfg->{$opt}");
   }
 }
@@ -262,9 +263,10 @@ for my $s ($set->isolates) {
   };
   $make{$clipped[0]} = {
     DEP => [ @reads ],
-    CMD => [ "skewer --quiet -t $CPUS -n -q 10 -z -o $id/clipped @reads ".($cfg->{skewer} || ''),
-             "mv $id/clipped-trimmed-pair1.fastq.gz $id/$R1",
-             "mv $id/clipped-trimmed-pair2.fastq.gz $id/$R2", ],
+#    CMD => [ "skewer --quiet -t $CPUS -n -q 10 -z -o $id/clipped @reads ".($cfg->{skewer} || ''),
+#             "mv $id/clipped-trimmed-pair1.fastq.gz $id/$R1",
+#             "mv $id/clipped-trimmed-pair2.fastq.gz $id/$R2", ],
+    CMD => [ "trimmomatic PE -threads $CPUS  @reads $id/$R1 /dev/null $id/$R2 /dev/null ".($cfg->{trimmomatic} || '') ],
   };
   # we need this special rule to handle the 'double dependency' problem
   # http://www.gnu.org/software/automake/manual/html_node/Multiple-Outputs.html#Multiple-Outputs
@@ -584,7 +586,7 @@ sub check_deps {
   my($self) = @_;
 
   require_exe( qw'convert pandoc head cat install env nl date' );
-  require_exe( qw'skewer prokka roary kraken snippy mlst abricate megahit spades.py nw_order nw_display FastTree' );
+  require_exe( qw'trimmomatic prokka roary kraken snippy mlst abricate megahit spades.py nw_order nw_display FastTree' );
   require_exe( qw'fq fa afa-pairwise.pl any2fasta.pl roary2svg.pl' );
 
   require_perlmod( qw'Data::Dumper Moo Bio::SeqIO File::Copy Time::Piece YAML::Tiny' );
