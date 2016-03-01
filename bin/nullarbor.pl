@@ -27,7 +27,7 @@ use Nullarbor::Utils qw(num_cpus);
 # constants
 
 my $EXE = "$FindBin::RealScript";
-my $VERSION = '0.10-dev';
+my $VERSION = '1.01';
 my $AUTHOR = 'Torsten Seemann <torsten.seemann@gmail.com>';
 my @CMDLINE = ($0, @ARGV);
 
@@ -561,18 +561,17 @@ sub write_makefile {
 sub usage {
   print "USAGE\n";
 #  print "(1) Analyse samples\n";
-  print "  $EXE [options] --name NAME --mlst SCHEME --ref REF.FA --input SAMPLES.TAB --outdir DIR\n";
+  print "  $EXE [options] --name NAME --mlst SCHEME --ref REF.FA/GBK --input INPUT.TAB --outdir DIR\n";
   print "    --check     Check dependencies only\n";
   print "    --accurate  Invest more effort in the de novo assembly\n";
   print "    --force     Overwrite --outdir (useful for adding samples to existing analysis)\n";
   print "    --cpus      Maximum number of CPUs to use in total ($cpus)\n";
   print "    --quiet     No output\n";
   print "    --verbose   More output\n";
-  print "    --version   Tool version\n";
   print "    --conf      Config file ($conf_file)\n";
 #  print "(2) Generate report  ** NOTE: done automatically by (1) - see report/ folder **\n";
 #  print "  $EXE [options] --indir DIR --outdir WEBDIR --name JOBNAME\n";
-  print "    --version   Tool version\n";
+  print "    --version   Print version and exit\n";
   exit;
 }
 
