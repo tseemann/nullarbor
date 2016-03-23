@@ -267,7 +267,7 @@ for my $s ($set->isolates) {
 #    CMD => [ "skewer --quiet -t $CPUS -n -q 10 -z -o $id/clipped @reads ".($cfg->{skewer} || ''),
 #             "mv $id/clipped-trimmed-pair1.fastq.gz $id/$R1",
 #             "mv $id/clipped-trimmed-pair2.fastq.gz $id/$R2", ],
-    CMD => [ "trimmomatic PE -threads $CPUS  @reads $id/$R1 /dev/null $id/$R2 /dev/null ".($cfg->{trimmomatic} || '') ],
+    CMD => [ "trimmomatic PE -threads $CPUS -phred33 @reads $id/$R1 /dev/null $id/$R2 /dev/null ".($cfg->{trimmomatic} || '') ],
   };
   # we need this special rule to handle the 'double dependency' problem
   # http://www.gnu.org/software/automake/manual/html_node/Multiple-Outputs.html#Multiple-Outputs
