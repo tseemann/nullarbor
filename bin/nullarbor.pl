@@ -189,6 +189,7 @@ my $CTG = "contigs.fa";
 my $zcat = 'gzip -f -c -d';
 my $CPUS = '$(CPUS)';
 my $NW_DISPLAY = "nw_display ".($cfg->{nw_display} || '');
+my $SNIPPY = '$(SNIPPY)';
 
 $make{'.DEFAULT'} = { DEP => 'all' };
 
@@ -324,7 +325,7 @@ for my $s ($set->isolates) {
   };  
   $make{"$id/$id/snps.tab"} = {
     DEP => [ $ref, @clipped ],
-    CMD => "snippy --cpus $CPUS --force --outdir $id/$id --ref $ref --R1 $clipped[0] --R2 $clipped[1]",
+    CMD => "$SNIPPY --cpus $CPUS --force --outdir $id/$id --ref $ref --R1 $clipped[0] --R2 $clipped[1]",
   };
   $make{"$id/prokka/$id.gff"} = {
     DEP => "$id/$CTG",
@@ -531,6 +532,7 @@ sub write_makefile {
   print $fh "MAKEFLAGS += --no-builtin-rules\n";
   print $fh "MAKEFLAGS += --no-builtin-variables\n";
   print $fh "CPUS=$threads\n";
+  print $fh "SNIPPY=snippy\n";
 #  print $fh "MAKEFLAGS += --load-average=$CPUS\n";
   print $fh ".SUFFIXES:\n";
 #  print $fh ".SUFFIXES: .newick .tree .aln .png .svg\n";
