@@ -279,55 +279,47 @@ sub generate {
   heading($fh, "Resistome");
   my %abr;
   for my $id (@id) {
-    $abr{$id} = load_tabular(-file=>"$indir/$id/abricate.tab", -sep=>"\t",-header=>1, -key=>4);
+    $abr{$id} = load_tabular(-file=>"$indir/$id/abricate.tab", -sep=>"\t", -header=>1, -key=>4); # 4 = "GENE"
   }
-#  print STDERR Dumper(\%abr); exit;
-  my @abr;
-  push @abr, [ qw(Isolate Genes) ];
-  for my $id (@id) {
-    my @x = sort keys %{$abr{$id}};
-    @x = 'n/a' if @x==0;
-    push @abr, [ $id, join( ',', @x) ];
-  }
-#  print $fh table_to_markdown(\@abr, 1);
-
-  sub percent_cover {
-    my($pc, $threshold) = @_;
-    $threshold ||= 50;
-    if ($pc >= $threshold) { 
-      return pass_fail(+1);
-    }
-    return "$pc%";
-  }
+#  print STDERR Dumper(\%abr);
 
   if (1) {
-    print $fh "\n";
+#    copy("$indir/ref.fa", "$outdir/$name.ref.fa");
+    my $csv_fn = "$name.resistome.csv";
+#    open CSV, '>', "$outdir/$csv_fn";
+    print $fh " Download: [$csv_fn]($csv_fn)\n";
+    my $ABSENT = '.';
+#    print $fh "\n";
     my %gene;
     map { $gene{$_}++ } (map { (keys %{$abr{$_}}) } @id);
     my @gene = sort { $a cmp $b } keys %gene;
-#    print STDERR Dumper(\%gene);
-    my @grid;
-#    my @vertgene = map { '__'.join(' ', split m//, $_).'__' } @gene;
-    push @grid, [ 'Isolate', 'Found', @gene ];
+#    print STDERR Dumper(\%gene, \@gene);
+    my @grid = ( [ 'Isolate', 'Found', @gene ] ); # for HTML
+    my @grid2 = ( [ @{$grid[0]} ] );              # for CSV
+    
     for my $id (@id) {
       my @abr;
+      my @abr2;
       for my $g (@gene) {
-        my $hit = '.';
+        my $hit = $ABSENT;
+        my $hit2 = $ABSENT;
         if ($abr{$id}{$g}) {
           my @hits = @{ $abr{$id}{$g} };
-          $hit = join("+", 
-            map { percent_cover( int $_->{'%COVERAGE'}, 100) } 
-              sort { $b->{'%COVERAGE'} <=> $a->{'%COVERAGE'} } @hits
-          );
-#          $hit = join("+", map { int $_->{'%COVERAGE'} } @hits);
-#          $hit = percent_cover( $hit, 100) if @hits == 1;
+          $hit = @hits == 1 && int($hits[0]->{'%COVERAGE'}) >= 95
+               ? pass_fail( +1 ) 
+               : pass_fail( 0, join(' + ', map { int($_->{'%COVERAGE'}).'%' } @hits) );
+#          $hit = join("+", 
+#            map { percent_cover( int $_->{'%COVERAGE'}, 100) } 
+#              sort { $b->{'%COVERAGE'} <=> $a->{'%COVERAGE'} } @hits
+#          );
+          $hit2 = join("+", map { int $_->{'%COVERAGE'} } @hits);
         }
         push @abr, $hit;
+        push @abr2, $hit2;
       }      
-#      my @abr = map { exists $abr{$id}{$_} ? percent_cover( int($abr{$id}{$_}{'%COVERAGE'}), 100) : '.' } @gene;
-#      print Dumper($id, \@abr); exit;
-      my $found = scalar( grep { $_ ne '.' } @abr );
-      push @grid, [ $id, $found, @abr ];
+      my $found = scalar( grep { $_ ne $ABSENT } @abr );
+      push @grid,  [ $id, $found, @abr ];
+      push @grid2, [ $id, $found, @abr2 ];
     }
     
     # add CSS to help rotate the labels to this big table!
@@ -337,6 +329,7 @@ sub generate {
     }
     
     print $fh table_to_markdown(\@grid, 1);
+    save_tabular("$outdir/$csv_fn", \@grid2, ",");
   }
 
   #...........................................................................................
@@ -353,9 +346,6 @@ sub generate {
     $refsize += $seq->length;
   }
 #  print STDERR Dumper($r, \@ref);
-  copy("$indir/ref.fa", "$outdir/$name.ref.fa");
-  printf $fh "Reference contains %d sequences totalling %.2f Mbp. ", @ref-1, $refsize/1E6;
-  print  $fh " Download: [$name.ref.fa]($name.ref.fa)\n";
   if (@ref < 10) {
     print  $fh table_to_markdown(\@ref, 1);
   }
@@ -660,7 +650,7 @@ sub load_tabular_as_hash {
 #.................................................................................
 
 sub pass_fail {
-    my($level) = @_;
+    my($level, $alt_text) = @_;
     $level ||= 0;
     my $sym = '?';
     my $class = 'dunno';
@@ -672,7 +662,8 @@ sub pass_fail {
       $sym = "&#10004;";
       $class = 'pass';
     }
-    return "<SPAN CLASS='$class'>$sym</SPAN>";
+    my $alt = defined($alt_text) ? " TITLE='$alt_text'" : "";
+    return "<SPAN CLASS='$class'$alt>$sym</SPAN>";
 }
 
 #.................................................................................

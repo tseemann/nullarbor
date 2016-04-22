@@ -39,6 +39,11 @@ DIV.vertical {
   font-style: italic;
 }
 
+.trafficlight {
+  font-size: larger;
+  font-weight: bold;
+}
+
 .pass {
   color: green;
   font-size: larger; 
@@ -55,6 +60,10 @@ DIV.vertical {
   color: orange;
   font-size: larger; 
   font-weight: bold;
+}
+
+.dunno:hover {
+  cursor: help;
 }
 
 .allele {
