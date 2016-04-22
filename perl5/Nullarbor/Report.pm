@@ -12,7 +12,7 @@ use List::Util qw(sum min max);
 sub heading {
   my($fh, $title) = @_;
   msg("Generating report section: $title");
-  print $fh "##$title\n";
+  print $fh "##[$title](#)\n"; # make H2 a link to index
 }
 
 #.................................................................................
@@ -235,8 +235,9 @@ sub generate {
 
 
   #...........................................................................................
-  # Assembly
-  heading($fh, "Assembly");
+  # Assembly & Anno
+  
+  heading($fh, "Assembly & Annotation");
   my $ass = load_tabular(-file=>"$indir/denovo.tab", -sep=>"\t", -header=>1);
 #  print STDERR Dumper($ass);
   $ass->[0][0] = 'Isolate';
@@ -244,16 +245,25 @@ sub generate {
   map { $_->[0] =~ s{/contigs.fa}{} } @$ass;
   # extract insert size from BWA output in Snippy folder
   push @{$ass->[0]}, "Insert size (25,50,75)%";
+  my @annofeat = qw(CDS rRNA tRNA tmRNA);
+  push @{$ass->[0]}, @annofeat;
   push @{$ass->[0]}, "Quality";
   for my $row (1 .. @$ass-1) {
     my $id = $ass->[$row][0];
+    # embed BWA MEM insert size results
     push @{ $ass->[$row] }, extract_insert_size("$indir/$id/$id/snps.log");
+    # embed prokka results in table
+    my %anno = (map { ($_->[0] => $_->[1]) } @{ load_tabular(-file=>"$indir/$id/prokka/$id.txt", -sep=>': ') } );
+    push @{ $ass->[$row] }, (map { $anno{$_} } @annofeat);
+    # final traffic light
     push @{$ass->[$row] }, pass_fail( $ass->[$row][1] > 1000 ? -1 : +1 );
   }
   print $fh table_to_markdown($ass,1);
 
   #...........................................................................................
   # Annotation
+
+if (0) {  
   heading($fh, "Annotation");
   my %anno;
   for my $id (@id) {
@@ -278,6 +288,7 @@ sub generate {
     }
     print $fh table_to_markdown(\@grid, 1); 
   }
+}
 
   #...........................................................................................
   # ABR
