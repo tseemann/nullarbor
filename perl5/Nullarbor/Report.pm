@@ -12,7 +12,7 @@ use List::Util qw(sum min max);
 sub heading {
   my($fh, $title) = @_;
   msg("Generating report section: $title");
-  print $fh "##[$title](#)\n"; # make H2 a link to index
+  print $fh "##$title\n"; # make H2 a link to index
 }
 
 #.................................................................................
