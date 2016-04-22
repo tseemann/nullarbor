@@ -60,17 +60,17 @@ sub generate {
 #  printf $fh "__Isolates:__ %d\n", scalar(@id);
 
   #...........................................................................................
-  # MLST
+  # MLST (old)
   
   my $mlst_legend = [
     [ "Legend", "Meaning" ],
-    [ "n", "exact intact allele" ],
-    [ "~n", "novel allele similar to n" ],
-    [ "n?", "partial match to known allele" ],
-    [ "n,m", "multiple alleles" ],
-    [ "-", "allele missing" ],
+    [ "(n)", "exact intact allele" ],
+    [ "(~n)", "novel allele similar to n" ],
+    [ "(n?)", "partial match to known allele" ],
+    [ "(n,m)", "multiple alleles" ],
+    [ "(-)", "allele missing" ],
   ];
-  
+
   my $mlst = load_tabular(-file=>"$indir/mlst.tab", -sep=>"\t", -header=>1);
 #  print STDERR Dumper($mlst);
   
@@ -87,15 +87,15 @@ sub generate {
   $mlst->[0][0] = 'Isolate';
   $mlst->[0][-1] = 'ST';
 
-  heading($fh, "MLST");
-  save_tabular("$outdir/$name.mlst.csv", $mlst, ",");
-  print $fh "Download: [$name.mlst.csv]($name.mlst.csv)\n";
-  print $fh table_to_markdown($mlst_legend, 1);
-  print $fh "<P>\n";
-  print $fh table_to_markdown($mlst, 1);
+#  heading($fh, "MLST (old)");
+#  save_tabular("$outdir/$name.mlst.csv", $mlst, ",");
+#  print $fh "Download: [$name.mlst.csv]($name.mlst.csv)\n";
+#  print $fh table_to_markdown($mlst_legend, 1);
+#  print $fh "<P>\n";
+#  print $fh table_to_markdown($mlst, 1);
 
   #...........................................................................................
-  # MLST (new)
+  # MLST
   
   my $mlst2 = load_tabular(-file=>"$indir/mlst2.tab", -sep=>"\t", -header=>0);
 
@@ -124,7 +124,12 @@ sub generate {
   # add header
   unshift @{$mlst2}, [ "Isolate", "Scheme", "Sequence<BR>Type", ("Allele")x($width-3), "Quality" ];
 
-  heading($fh, "MLST (new)");
+  heading($fh, "MLST");
+  
+  # these are the 'old style' tables for download ... FIXME (MDU legacy)
+  save_tabular("$outdir/$name.mlst.csv", $mlst, ",");   
+  print $fh "Download: [$name.mlst.csv]($name.mlst.csv)\n";
+  
   print $fh table_to_markdown($mlst_legend, 1);
   print $fh "<P>\n";
   print $fh table_to_markdown($mlst2, 1);
