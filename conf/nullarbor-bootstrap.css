@@ -1,6 +1,8 @@
 
 SVG {
-  width: device-width;
+  width: 100%;
+  height: auto;
+  font-family: sans-serif;
 }
 
 H1 {

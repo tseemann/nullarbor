@@ -4,7 +4,6 @@ extends 'Nullarbor::Module';
 
 use Data::Dumper;
 use Bio::SeqIO;
-use File::Slurp;
 
 #...........................................................................................
 
@@ -21,9 +20,10 @@ sub html {
 #  my $name = $self->name;
   my $html = '';
 
-  
   $html .= $self->download_links("core.aln", "tree.newick");
-  $html .= "<p class='container-fluid'>\n" . read_file("$indir/tree.svg") . "<p>\n";
+  
+  my $svg = $self->load_svg("$indir/tree.svg");
+  $html .= "<p class='container-fluid'>\n$svg\n</p>\n";
 
   my $aln = Bio::SeqIO->new(-file=>"$indir/core.aln", -format=>'fasta');
   $aln = $aln->next_seq;

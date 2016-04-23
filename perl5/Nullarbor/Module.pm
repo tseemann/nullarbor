@@ -5,6 +5,7 @@ use Nullarbor::Logger qw(msg err);
 use Nullarbor::Tabular;
 use File::Copy;
 use File::Slurp;
+use Data::Dumper;
 
 #.................................................................................
 
@@ -83,6 +84,34 @@ sub pass_fail {
 }
 
 #.................................................................................
+# load a .SVG file and fix headers to work better as inline <SVG>
+# FIXME: should probably use XML::Simple or another module....
+# https://css-tricks.com/scale-svg/
+# ?xml version='1.0' standalone='no'?><!DOCTYPE svg PUBLIC '-//W3C//DTD SVG
+# 1.1//EN' 'http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd'><svg
+# width='1024' height='136' version='1.1' xmlns='http://www.w3.org/2000/svg'
+# xmlns:xlink='http://www.w3.org/1999/xlink' >
+
+sub load_svg {
+  my($self, $svg_fn) = @_;
+
+  my $xml = read_file( $svg_fn );
+    
+  $xml =~ m/\bwidth=['"]?(\d+)['"]?/;
+  my $w = $1 || 1024;
+
+  $xml =~ m/\bheight=['"]?(\d+)['"]?/;
+  my $h = $1 || 512;
+  
+  $xml =~ s/^.*?<svg/<svg viewBox="0 0 $w $h"/;
+
+  return $xml;
+}
+
+#.................................................................................
 
 1;
+
+
+
 

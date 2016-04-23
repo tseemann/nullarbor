@@ -26,16 +26,16 @@ sub html {
   return unless -r $pan_ss and -r $pan_png;
   
   my $html = '';
+
+  copy($pan_png, "$outdir/pan.png");
+  $html .= "<img src='pan.png'>\n";
   
   my $ss = Nullarbor::Tabular::load(-file=>$pan_ss, -sep=>"\t");
   unshift @$ss, [ "Ortholog class", "Definition", "Count" ];
   $html .= $self->matrix_to_html($ss, 1);
  
-  copy($pan_png, "$outdir/pan.png");
-  $html .= "<img src='pan.png'>\n";
-
-  copy($acc_svg, "$outdir/acc.svg");
-  $html .= "<img src='acc.svg'>\n";
+  my $svg = $self->load_svg($acc_svg);
+  $html .= "<p class='container-fluid'>\n$svg\n</p>\n";
   
   return $html;
 }
