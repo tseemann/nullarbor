@@ -22,6 +22,8 @@ my %getver = (
   'Trimmomatic' => 'echo',
   'SPAdes' => 'spades.py --help',
   'BWA MEM' => 'bwa 2>&1 | grep ^Version',
+  'FastTree' => 'FastTree',
+  'Newick-Utils' => 'echo',
 );
 
 #...........................................................................................
