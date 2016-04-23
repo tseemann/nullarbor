@@ -128,7 +128,10 @@ Submit problems to the [Issues Page](https://github.com/tseemann/nullarbor/issue
 
 ## Citation
 
-Nullarbor is not published yet. Please use this URL: https://github.com/tseemann/nullarbor
+Seemann T, Goncalves de Silva A, Bulach DM, Kwong JC, Howden BJ.
+*Nullarbor* 
+**Github**
+https://github.com/tseemann/nullarbor
 
 ## Example report
 
