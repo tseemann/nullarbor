@@ -40,10 +40,10 @@ my $ref = '';
 my $mlst = '';
 my $input = '';
 my $outdir = '';
-my $cpus = num_cpus();
+my $cpus = max( 1, int( 0.5 * num_cpus()) );
 my $force = 0;
 my $run = 0;
-my $report = 0;
+#my $report = 0;
 my $indir = '';
 my $name = '';
 my $accurate = 0;
@@ -66,7 +66,7 @@ GetOptions(
   "outdir=s" => \$outdir,
   "force!"   => \$force,
   "run!"     => \$run,
-  "report!"  => \$report,
+#  "report!"  => \$report,
   "accurate!"=> \$accurate,
   "indir=s"  => \$indir,
   "name=s"   => \$name,
@@ -84,15 +84,15 @@ if ($check) {
   exit(0);
 }
 
-if ($report) {
-  msg("Running in --report mode");
-  $indir or err("Please set the --indir folder to a $EXE output folder");
-  $outdir or err("Please set the --outdir output folder.");
-  $name or err("Please specify a report --name");
-  make_path($outdir) unless -f $outdir;
-  Nullarbor::Report->generate($indir, $outdir, $name);
-  exit;
-}
+#if ($report) {
+#  msg("Running in --report mode");
+#  $indir or err("Please set the --indir folder to a $EXE output folder");
+#  $outdir or err("Please set the --outdir output folder.");
+#  $name or err("Please specify a report --name");
+#  make_path($outdir) unless -f $outdir;
+#  Nullarbor::Report->generate($indir, $outdir, $name);
+#  exit;
+#}
 
 $name or err("Please provide a --name for the project.");
 $name =~ m{/|\s} and err("The --name is not allowed to have spaces or slashes in it.");
@@ -206,14 +206,14 @@ $make{'report'} = {
   DEP => [ 'report/index.html' ],
 };
 
-$make{'report/index.html'} = {
-  DEP => 'report/index.md',
-  CMD => "pandoc --standalone --toc --from markdown_github+pandoc_title_block --to html --css 'nullarbor.css' $make_dep > $make_target"
-};
+#$make{'report/index.html'} = {
+#  DEP => 'report/index.md',
+#  CMD => "pandoc --standalone --toc --from markdown_github+pandoc_title_block --to html --css 'nullarbor.css' $make_dep > $make_target"
+#};
 
-$make{'report/index.md'} = {
+$make{'report/index.html'} = {
   DEP => [ $REF, qw(yields kraken abricate mlst.tab mlst2.tab denovo.tab core.aln tree.gif distances.tab roary) ],
-  CMD => "$FindBin::RealBin/nullarbor.pl --name $name --report --indir $outdir --outdir $outdir/report",
+  CMD => "$FindBin::RealBin/nullarbor-report.pl --name $name --indir $outdir --outdir $outdir/report",
 };
 
 if (my $dir = $cfg->{publish}) {
@@ -561,8 +561,10 @@ sub write_makefile {
 
 #-------------------------------------------------------------------
 sub usage {
+  print "NAME\n  $EXE $VERSION\n";
+  print "SYNOPSIS\n  Reads to reports for public health microbiology\n";
+  print "AUTHOR\n  $AUTHOR\n";
   print "USAGE\n";
-#  print "(1) Analyse samples\n";
   print "  $EXE [options] --name NAME --mlst SCHEME --ref REF.FA/GBK --input INPUT.TAB --outdir DIR\n";
   print "    --check     Check dependencies only\n";
   print "    --accurate  Invest more effort in the de novo assembly\n";
@@ -571,8 +573,6 @@ sub usage {
   print "    --quiet     No output\n";
   print "    --verbose   More output\n";
   print "    --conf      Config file ($conf_file)\n";
-#  print "(2) Generate report  ** NOTE: done automatically by (1) - see report/ folder **\n";
-#  print "  $EXE [options] --indir DIR --outdir WEBDIR --name JOBNAME\n";
   print "    --version   Print version and exit\n";
   exit;
 }
@@ -587,11 +587,11 @@ sub version {
 sub check_deps { 
   my($self) = @_;
 
-  require_exe( qw'convert pandoc head cat install env nl date' );
+  require_exe( qw'convert head cat install env nl' );
   require_exe( qw'trimmomatic prokka roary kraken snippy mlst abricate megahit spades.py nw_order nw_display FastTree' );
   require_exe( qw'fq fa afa-pairwise.pl any2fasta.pl roary2svg.pl' );
 
-  require_perlmod( qw'Data::Dumper Moo Bio::SeqIO File::Copy Time::Piece YAML::Tiny' );
+  require_perlmod( qw'Data::Dumper Moo Bio::SeqIO File::Copy Time::Piece YAML::Tiny File::Slurp File::Copy' );
 
   require_version('megahit', 1.0);
   require_version('snippy', 2.5);
