@@ -190,6 +190,7 @@ my $zcat = 'gzip -f -c -d';
 my $CPUS = '$(CPUS)';
 my $NW_DISPLAY = "nw_display ".($cfg->{nw_display} || '');
 my $SNIPPY = '$(SNIPPY)';
+my $DELETE = "rm -v -f";
 
 $make{'.DEFAULT'} = { DEP => 'all' };
 
@@ -335,6 +336,17 @@ for my $s ($set->isolates) {
     DEP => [ @clipped ],
     CMD => "mash sketch -o $id/$id $make_deps",
   };
+  $make{"$id/cortex.fa"} = { 
+#    DEP => [ @clipped ],
+    DEP => [ @reads ],
+    CMD => [
+#      "mccortex31 build -m 4G -t $CPUS -s $id -k 31 -2 $clipped[0]:$clipped[1] $id/raw.ctx",
+      "mccortex31 build -m 4G -t $CPUS -s $id -k 31 -2 $reads[0]:$reads[1] $id/raw.ctx",
+      "mccortex31 clean -m 4G -t $CPUS -o $id/clean.ctx $id/raw.ctx",
+      "mccortex31 unitigs -m 4G -t $CPUS $id/clean.ctx > $make_target",
+      "$DELETE $id/{clean,raw}.ctx",
+    ],
+  };
 }
 close ISOLATES;
 #END per isolate
@@ -362,6 +374,10 @@ $make{"prokka"} = {
 
 $make{"mash"} = { 
   DEP => [ map { "$_/$_.msh" } $set->ids ],
+};
+
+$make{"cortex"} = { 
+  DEP => [ map { "$_/cortex.fa" } $set->ids ],
 };
 
 $make{"clip"} = { 
@@ -493,13 +509,12 @@ $make{'panic'} = {
   CMD => "\@cat $make_dep",
 };
 
-my $DELETE = "rm -v -f";
 $make{'space'} = {
   CMD => [
 #    "$DELETE core.full.aln core.nogaps.aln",
     "$DELETE core.full.aln core.vcf",
     "$DELETE roary/*.{tab,embl,dot,Rtab}",
-    (map { "$DELETE $_/prokka/*.{err,ffn,fsa,sqn,tbl} $_/$_/*consensus*fa $_/$_/*.{vcf,vcf.gz,vcf.tbi,bed,bam,bai,html}" } $set->ids),
+    (map { "$DELETE $_/*.ctx $_/prokka/*.{err,ffn,fsa,sqn,tbl} $_/$_/*consensus*fa $_/$_/*.{vcf,vcf.gz,vcf.tbi,bed,bam,bai,html}" } $set->ids),
   ],
 };
 
