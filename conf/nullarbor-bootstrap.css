@@ -36,11 +36,11 @@ A.file-download {
 //  border: 1pt dotted gray;
 }
 
+UL.pagination {
+  font-size: smaller;
+}
+
 TH {
-/*
-  background: RoyalBlue;
-  color: white;
-*/
   background: LightGrey;
   color: Black;
 }

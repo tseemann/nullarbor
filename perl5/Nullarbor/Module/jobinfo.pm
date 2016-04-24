@@ -31,7 +31,7 @@ sub html {
       tt( $self->indir ),
     ],
   ];
-  return $self->matrix_to_html($meta_data, 1);
+  return $self->matrix_to_html($meta_data, 1);   # 0 = no fancy sorting
 }
 
 #...........................................................................................

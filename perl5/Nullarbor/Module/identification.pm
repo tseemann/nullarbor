@@ -47,7 +47,7 @@ sub html {
     ];  # _italics_ taxa names
   }
 #  print Dumper(\@spec);
-  return $self->matrix_to_html(\@spec, 1);
+  return $self->matrix_to_html(\@spec);
 }
 
 #...........................................................................................

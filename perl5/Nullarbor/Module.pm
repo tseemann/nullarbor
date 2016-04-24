@@ -30,17 +30,22 @@ sub download_links {
 #.................................................................................
 
 sub matrix_to_html {
-  my($self, $matrix, $header, $footer) = @_;
-  my $html = "<table class='table table-condensed table-bordered table-hover'>\n";
+  my($self, $matrix, $plain) = @_;
+  my $id = $self->id;
+  # choose between regular Bootstrap tables or DataTables
+  my $class = $plain ? "table table-bordered table-condensed" : "display compact table-sortable";
+  my $html = "<table id='$id' class='$class'>\n<thead>\n";
   my $row_no=0;
-  for my $row (@$matrix) {
+  for my $row (@$matrix) {   
     $html .= "<tr>\n";
-    my $td = (($header && $row_no==0) or ($footer && $row_no==$#$matrix)) ? "<th>" : "<td>";
+    my $td = $row_no==0 ? "<th>" : "<td>";
     for my $col (@$row) {
       $html .= "$td$col\n";
     }
+    $html .= "</thead>\n<tbody>\n" if $row_no==0;
     $row_no++;
   }
+  $html .= "</tbody>";
 
   my $csv_fn = $self->id.".csv";
   write_file( $self->outdir."/$csv_fn", $self->matrix_to_csv($matrix) );

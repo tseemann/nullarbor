@@ -38,7 +38,7 @@ sub html {
       push @{$wgs[-1]}, $self->pass_fail( $depth < 25 ? -1 : $depth < 50 ? 0 : +1 );
     }
   #  print Dumper(\@wgs);
-    return $self->matrix_to_html(\@wgs, 1);
+    return $self->matrix_to_html(\@wgs);
   }
 }
 

@@ -19,7 +19,7 @@ sub html {
     $matrix->[0][$i] = "<div class='vertical'>" . $matrix->[0][$i] . "</div>";
   }
   
-  return $self->matrix_to_html($matrix, 1, 0);  
+  return $self->matrix_to_html($matrix);  
 }
 
 #...........................................................................................

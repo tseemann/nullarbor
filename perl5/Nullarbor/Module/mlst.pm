@@ -77,7 +77,7 @@ sub html {
 #  save_tabular("$outdir/$name.mlst.csv", $mlst, ",");   
 #  print $fh "Download: [$name.mlst.csv]($name.mlst.csv)\n";
   
-  return $self->matrix_to_html($mlst2, 1);
+  return $self->matrix_to_html($mlst2);
 
 #    return $self->matrix_to_html(\@wgs, 1);
 }

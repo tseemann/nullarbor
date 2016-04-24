@@ -63,7 +63,7 @@ sub html {
     $grid[0][$i] = " <DIV CLASS='vertical'>$grid[0][$i]</DIV>";
   }
   
-  return $self->matrix_to_html(\@grid, 1);
+  return $self->matrix_to_html(\@grid);
 
 #  save_tabular("$outdir/$csv_fn", \@grid2, ",");
 }

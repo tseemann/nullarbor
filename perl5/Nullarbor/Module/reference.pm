@@ -37,7 +37,7 @@ sub html {
   push @ref, [ $VERT_DOTS, $VERT_DOTS, "(skipped ".($ncontig-$MAX_CONTIGS)." sequences)" ] if $ncontig >= $MAX_CONTIGS;
   push @ref, [ 'TOTAL', $refsize, "Total reference size in bp" ];
 
-  return $self->matrix_to_html(\@ref, 1, 1);
+  return $self->matrix_to_html(\@ref);
 }
 
 #...........................................................................................

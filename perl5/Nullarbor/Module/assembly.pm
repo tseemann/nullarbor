@@ -59,7 +59,7 @@ sub html {
     push @{$ass->[$row] }, $self->pass_fail( $bad ? -1 : +1 );
   }
   
-  return $self->matrix_to_html($ass, 1); 
+  return $self->matrix_to_html($ass); 
 }
   
 

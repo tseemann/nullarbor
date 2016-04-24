@@ -36,7 +36,7 @@ sub html {
     push @{$core->[$row]}, $self->pass_fail( $C < 0.5*$AC ? -1 : $C < 0.9*$AC ? 0 : +1 );
   }
 
-  return $self->matrix_to_html($core, 1, 1);
+  return $self->matrix_to_html($core);
 }
 
 #...........................................................................................
