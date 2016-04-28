@@ -100,7 +100,7 @@ sub pass_fail {
 sub load_svg {
   my($self, $svg_fn) = @_;
 
-  my $xml = read_file( $svg_fn );
+  my $xml = read_file( $svg_fn ) or err("Could not open SVG file: $svg_fn");
     
   $xml =~ m/\bwidth=['"]?(\d+)['"]?/;
   my $w = $1 || 1024;
