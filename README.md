@@ -128,7 +128,7 @@ Submit problems to the [Issues Page](https://github.com/tseemann/nullarbor/issue
 
 ## Citation
 
-Seemann T, Goncalves de Silva A, Bulach DM, Kwong JC, Howden BJ.
+Seemann T, Goncalves da Silva A, Bulach DM, Kwong JC, Howden BP.
 *Nullarbor* 
 **Github**
 https://github.com/tseemann/nullarbor
