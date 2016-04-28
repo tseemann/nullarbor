@@ -13,7 +13,11 @@
     <script>
     $(document).ready( function () {
       $('table.table-sortable').DataTable( {
-        "lengthMenu": [[10, 25, 100, -1], [10, 25, 100, "All"]],
+        lengthMenu: [[10, 25, 100, -1], [10, 25, 100, "All"]],
+        scrollY: '50vh',
+        scrollCollapse: true,
+        paging: false,
+        //order: [[ -1, "desc" ]],
       } );
     } );
     </script>

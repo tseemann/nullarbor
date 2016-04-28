@@ -122,7 +122,7 @@ foreach (@html) {
 my $out_fn = "$outdir/index.html";
 write_file($out_fn, @html);
 
-copy("${TEMPLATE_DIR}/nullarbor-bootstrap.css", $outdir);
+copy("${TEMPLATE_DIR}/nullarbor.css", $outdir);
 
 msg("Results in: $out_fn");
 msg("Done.");
