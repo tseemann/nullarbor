@@ -191,6 +191,8 @@ my $CPUS = '$(CPUS)';
 my $NW_DISPLAY = "nw_display ".($cfg->{nw_display} || '');
 my $SNIPPY = '$(SNIPPY)';
 my $DELETE = "rm -v -f";
+my $TEMPDIR = $cfg->{tempdir} || $ENV{TMPDIR} || '/tmp';
+msg("Will use temp folder: $TEMPDIR");
 
 $make{'.DEFAULT'} = { DEP => 'all' };
 
@@ -282,7 +284,8 @@ for my $s ($set->isolates) {
       DEP => [ @clipped ],
       CMD => [ 
         "rm -f -r $id/spades",
-        "spades.py -t $CPUS -1 $clipped[0] -2 $clipped[1] -o $id/spades --only-assembler --careful --cov-cutoff auto",
+#        "spades.py -t $CPUS -1 $clipped[0] -2 $clipped[1] -o $id/spades --only-assembler --careful",
+        "spades.py --tmp-dir '$TEMPDIR' -t $CPUS -1 $clipped[0] -2 $clipped[1] -o $id/spades --only-assembler --careful",
         "mv $id/spades/scaffolds.fasta $make_target",
         "mv $id/spades/spades.log $id/spades.log",
         "rm -f -v -r $id/spades",
