@@ -191,8 +191,10 @@ my $CPUS = '$(CPUS)';
 my $NW_DISPLAY = "nw_display ".($cfg->{nw_display} || '');
 my $SNIPPY = '$(SNIPPY)';
 my $DELETE = "rm -v -f";
+
 my $TEMPDIR = $cfg->{tempdir} || $ENV{TMPDIR} || '/tmp';
 msg("Will use temp folder: $TEMPDIR");
+my $JOBRAM = $cfg->{jobram} || undef;
 
 $make{'.DEFAULT'} = { DEP => 'all' };
 
