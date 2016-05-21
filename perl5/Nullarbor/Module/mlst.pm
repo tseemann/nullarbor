@@ -55,7 +55,8 @@ sub html {
     $row->[0] =~ s{/contigs.fa}{};
     $row->[0] =~ s/ref.fa/Reference/;
     my $ST = $row->[2];
-    my $missing = $row->[2] eq '-' ? 1E9 : sum( map { $row->[$_] =~ m/[-~?]/ ? 1 : 0 } (3 .. $#$row) );
+#    my $missing = $row->[2] eq '-' ? 1E9 : sum( map { $row->[$_] =~ m/[-~?]/ ? 1 : 0 } (3 .. $#$row) );
+    my $missing = sum( map { $row->[$_] =~ m/[-?]/ ? 1 : 0 } (3 .. $#$row) ); # not ~
     for my $i (3 .. $#$row) {
       my $g = $row->[$i];
       $g =~ s/^_//; # fix bold bug for alleles ending in _ !
@@ -66,8 +67,8 @@ sub html {
     while (@$row < $width) {
       push @$row, '.';  # padding
     }
-#    print STDERR "ST=$ST N=$ngene missing=$missing\n";
-    push @$row, $self->pass_fail( $missing==0 && $ST ne '-' ? +1 : $missing <= 1 ? 0 : -1 );
+    print STDERR "ST=$ST missing=$missing @$row\n";
+    push @$row, $self->pass_fail( $ST ne '-' ? +1 : $missing == 0 ? 0 : -1 );
   }
 
   # add header
