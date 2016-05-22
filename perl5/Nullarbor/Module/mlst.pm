@@ -67,7 +67,7 @@ sub html {
     while (@$row < $width) {
       push @$row, '.';  # padding
     }
-    print STDERR "ST=$ST missing=$missing @$row\n";
+#    print STDERR "ST=$ST missing=$missing @$row\n";
     push @$row, $self->pass_fail( $ST ne '-' ? +1 : $missing == 0 ? 0 : -1 );
   }
 
