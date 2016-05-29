@@ -1,0 +1,6 @@
+Ortholog class,Definition,Count
+Core genes,(99% <= strains <= 100%),3438
+Soft core genes,(95% <= strains < 99%),0
+Shell genes,(15% <= strains < 95%),2068
+Cloud genes,(0% <= strains < 15%),0
+Total genes,(0% <= strains <= 100%),5506
