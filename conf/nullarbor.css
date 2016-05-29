@@ -12,6 +12,11 @@ H1 {
 .nullarbor-section {
   border-top: 0.66ex dotted DarkGray;
   margin-top: 4ex;
+  width: auto;
+}
+
+A.jump-home {
+  font-size: smaller;
 }
 
 TT {
@@ -27,6 +32,7 @@ TD:first-child {
 
 TABLE {
 /*  font-size: smaller; */
+/*   width: auto; */
 }
 
 A.file-download {

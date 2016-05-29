@@ -10,16 +10,25 @@
     <script src="https://cdn.datatables.net/1.10.11/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.10.11/js/dataTables.bootstrap.min.js"></script>
 
+    <!-- Graphing library --> 
+    <!-- <script src="https://cdn.plot.ly/plotly-latest.min.js"></script> -->
+    
     <script>
     $(document).ready( function () {
       $('table.table-sortable').DataTable( {
         lengthMenu: [[10, 25, 100, -1], [10, 25, 100, "All"]],
-        scrollY: '50vh',
+        //scrollY: '50vh',
         scrollCollapse: true,
         paging: false,
+        //scrollX: true,
         //order: [[ -1, "desc" ]],
       } );
     } );
+    
+//    $('#go-plain').on('click', function () {
+//      $(this).button('XXX');
+//      $('table.table-sortable').DataTable().destroy(false);
+//    } );
     </script>
         
   </body>

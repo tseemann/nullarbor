@@ -90,8 +90,8 @@ my @html;
 push @html, scalar read_file("${TEMPLATE_DIR}/report.header.html");
 push @html, "<h1>$name</h1>\n";
 
-my @section = qw(jobinfo seqdata identification mlst resistome
-                 assembly reference core snptree snpdist pan
+my @section = qw(jobinfo seqdata identification mlst serotype resistome
+                 assembly reference core snptree snpdist snpdensity pan
                  tools about);
 
 for my $section (@section) {
@@ -105,7 +105,7 @@ for my $section (@section) {
     next;
   }
   push @html, "<div class='container-fluid nullarbor-section' id='$section'>\n<a name='$section'></a>\n" .
-              "<h2>$MAGIC".$module->name." <small><a href='#'>&#x25B2;</a></small></h2>\n" .
+              "<h2>$MAGIC".$module->name." <a href='#' class='jump-home'>&#x25B2;</a> </h2>\n" .
               $result .
               "</div>";
   # keep track of sections
