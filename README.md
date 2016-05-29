@@ -22,15 +22,16 @@ further action.
 ### Per isolate
 
 1. Clean reads
-   * remove adaptors, low quality bases and reads (Skewer)
+   * remove adaptors, low quality bases and reads (Trimmomatic)
 2. Species identification
    * k-mer analysis against known genome database (Kraken)
 3. De novo assembly
-   * Fast, confident but more contigs (MEGA-HIT)
+   * Fast mostly-good-enough assembly (MEGA-HIT)
+   * More accuratebut slower assembly (SPAdes) using `--accurate`
 4. Annotation
    * Genome annotation (Prokka)
 5. MLST
-   * From assembly (mlst)
+   * From assembly w/ automatic scheme detection (mlst)
 6. Resistome
    * From assembly (abricate)
 7. Variants
@@ -39,21 +40,12 @@ further action.
 ### Per isolate set
 
 1. Core genome SNPs
-   * From reads (Snippy)
-   * From contigs (ParSNP)
+   * From reads (Snippy-core)
 2. Draw tree
    * Maximum likelihood (FastTree)
    * SNP distance matrix (afa-pairwise)
 3. Report
-   * Table of isolates, yield, coverage, species, MLST (Markdown, HTML)
-
-### Planned features
-
-* Identify outliers 
-* Automatically choose appropriate reference genome
-* Automatically choose MLST scheme
-* Include some sparse closed references in tree
-* Pre-overlap reads with PEAR to improve assembly
+   * Table of isolates, yield, coverage, species, MLST (HTML + Plotly.JS + DataTables)
 
 ## Installation
 
@@ -62,7 +54,7 @@ Please first install the [Linuxbrew](https://github.com/Homebrew/linuxbrew) pack
     brew tap homebrew/science
     brew tap chapmanb/cbl
     brew tap tseemann/bioinformatics-linux
-    brew install nullarbor
+    brew install nullarbor --HEAD
 
 ## Usage
 
@@ -71,13 +63,13 @@ Please first install the [Linuxbrew](https://github.com/Homebrew/linuxbrew) pack
 This is a file, one line per isolate, with 3 tab separated columns: ID, R1, R2.
 
     Isolate1	/data/reads/Isolate1_R1.fq.gz	/data/reads/Isolate2_R1.fq.gz
-    Isolate2	/data/reads/Isolate2_R1.fq	/data/reads/Isolate2_R2.fq
+    Isolate2	/data/reads/Isolate2_R1.fq      /data/reads/Isolate2_R2.fq
     Isolate3	/data/old/s_3_1_sequence.txt	/data/old/s_3_2_sequence.txt
     Isolate3b	/data/reads/Isolate3b_R1.fastq	/data/reads/Isolate3b_R2.fastq
 
 ### Choose a reference genome (FASTA, GENBANK)
 
-This is just a regular FASTA file. Try and choose a reference phylogenomically similar to your isolates.    
+This is just a regular FASTA or GENBANK file. Try and choose a reference phylogenomically similar to your isolates.    
 If you use a GENBANK or EMBL file the annotations will be used to annotate SNPs by Snippy.
 
 ### Generate the run folder
@@ -136,3 +128,4 @@ https://github.com/tseemann/nullarbor
 ## Example report
 
 FIXME
+
