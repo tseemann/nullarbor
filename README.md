@@ -15,6 +15,10 @@ the strains.  All this information is then combined with epidemiological
 information (metadata for each sample) to assess the situation and inform
 further action.
 
+## Example reports
+
+Feel free to browse some [example reports](http://tseemann.github.io/nullarbor/).
+
 ## Pipeline
 
 ### Per isolate
@@ -126,7 +130,4 @@ Seemann T, Goncalves da Silva A, Bulach DM, Schultz MB, Kwong JC, Howden BP.
 *Nullarbor* 
 **Github** https://github.com/tseemann/nullarbor
 
-## Example report
-
-FIXME
 
