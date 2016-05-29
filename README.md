@@ -2,8 +2,6 @@
 
 Pipeline to generate complete public health microbiology reports from sequenced isolates
 
-By Torsten Seemann (@torstenseemann)
-
 ## Motivation
 
 Public health microbiology labs receive batches of bacterial isolates
@@ -118,12 +116,15 @@ element of Australian irony in the name.
 
 Submit problems to the [Issues Page](https://github.com/tseemann/nullarbor/issues)
 
+## License
+
+[GPL 2.0](https://raw.githubusercontent.com/tseemann/nullarbor/master/LICENSE)
+
 ## Citation
 
-Seemann T, Goncalves da Silva A, Bulach DM, Kwong JC, Howden BP.
+Seemann T, Goncalves da Silva A, Bulach DM, Schultz MB, Kwong JC, Howden BP.
 *Nullarbor* 
-**Github**
-https://github.com/tseemann/nullarbor
+**Github** https://github.com/tseemann/nullarbor
 
 ## Example report
 
