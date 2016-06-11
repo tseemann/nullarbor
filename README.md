@@ -116,7 +116,7 @@ do this instead:
 
     firefox OUTDIR/report/index.html
 
-An example report will be made available soon.
+Here are some [example reports](http://tseemann.github.io/nullarbor/).
 
 ### See some options
 
