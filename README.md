@@ -46,7 +46,9 @@ Feel free to browse some [example reports](http://tseemann.github.io/nullarbor/)
 2. Draw tree
    * Maximum likelihood (FastTree)
    * SNP distance matrix (afa-pairwise)
-3. Report
+3. Pan genome
+   * From annotated contigs (Roary)
+4. Report
    * Table of isolates, yield, coverage, species, MLST (HTML + Plotly.JS + DataTables)
 
 ## Installation
