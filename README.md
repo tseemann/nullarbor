@@ -60,6 +60,21 @@ Please first install the [Linuxbrew](https://github.com/Homebrew/linuxbrew) pack
     brew tap tseemann/bioinformatics-linux
     brew install nullarbor --HEAD
 
+You need to install a [Kraken](https://ccb.jhu.edu/software/kraken/) database.
+
+    wget https://ccb.jhu.edu/software/kraken/dl/minikraken.tgz
+    
+Choose a folder (say `$HOME`) to put it in, you need ~4 GB free:
+
+    tar -C $HOME minikraken.tgz
+
+Then add the following to your `$HOME/.bashrc` so Nullarbor can use it:
+
+    export KRAKEN_DB_PATH=$HOME/minikraken
+
+You should be good to go now. When you first run Nullarbor it will let you
+know of any missing dependencies or databases.
+
 ## Usage
 
 ### Create a 'samples' file (TAB)
