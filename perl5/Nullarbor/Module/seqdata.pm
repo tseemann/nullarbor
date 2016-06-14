@@ -34,7 +34,8 @@ sub html {
       $t->[0][1] = $id;
       push @wgs, [ map { $_->[1] } @$t ];
       my $depth = $wgs[-1][-1];
-      $depth =~ s/\D+$//;
+      $depth =~ s/\D+$//; # remove 'x' suffix
+      $wgs[-1][-1] = $depth;
       push @{$wgs[-1]}, $self->pass_fail( $depth < 25 ? -1 : $depth < 50 ? 0 : +1 );
     }
   #  print Dumper(\@wgs);
