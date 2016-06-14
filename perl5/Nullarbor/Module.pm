@@ -40,6 +40,7 @@ sub matrix_to_html {
     $html .= "<tr>\n";
     my $td = $row_no==0 ? "<th>" : "<td>";
     for my $col (@$row) {
+      $col = '' if not defined $col;
       $html .= "$td$col\n";
     }
     $html .= "</thead>\n<tbody>\n" if $row_no==0;
