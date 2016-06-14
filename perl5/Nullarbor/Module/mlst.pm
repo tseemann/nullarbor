@@ -61,7 +61,7 @@ sub html {
       my $g = $row->[$i];
       $g =~ s/^_//; # fix bold bug for alleles ending in _ !
       $g =~ s/_$//;
-      my $class = $g =~ m/[-?]/ ? "missing" : $g =~ m/~/ ? "novel" : "known";
+      my $class = $g =~ m/[-?,]/ ? "missing" : $g =~ m/~/ ? "novel" : "known";
       $row->[$i] = "<SPAN CLASS='allele $class'>$g</SPAN>";
     }
     while (@$row < $width) {
