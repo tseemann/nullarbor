@@ -53,6 +53,16 @@ Feel free to browse some [example reports](http://tseemann.github.io/nullarbor/)
 
 ## Installation
 
+### Warning
+
+Installing Nullarbor is not easy. It is a complex pipeline, and depends on lots of external
+tools and databases. If you have access to cloud or virtual machines you may wish to consider
+using the [Genomics Virtual Lab image](http://genome.edu.au/) or the 
+[Ubuntu 14.04 installer](https://gist.github.com/stephenturner/005d4e4e322b8cf5b991d1d357527859)
+by @stephenturner.
+
+### Local installation
+
 Please first install the [Linuxbrew](https://github.com/Homebrew/linuxbrew) package manner, then:
 
     brew tap homebrew/science
@@ -70,7 +80,7 @@ Choose a folder (say `$HOME`) to put it in, you need ~4 GB free:
 
 Then add the following to your `$HOME/.bashrc` so Nullarbor can use it:
 
-    export KRAKEN_DB_PATH=$HOME/minikraken
+    export KRAKEN_DB_PATH=$HOME/minikraken_20141208
 
 You should be good to go now. When you first run Nullarbor it will let you
 know of any missing dependencies or databases.
@@ -110,7 +120,7 @@ The `-C` option just means to change into the `/home/maria/listeria/nullarbor` f
 do this instead:
 
     cd OUTDIR
-    make 
+    make -j 4
 
 ### View the report
 
