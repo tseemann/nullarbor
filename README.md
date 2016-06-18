@@ -21,6 +21,13 @@ Feel free to browse some [example reports](http://tseemann.github.io/nullarbor/)
 
 ## Pipeline
 
+### Limitations
+
+Nullarbor currently only supports Illumina paired-end sequencing data;
+single end reads, from either Illumina or Ion Torrent are not supported.
+All jobs are run on a single compute node; there is no support yet for
+distributing the work across a high performance cluster.
+
 ### Per isolate
 
 1. Clean reads
