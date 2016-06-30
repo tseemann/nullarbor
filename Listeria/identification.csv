@@ -1,0 +1,19 @@
+Isolate,#1 Match,%,#2 Match,%,#3 Match,%,#4 Match,%,Quality
+OFN-57,Listeria monocytogenes,95.98,unclassified,0.70,Salmonella enterica,0.06,Listeria innocua,0.04,&#10004;
+OFN-61,Listeria monocytogenes,95.43,unclassified,0.66,Listeria innocua,0.14,Salmonella enterica,0.09,&#10004;
+OFN-55,Listeria monocytogenes,94.74,unclassified,1.33,Listeria innocua,0.19,Salmonella enterica,0.06,&#10004;
+OFN-62,Listeria monocytogenes,94.50,unclassified,1.38,Listeria innocua,0.20,Salmonella enterica,0.12,&#10004;
+OFN-60,Listeria monocytogenes,94.88,unclassified,0.91,Listeria innocua,0.19,Salmonella enterica,0.06,&#10004;
+OFN-58,Listeria monocytogenes,94.00,unclassified,1.03,Listeria innocua,0.30,Salmonella enterica,0.19,&#10004;
+OFN-01,Listeria monocytogenes,93.90,unclassified,1.20,Listeria innocua,0.51,Listeria phage LP-101,0.04,&#10004;
+OFN-04,Listeria monocytogenes,94.43,unclassified,0.71,Listeria innocua,0.27,Listeria phage LP-101,0.03,&#10004;
+OFN-59,Listeria monocytogenes,95.20,unclassified,0.92,Listeria innocua,0.17,Salmonella enterica,0.09,&#10004;
+OFN-64,Listeria monocytogenes,95.63,unclassified,0.84,Listeria innocua,0.18,Listeria phage LP-101,0.02,&#10004;
+OFN-65,Listeria monocytogenes,95.55,unclassified,1.01,Listeria innocua,0.26,Lactococcus lactis,0.03,&#10004;
+OFN-56,Listeria monocytogenes,95.08,unclassified,0.80,Listeria innocua,0.19,Salmonella enterica,0.05,&#10004;
+OFN-68,Listeria monocytogenes,95.75,unclassified,0.94,Listeria innocua,0.19,Listeria phage LP-101,0.03,&#10004;
+OFN-67,Listeria monocytogenes,95.43,unclassified,0.94,Listeria innocua,0.25,Lactococcus lactis,0.02,&#10004;
+OFN-66,Listeria monocytogenes,95.61,unclassified,0.87,Listeria innocua,0.24,Lactococcus lactis,0.02,&#10004;
+OFN-03,Listeria monocytogenes,89.80,Listeria innocua,4.37,unclassified,0.93,Listeria welshimeri,0.03,&#10004;
+OFN-63,Listeria monocytogenes,95.98,unclassified,0.68,Listeria innocua,0.20,Salmonella enterica,0.02,&#10004;
+OFN-02,Listeria monocytogenes,89.99,unclassified,4.37,Lactococcus lactis,0.64,Listeria innocua,0.55,&#10004;

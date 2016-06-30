@@ -1,0 +1,2343 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Nullarbor</title>
+
+    <!-- Bootstrap -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Optional theme -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css" rel="stylesheet">
+
+    <!-- Datatables -->
+    <link href="https://cdn.datatables.net/1.10.11/css/jquery.dataTables.min.css" rel="stylesheet">
+
+    <!-- LOCAL STYLE -->
+    <link href="nullarbor.css" rel="stylesheet">
+
+    <!-- Graphing library -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+
+<!--
+<nav class='navbar navbar-inverse navbar-static-top'>
+  <div class='container'>
+    <p class='navbar-brand'>
+Nullarbor
+    </p>
+    <p class='navbar-text navbar-right'>Torsten Seemann</p>
+  </div>
+</nav>
+-->
+
+<div class='container-fluid'>
+<h1>OFN_Genomics_Workshop_2016</h1>
+<div class='container-fluid nullarbor-section' id='jobinfo'>
+<a name='jobinfo'></a>
+<h2><span class='dropdown'>
+<button class='btn btn-default dropdown-toggle' type='button' data-toggle='dropdown'>&#9776;</button>
+<ul class='dropdown-menu'><li><a href='#jobinfo'>Report summary</a>
+<li><a href='#seqdata'>Sequence data</a>
+<li><a href='#identification'>Species identification</a>
+<li><a href='#mlst'>MLST</a>
+<li><a href='#serotype'>Serotyping</a>
+<li><a href='#resistome'>Resistome</a>
+<li><a href='#assembly'>Assembly and annotation</a>
+<li><a href='#reference'>Reference genome</a>
+<li><a href='#core'>Core genome</a>
+<li><a href='#snptree'>Core SNP phylogeny</a>
+<li><a href='#snpdist'>Pairwise core SNP distances</a>
+<li><a href='#snpdensity'>Core SNP density</a>
+<li><a href='#pan'>Pan genome</a>
+<li><a href='#tools'>Software versions</a>
+<li><a href='#about'>About</a>
+</ul></span>
+Report summary <a href='#' class='jump-home'>&#x25B2;</a> </h2>
+<table id='jobinfo' class='table table-bordered table-condensed'>
+<thead>
+<tr>
+<th>Isolates
+<th>Author
+<th>Date
+<th>Host
+<th>Folder
+</thead>
+<tbody>
+<tr>
+<td>18
+<td><tt>tseemann</tt>
+<td>Tue Jun 14 23:04:34 2016
+<td><tt>526080-s598782</tt>
+<td><tt>/mnt/seq/JOBS/BESPOKE/ASM-NGS-Conf-2015/nullarbor</tt>
+</tbody><caption><span class='file-download-bar'>Download:  <a href='jobinfo.csv' class='file-download'>&#11015;jobinfo.csv</a></span>
+</caption>
+</table>
+</div><div class='container-fluid nullarbor-section' id='seqdata'>
+<a name='seqdata'></a>
+<h2><span class='dropdown'>
+<button class='btn btn-default dropdown-toggle' type='button' data-toggle='dropdown'>&#9776;</button>
+<ul class='dropdown-menu'><li><a href='#jobinfo'>Report summary</a>
+<li><a href='#seqdata'>Sequence data</a>
+<li><a href='#identification'>Species identification</a>
+<li><a href='#mlst'>MLST</a>
+<li><a href='#serotype'>Serotyping</a>
+<li><a href='#resistome'>Resistome</a>
+<li><a href='#assembly'>Assembly and annotation</a>
+<li><a href='#reference'>Reference genome</a>
+<li><a href='#core'>Core genome</a>
+<li><a href='#snptree'>Core SNP phylogeny</a>
+<li><a href='#snpdist'>Pairwise core SNP distances</a>
+<li><a href='#snpdensity'>Core SNP density</a>
+<li><a href='#pan'>Pan genome</a>
+<li><a href='#tools'>Software versions</a>
+<li><a href='#about'>About</a>
+</ul></span>
+Sequence data <a href='#' class='jump-home'>&#x25B2;</a> </h2>
+<table id='seqdata' class='display compact table-sortable'>
+<thead>
+<tr>
+<th>Isolate
+<th>Reads
+<th>Yield
+<th>GeeCee
+<th>MinLen
+<th>AvgLen
+<th>MaxLen
+<th>ModeLen
+<th>Phred
+<th>AvgQual
+<th>Depth
+<th>Quality
+</thead>
+<tbody>
+<tr>
+<td>OFN-57
+<td>1790450
+<td>424217861
+<td>38.5
+<td>31
+<td>236
+<td>251
+<td>251
+<td>33
+<td>34.2
+<td>134
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-61
+<td>1753462
+<td>414723445
+<td>38.6
+<td>35
+<td>236
+<td>251
+<td>251
+<td>33
+<td>35.1
+<td>131
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-55
+<td>1701422
+<td>405832153
+<td>38.4
+<td>30
+<td>238
+<td>251
+<td>251
+<td>33
+<td>34.4
+<td>128
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-62
+<td>815450
+<td>189091835
+<td>38.6
+<td>32
+<td>231
+<td>251
+<td>251
+<td>33
+<td>34.3
+<td>59
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-60
+<td>2073586
+<td>481662442
+<td>38.5
+<td>30
+<td>232
+<td>251
+<td>251
+<td>33
+<td>35.0
+<td>152
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-58
+<td>274166
+<td>65921121
+<td>38.1
+<td>35
+<td>240
+<td>251
+<td>251
+<td>33
+<td>30.1
+<td>20
+<td><span class='traffic-light fail'>&#10008;</span>
+<tr>
+<td>OFN-01
+<td>1121022
+<td>267250486
+<td>38.6
+<td>31
+<td>238
+<td>251
+<td>251
+<td>33
+<td>36.3
+<td>84
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-04
+<td>5194186
+<td>1180263352
+<td>38.6
+<td>34
+<td>227
+<td>251
+<td>251
+<td>33
+<td>35.7
+<td>373
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-59
+<td>1637386
+<td>385399586
+<td>38.5
+<td>34
+<td>235
+<td>251
+<td>251
+<td>33
+<td>34.5
+<td>121
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-64
+<td>1306728
+<td>310863899
+<td>38.7
+<td>35
+<td>237
+<td>251
+<td>251
+<td>33
+<td>36.3
+<td>98
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-65
+<td>627360
+<td>148114369
+<td>38.0
+<td>30
+<td>236
+<td>251
+<td>251
+<td>33
+<td>36.4
+<td>46
+<td><span class='traffic-light dunno'>?</span>
+<tr>
+<td>OFN-56
+<td>2187320
+<td>513849449
+<td>38.6
+<td>32
+<td>234
+<td>251
+<td>251
+<td>33
+<td>34.6
+<td>162
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-68
+<td>1000614
+<td>236891936
+<td>38.1
+<td>33
+<td>236
+<td>251
+<td>251
+<td>33
+<td>36.4
+<td>74
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-67
+<td>727196
+<td>172176858
+<td>38.3
+<td>35
+<td>236
+<td>251
+<td>251
+<td>33
+<td>36.0
+<td>54
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-66
+<td>1389632
+<td>329890768
+<td>38.3
+<td>32
+<td>237
+<td>251
+<td>251
+<td>33
+<td>36.4
+<td>104
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-03
+<td>6717352
+<td>1513486321
+<td>38.6
+<td>30
+<td>225
+<td>251
+<td>251
+<td>33
+<td>35.8
+<td>478
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-63
+<td>1003866
+<td>241303994
+<td>38.5
+<td>34
+<td>240
+<td>251
+<td>251
+<td>33
+<td>36.2
+<td>76
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-02
+<td>1108224
+<td>264208400
+<td>38.6
+<td>34
+<td>238
+<td>251
+<td>251
+<td>33
+<td>35.9
+<td>83
+<td><span class='traffic-light pass'>&#10004;</span>
+</tbody><caption><span class='file-download-bar'>Download:  <a href='seqdata.csv' class='file-download'>&#11015;seqdata.csv</a></span>
+</caption>
+</table>
+</div><div class='container-fluid nullarbor-section' id='identification'>
+<a name='identification'></a>
+<h2><span class='dropdown'>
+<button class='btn btn-default dropdown-toggle' type='button' data-toggle='dropdown'>&#9776;</button>
+<ul class='dropdown-menu'><li><a href='#jobinfo'>Report summary</a>
+<li><a href='#seqdata'>Sequence data</a>
+<li><a href='#identification'>Species identification</a>
+<li><a href='#mlst'>MLST</a>
+<li><a href='#serotype'>Serotyping</a>
+<li><a href='#resistome'>Resistome</a>
+<li><a href='#assembly'>Assembly and annotation</a>
+<li><a href='#reference'>Reference genome</a>
+<li><a href='#core'>Core genome</a>
+<li><a href='#snptree'>Core SNP phylogeny</a>
+<li><a href='#snpdist'>Pairwise core SNP distances</a>
+<li><a href='#snpdensity'>Core SNP density</a>
+<li><a href='#pan'>Pan genome</a>
+<li><a href='#tools'>Software versions</a>
+<li><a href='#about'>About</a>
+</ul></span>
+Species identification <a href='#' class='jump-home'>&#x25B2;</a> </h2>
+<table id='identification' class='display compact table-sortable'>
+<thead>
+<tr>
+<th>Isolate
+<th>#1 Match
+<th>%
+<th>#2 Match
+<th>%
+<th>#3 Match
+<th>%
+<th>#4 Match
+<th>%
+<th>Quality
+</thead>
+<tbody>
+<tr>
+<td>OFN-57
+<td><SPAN STYLE='color: black; font-weight: bold;'><span class='binomial'>Listeria monocytogenes</span></SPAN>
+<td><SPAN STYLE='color: black; font-weight: bold;'>95.98</SPAN>
+<td><SPAN STYLE='color: lightgray;'><span class='binomial'>unclassified</span></SPAN>
+<td><SPAN STYLE='color: lightgray;'>0.70</SPAN>
+<td><SPAN STYLE='color: lightgray;'><span class='binomial'>Salmonella enterica</span></SPAN>
+<td><SPAN STYLE='color: lightgray;'>0.06</SPAN>
+<td><SPAN STYLE='color: lightgray;'><span class='binomial'>Listeria innocua</span></SPAN>
+<td><SPAN STYLE='color: lightgray;'>0.04</SPAN>
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-61
+<td><SPAN STYLE='color: black; font-weight: bold;'><span class='binomial'>Listeria monocytogenes</span></SPAN>
+<td><SPAN STYLE='color: black; font-weight: bold;'>95.43</SPAN>
+<td><SPAN STYLE='color: lightgray;'><span class='binomial'>unclassified</span></SPAN>
+<td><SPAN STYLE='color: lightgray;'>0.66</SPAN>
+<td><SPAN STYLE='color: lightgray;'><span class='binomial'>Listeria innocua</span></SPAN>
+<td><SPAN STYLE='color: lightgray;'>0.14</SPAN>
+<td><SPAN STYLE='color: lightgray;'><span class='binomial'>Salmonella enterica</span></SPAN>
+<td><SPAN STYLE='color: lightgray;'>0.09</SPAN>
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-55
+<td><SPAN STYLE='color: black; font-weight: bold;'><span class='binomial'>Listeria monocytogenes</span></SPAN>
+<td><SPAN STYLE='color: black; font-weight: bold;'>94.74</SPAN>
+<td><SPAN STYLE='color: gray;'><span class='binomial'>unclassified</span></SPAN>
+<td><SPAN STYLE='color: gray;'>1.33</SPAN>
+<td><SPAN STYLE='color: lightgray;'><span class='binomial'>Listeria innocua</span></SPAN>
+<td><SPAN STYLE='color: lightgray;'>0.19</SPAN>
+<td><SPAN STYLE='color: lightgray;'><span class='binomial'>Salmonella enterica</span></SPAN>
+<td><SPAN STYLE='color: lightgray;'>0.06</SPAN>
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-62
+<td><SPAN STYLE='color: black; font-weight: bold;'><span class='binomial'>Listeria monocytogenes</span></SPAN>
+<td><SPAN STYLE='color: black; font-weight: bold;'>94.50</SPAN>
+<td><SPAN STYLE='color: gray;'><span class='binomial'>unclassified</span></SPAN>
+<td><SPAN STYLE='color: gray;'>1.38</SPAN>
+<td><SPAN STYLE='color: lightgray;'><span class='binomial'>Listeria innocua</span></SPAN>
+<td><SPAN STYLE='color: lightgray;'>0.20</SPAN>
+<td><SPAN STYLE='color: lightgray;'><span class='binomial'>Salmonella enterica</span></SPAN>
+<td><SPAN STYLE='color: lightgray;'>0.12</SPAN>
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-60
+<td><SPAN STYLE='color: black; font-weight: bold;'><span class='binomial'>Listeria monocytogenes</span></SPAN>
+<td><SPAN STYLE='color: black; font-weight: bold;'>94.88</SPAN>
+<td><SPAN STYLE='color: lightgray;'><span class='binomial'>unclassified</span></SPAN>
+<td><SPAN STYLE='color: lightgray;'>0.91</SPAN>
+<td><SPAN STYLE='color: lightgray;'><span class='binomial'>Listeria innocua</span></SPAN>
+<td><SPAN STYLE='color: lightgray;'>0.19</SPAN>
+<td><SPAN STYLE='color: lightgray;'><span class='binomial'>Salmonella enterica</span></SPAN>
+<td><SPAN STYLE='color: lightgray;'>0.06</SPAN>
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-58
+<td><SPAN STYLE='color: black; font-weight: bold;'><span class='binomial'>Listeria monocytogenes</span></SPAN>
+<td><SPAN STYLE='color: black; font-weight: bold;'>94.00</SPAN>
+<td><SPAN STYLE='color: gray;'><span class='binomial'>unclassified</span></SPAN>
+<td><SPAN STYLE='color: gray;'>1.03</SPAN>
+<td><SPAN STYLE='color: lightgray;'><span class='binomial'>Listeria innocua</span></SPAN>
+<td><SPAN STYLE='color: lightgray;'>0.30</SPAN>
+<td><SPAN STYLE='color: lightgray;'><span class='binomial'>Salmonella enterica</span></SPAN>
+<td><SPAN STYLE='color: lightgray;'>0.19</SPAN>
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-01
+<td><SPAN STYLE='color: black; font-weight: bold;'><span class='binomial'>Listeria monocytogenes</span></SPAN>
+<td><SPAN STYLE='color: black; font-weight: bold;'>93.90</SPAN>
+<td><SPAN STYLE='color: gray;'><span class='binomial'>unclassified</span></SPAN>
+<td><SPAN STYLE='color: gray;'>1.20</SPAN>
+<td><SPAN STYLE='color: lightgray;'><span class='binomial'>Listeria innocua</span></SPAN>
+<td><SPAN STYLE='color: lightgray;'>0.51</SPAN>
+<td><SPAN STYLE='color: lightgray;'><span class='binomial'>Listeria phage LP-101</span></SPAN>
+<td><SPAN STYLE='color: lightgray;'>0.04</SPAN>
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-04
+<td><SPAN STYLE='color: black; font-weight: bold;'><span class='binomial'>Listeria monocytogenes</span></SPAN>
+<td><SPAN STYLE='color: black; font-weight: bold;'>94.43</SPAN>
+<td><SPAN STYLE='color: lightgray;'><span class='binomial'>unclassified</span></SPAN>
+<td><SPAN STYLE='color: lightgray;'>0.71</SPAN>
+<td><SPAN STYLE='color: lightgray;'><span class='binomial'>Listeria innocua</span></SPAN>
+<td><SPAN STYLE='color: lightgray;'>0.27</SPAN>
+<td><SPAN STYLE='color: lightgray;'><span class='binomial'>Listeria phage LP-101</span></SPAN>
+<td><SPAN STYLE='color: lightgray;'>0.03</SPAN>
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-59
+<td><SPAN STYLE='color: black; font-weight: bold;'><span class='binomial'>Listeria monocytogenes</span></SPAN>
+<td><SPAN STYLE='color: black; font-weight: bold;'>95.20</SPAN>
+<td><SPAN STYLE='color: lightgray;'><span class='binomial'>unclassified</span></SPAN>
+<td><SPAN STYLE='color: lightgray;'>0.92</SPAN>
+<td><SPAN STYLE='color: lightgray;'><span class='binomial'>Listeria innocua</span></SPAN>
+<td><SPAN STYLE='color: lightgray;'>0.17</SPAN>
+<td><SPAN STYLE='color: lightgray;'><span class='binomial'>Salmonella enterica</span></SPAN>
+<td><SPAN STYLE='color: lightgray;'>0.09</SPAN>
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-64
+<td><SPAN STYLE='color: black; font-weight: bold;'><span class='binomial'>Listeria monocytogenes</span></SPAN>
+<td><SPAN STYLE='color: black; font-weight: bold;'>95.63</SPAN>
+<td><SPAN STYLE='color: lightgray;'><span class='binomial'>unclassified</span></SPAN>
+<td><SPAN STYLE='color: lightgray;'>0.84</SPAN>
+<td><SPAN STYLE='color: lightgray;'><span class='binomial'>Listeria innocua</span></SPAN>
+<td><SPAN STYLE='color: lightgray;'>0.18</SPAN>
+<td><SPAN STYLE='color: lightgray;'><span class='binomial'>Listeria phage LP-101</span></SPAN>
+<td><SPAN STYLE='color: lightgray;'>0.02</SPAN>
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-65
+<td><SPAN STYLE='color: black; font-weight: bold;'><span class='binomial'>Listeria monocytogenes</span></SPAN>
+<td><SPAN STYLE='color: black; font-weight: bold;'>95.55</SPAN>
+<td><SPAN STYLE='color: gray;'><span class='binomial'>unclassified</span></SPAN>
+<td><SPAN STYLE='color: gray;'>1.01</SPAN>
+<td><SPAN STYLE='color: lightgray;'><span class='binomial'>Listeria innocua</span></SPAN>
+<td><SPAN STYLE='color: lightgray;'>0.26</SPAN>
+<td><SPAN STYLE='color: lightgray;'><span class='binomial'>Lactococcus lactis</span></SPAN>
+<td><SPAN STYLE='color: lightgray;'>0.03</SPAN>
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-56
+<td><SPAN STYLE='color: black; font-weight: bold;'><span class='binomial'>Listeria monocytogenes</span></SPAN>
+<td><SPAN STYLE='color: black; font-weight: bold;'>95.08</SPAN>
+<td><SPAN STYLE='color: lightgray;'><span class='binomial'>unclassified</span></SPAN>
+<td><SPAN STYLE='color: lightgray;'>0.80</SPAN>
+<td><SPAN STYLE='color: lightgray;'><span class='binomial'>Listeria innocua</span></SPAN>
+<td><SPAN STYLE='color: lightgray;'>0.19</SPAN>
+<td><SPAN STYLE='color: lightgray;'><span class='binomial'>Salmonella enterica</span></SPAN>
+<td><SPAN STYLE='color: lightgray;'>0.05</SPAN>
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-68
+<td><SPAN STYLE='color: black; font-weight: bold;'><span class='binomial'>Listeria monocytogenes</span></SPAN>
+<td><SPAN STYLE='color: black; font-weight: bold;'>95.75</SPAN>
+<td><SPAN STYLE='color: lightgray;'><span class='binomial'>unclassified</span></SPAN>
+<td><SPAN STYLE='color: lightgray;'>0.94</SPAN>
+<td><SPAN STYLE='color: lightgray;'><span class='binomial'>Listeria innocua</span></SPAN>
+<td><SPAN STYLE='color: lightgray;'>0.19</SPAN>
+<td><SPAN STYLE='color: lightgray;'><span class='binomial'>Listeria phage LP-101</span></SPAN>
+<td><SPAN STYLE='color: lightgray;'>0.03</SPAN>
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-67
+<td><SPAN STYLE='color: black; font-weight: bold;'><span class='binomial'>Listeria monocytogenes</span></SPAN>
+<td><SPAN STYLE='color: black; font-weight: bold;'>95.43</SPAN>
+<td><SPAN STYLE='color: lightgray;'><span class='binomial'>unclassified</span></SPAN>
+<td><SPAN STYLE='color: lightgray;'>0.94</SPAN>
+<td><SPAN STYLE='color: lightgray;'><span class='binomial'>Listeria innocua</span></SPAN>
+<td><SPAN STYLE='color: lightgray;'>0.25</SPAN>
+<td><SPAN STYLE='color: lightgray;'><span class='binomial'>Lactococcus lactis</span></SPAN>
+<td><SPAN STYLE='color: lightgray;'>0.02</SPAN>
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-66
+<td><SPAN STYLE='color: black; font-weight: bold;'><span class='binomial'>Listeria monocytogenes</span></SPAN>
+<td><SPAN STYLE='color: black; font-weight: bold;'>95.61</SPAN>
+<td><SPAN STYLE='color: lightgray;'><span class='binomial'>unclassified</span></SPAN>
+<td><SPAN STYLE='color: lightgray;'>0.87</SPAN>
+<td><SPAN STYLE='color: lightgray;'><span class='binomial'>Listeria innocua</span></SPAN>
+<td><SPAN STYLE='color: lightgray;'>0.24</SPAN>
+<td><SPAN STYLE='color: lightgray;'><span class='binomial'>Lactococcus lactis</span></SPAN>
+<td><SPAN STYLE='color: lightgray;'>0.02</SPAN>
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-03
+<td><SPAN STYLE='color: black; font-weight: bold;'><span class='binomial'>Listeria monocytogenes</span></SPAN>
+<td><SPAN STYLE='color: black; font-weight: bold;'>89.80</SPAN>
+<td><SPAN STYLE='color: gray;'><span class='binomial'>Listeria innocua</span></SPAN>
+<td><SPAN STYLE='color: gray;'>4.37</SPAN>
+<td><SPAN STYLE='color: lightgray;'><span class='binomial'>unclassified</span></SPAN>
+<td><SPAN STYLE='color: lightgray;'>0.93</SPAN>
+<td><SPAN STYLE='color: lightgray;'><span class='binomial'>Listeria welshimeri</span></SPAN>
+<td><SPAN STYLE='color: lightgray;'>0.03</SPAN>
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-63
+<td><SPAN STYLE='color: black; font-weight: bold;'><span class='binomial'>Listeria monocytogenes</span></SPAN>
+<td><SPAN STYLE='color: black; font-weight: bold;'>95.98</SPAN>
+<td><SPAN STYLE='color: lightgray;'><span class='binomial'>unclassified</span></SPAN>
+<td><SPAN STYLE='color: lightgray;'>0.68</SPAN>
+<td><SPAN STYLE='color: lightgray;'><span class='binomial'>Listeria innocua</span></SPAN>
+<td><SPAN STYLE='color: lightgray;'>0.20</SPAN>
+<td><SPAN STYLE='color: lightgray;'><span class='binomial'>Salmonella enterica</span></SPAN>
+<td><SPAN STYLE='color: lightgray;'>0.02</SPAN>
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-02
+<td><SPAN STYLE='color: black; font-weight: bold;'><span class='binomial'>Listeria monocytogenes</span></SPAN>
+<td><SPAN STYLE='color: black; font-weight: bold;'>89.99</SPAN>
+<td><SPAN STYLE='color: gray;'><span class='binomial'>unclassified</span></SPAN>
+<td><SPAN STYLE='color: gray;'>4.37</SPAN>
+<td><SPAN STYLE='color: lightgray;'><span class='binomial'>Lactococcus lactis</span></SPAN>
+<td><SPAN STYLE='color: lightgray;'>0.64</SPAN>
+<td><SPAN STYLE='color: lightgray;'><span class='binomial'>Listeria innocua</span></SPAN>
+<td><SPAN STYLE='color: lightgray;'>0.55</SPAN>
+<td><span class='traffic-light pass'>&#10004;</span>
+</tbody><caption><span class='file-download-bar'>Download:  <a href='identification.csv' class='file-download'>&#11015;identification.csv</a></span>
+</caption>
+</table>
+</div><div class='container-fluid nullarbor-section' id='mlst'>
+<a name='mlst'></a>
+<h2><span class='dropdown'>
+<button class='btn btn-default dropdown-toggle' type='button' data-toggle='dropdown'>&#9776;</button>
+<ul class='dropdown-menu'><li><a href='#jobinfo'>Report summary</a>
+<li><a href='#seqdata'>Sequence data</a>
+<li><a href='#identification'>Species identification</a>
+<li><a href='#mlst'>MLST</a>
+<li><a href='#serotype'>Serotyping</a>
+<li><a href='#resistome'>Resistome</a>
+<li><a href='#assembly'>Assembly and annotation</a>
+<li><a href='#reference'>Reference genome</a>
+<li><a href='#core'>Core genome</a>
+<li><a href='#snptree'>Core SNP phylogeny</a>
+<li><a href='#snpdist'>Pairwise core SNP distances</a>
+<li><a href='#snpdensity'>Core SNP density</a>
+<li><a href='#pan'>Pan genome</a>
+<li><a href='#tools'>Software versions</a>
+<li><a href='#about'>About</a>
+</ul></span>
+MLST <a href='#' class='jump-home'>&#x25B2;</a> </h2>
+<table id='mlst' class='display compact table-sortable'>
+<thead>
+<tr>
+<th>Isolate
+<th>Scheme
+<th>Sequence<BR>Type
+<th>Allele
+<th>Allele
+<th>Allele
+<th>Allele
+<th>Allele
+<th>Allele
+<th>Allele
+<th>Quality
+</thead>
+<tbody>
+<tr>
+<td>OFN-01
+<td>lmonocytogenes
+<td>5
+<td><SPAN CLASS='allele known'>abcZ(2)</SPAN>
+<td><SPAN CLASS='allele known'>bglA(1)</SPAN>
+<td><SPAN CLASS='allele known'>cat(11)</SPAN>
+<td><SPAN CLASS='allele known'>dapE(3)</SPAN>
+<td><SPAN CLASS='allele known'>dat(3)</SPAN>
+<td><SPAN CLASS='allele known'>ldh(1)</SPAN>
+<td><SPAN CLASS='allele known'>lhkA(7)</SPAN>
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-02
+<td>lmonocytogenes
+<td>5
+<td><SPAN CLASS='allele known'>abcZ(2)</SPAN>
+<td><SPAN CLASS='allele known'>bglA(1)</SPAN>
+<td><SPAN CLASS='allele known'>cat(11)</SPAN>
+<td><SPAN CLASS='allele known'>dapE(3)</SPAN>
+<td><SPAN CLASS='allele known'>dat(3)</SPAN>
+<td><SPAN CLASS='allele known'>ldh(1)</SPAN>
+<td><SPAN CLASS='allele known'>lhkA(7)</SPAN>
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-03
+<td>lmonocytogenes
+<td>-
+<td><SPAN CLASS='allele known'>abcZ(2)</SPAN>
+<td><SPAN CLASS='allele known'>bglA(1)</SPAN>
+<td><SPAN CLASS='allele missing'>cat(11,83)</SPAN>
+<td><SPAN CLASS='allele known'>dapE(3)</SPAN>
+<td><SPAN CLASS='allele missing'>dat(3,20)</SPAN>
+<td><SPAN CLASS='allele missing'>ldh(9?)</SPAN>
+<td><SPAN CLASS='allele known'>lhkA(7)</SPAN>
+<td><span class='traffic-light fail'>&#10008;</span>
+<tr>
+<td>OFN-04
+<td>lmonocytogenes
+<td>5
+<td><SPAN CLASS='allele known'>abcZ(2)</SPAN>
+<td><SPAN CLASS='allele known'>bglA(1)</SPAN>
+<td><SPAN CLASS='allele known'>cat(11)</SPAN>
+<td><SPAN CLASS='allele known'>dapE(3)</SPAN>
+<td><SPAN CLASS='allele known'>dat(3)</SPAN>
+<td><SPAN CLASS='allele known'>ldh(1)</SPAN>
+<td><SPAN CLASS='allele known'>lhkA(7)</SPAN>
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-55
+<td>lmonocytogenes
+<td>5
+<td><SPAN CLASS='allele known'>abcZ(2)</SPAN>
+<td><SPAN CLASS='allele known'>bglA(1)</SPAN>
+<td><SPAN CLASS='allele known'>cat(11)</SPAN>
+<td><SPAN CLASS='allele known'>dapE(3)</SPAN>
+<td><SPAN CLASS='allele known'>dat(3)</SPAN>
+<td><SPAN CLASS='allele known'>ldh(1)</SPAN>
+<td><SPAN CLASS='allele known'>lhkA(7)</SPAN>
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-56
+<td>lmonocytogenes
+<td>-
+<td><SPAN CLASS='allele known'>abcZ(2)</SPAN>
+<td><SPAN CLASS='allele missing'>bglA(9?)</SPAN>
+<td><SPAN CLASS='allele known'>cat(11)</SPAN>
+<td><SPAN CLASS='allele known'>dapE(3)</SPAN>
+<td><SPAN CLASS='allele known'>dat(3)</SPAN>
+<td><SPAN CLASS='allele known'>ldh(1)</SPAN>
+<td><SPAN CLASS='allele known'>lhkA(7)</SPAN>
+<td><span class='traffic-light fail'>&#10008;</span>
+<tr>
+<td>OFN-57
+<td>lmonocytogenes
+<td>5
+<td><SPAN CLASS='allele known'>abcZ(2)</SPAN>
+<td><SPAN CLASS='allele known'>bglA(1)</SPAN>
+<td><SPAN CLASS='allele known'>cat(11)</SPAN>
+<td><SPAN CLASS='allele known'>dapE(3)</SPAN>
+<td><SPAN CLASS='allele known'>dat(3)</SPAN>
+<td><SPAN CLASS='allele known'>ldh(1)</SPAN>
+<td><SPAN CLASS='allele known'>lhkA(7)</SPAN>
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-58
+<td>lmonocytogenes
+<td>5
+<td><SPAN CLASS='allele known'>abcZ(2)</SPAN>
+<td><SPAN CLASS='allele known'>bglA(1)</SPAN>
+<td><SPAN CLASS='allele known'>cat(11)</SPAN>
+<td><SPAN CLASS='allele known'>dapE(3)</SPAN>
+<td><SPAN CLASS='allele known'>dat(3)</SPAN>
+<td><SPAN CLASS='allele known'>ldh(1)</SPAN>
+<td><SPAN CLASS='allele known'>lhkA(7)</SPAN>
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-59
+<td>lmonocytogenes
+<td>5
+<td><SPAN CLASS='allele known'>abcZ(2)</SPAN>
+<td><SPAN CLASS='allele known'>bglA(1)</SPAN>
+<td><SPAN CLASS='allele known'>cat(11)</SPAN>
+<td><SPAN CLASS='allele known'>dapE(3)</SPAN>
+<td><SPAN CLASS='allele known'>dat(3)</SPAN>
+<td><SPAN CLASS='allele known'>ldh(1)</SPAN>
+<td><SPAN CLASS='allele known'>lhkA(7)</SPAN>
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-60
+<td>lmonocytogenes
+<td>5
+<td><SPAN CLASS='allele known'>abcZ(2)</SPAN>
+<td><SPAN CLASS='allele known'>bglA(1)</SPAN>
+<td><SPAN CLASS='allele known'>cat(11)</SPAN>
+<td><SPAN CLASS='allele known'>dapE(3)</SPAN>
+<td><SPAN CLASS='allele known'>dat(3)</SPAN>
+<td><SPAN CLASS='allele known'>ldh(1)</SPAN>
+<td><SPAN CLASS='allele known'>lhkA(7)</SPAN>
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-61
+<td>lmonocytogenes
+<td>5
+<td><SPAN CLASS='allele known'>abcZ(2)</SPAN>
+<td><SPAN CLASS='allele known'>bglA(1)</SPAN>
+<td><SPAN CLASS='allele known'>cat(11)</SPAN>
+<td><SPAN CLASS='allele known'>dapE(3)</SPAN>
+<td><SPAN CLASS='allele known'>dat(3)</SPAN>
+<td><SPAN CLASS='allele known'>ldh(1)</SPAN>
+<td><SPAN CLASS='allele known'>lhkA(7)</SPAN>
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-62
+<td>lmonocytogenes
+<td>5
+<td><SPAN CLASS='allele known'>abcZ(2)</SPAN>
+<td><SPAN CLASS='allele known'>bglA(1)</SPAN>
+<td><SPAN CLASS='allele known'>cat(11)</SPAN>
+<td><SPAN CLASS='allele known'>dapE(3)</SPAN>
+<td><SPAN CLASS='allele known'>dat(3)</SPAN>
+<td><SPAN CLASS='allele known'>ldh(1)</SPAN>
+<td><SPAN CLASS='allele known'>lhkA(7)</SPAN>
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-63
+<td>lmonocytogenes
+<td>5
+<td><SPAN CLASS='allele known'>abcZ(2)</SPAN>
+<td><SPAN CLASS='allele known'>bglA(1)</SPAN>
+<td><SPAN CLASS='allele known'>cat(11)</SPAN>
+<td><SPAN CLASS='allele known'>dapE(3)</SPAN>
+<td><SPAN CLASS='allele known'>dat(3)</SPAN>
+<td><SPAN CLASS='allele known'>ldh(1)</SPAN>
+<td><SPAN CLASS='allele known'>lhkA(7)</SPAN>
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-64
+<td>lmonocytogenes
+<td>5
+<td><SPAN CLASS='allele known'>abcZ(2)</SPAN>
+<td><SPAN CLASS='allele known'>bglA(1)</SPAN>
+<td><SPAN CLASS='allele known'>cat(11)</SPAN>
+<td><SPAN CLASS='allele known'>dapE(3)</SPAN>
+<td><SPAN CLASS='allele known'>dat(3)</SPAN>
+<td><SPAN CLASS='allele known'>ldh(1)</SPAN>
+<td><SPAN CLASS='allele known'>lhkA(7)</SPAN>
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-65
+<td>lmonocytogenes
+<td>5
+<td><SPAN CLASS='allele known'>abcZ(2)</SPAN>
+<td><SPAN CLASS='allele known'>bglA(1)</SPAN>
+<td><SPAN CLASS='allele known'>cat(11)</SPAN>
+<td><SPAN CLASS='allele known'>dapE(3)</SPAN>
+<td><SPAN CLASS='allele known'>dat(3)</SPAN>
+<td><SPAN CLASS='allele known'>ldh(1)</SPAN>
+<td><SPAN CLASS='allele known'>lhkA(7)</SPAN>
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-66
+<td>lmonocytogenes
+<td>5
+<td><SPAN CLASS='allele known'>abcZ(2)</SPAN>
+<td><SPAN CLASS='allele known'>bglA(1)</SPAN>
+<td><SPAN CLASS='allele known'>cat(11)</SPAN>
+<td><SPAN CLASS='allele known'>dapE(3)</SPAN>
+<td><SPAN CLASS='allele known'>dat(3)</SPAN>
+<td><SPAN CLASS='allele known'>ldh(1)</SPAN>
+<td><SPAN CLASS='allele known'>lhkA(7)</SPAN>
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-67
+<td>lmonocytogenes
+<td>5
+<td><SPAN CLASS='allele known'>abcZ(2)</SPAN>
+<td><SPAN CLASS='allele known'>bglA(1)</SPAN>
+<td><SPAN CLASS='allele known'>cat(11)</SPAN>
+<td><SPAN CLASS='allele known'>dapE(3)</SPAN>
+<td><SPAN CLASS='allele known'>dat(3)</SPAN>
+<td><SPAN CLASS='allele known'>ldh(1)</SPAN>
+<td><SPAN CLASS='allele known'>lhkA(7)</SPAN>
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-68
+<td>lmonocytogenes
+<td>5
+<td><SPAN CLASS='allele known'>abcZ(2)</SPAN>
+<td><SPAN CLASS='allele known'>bglA(1)</SPAN>
+<td><SPAN CLASS='allele known'>cat(11)</SPAN>
+<td><SPAN CLASS='allele known'>dapE(3)</SPAN>
+<td><SPAN CLASS='allele known'>dat(3)</SPAN>
+<td><SPAN CLASS='allele known'>ldh(1)</SPAN>
+<td><SPAN CLASS='allele known'>lhkA(7)</SPAN>
+<td><span class='traffic-light pass'>&#10004;</span>
+</tbody><caption><span class='file-download-bar'>Download:  <a href='mlst.csv' class='file-download'>&#11015;mlst.csv</a></span>
+</caption>
+</table>
+</div><div class='container-fluid nullarbor-section' id='serotype'>
+<a name='serotype'></a>
+<h2><span class='dropdown'>
+<button class='btn btn-default dropdown-toggle' type='button' data-toggle='dropdown'>&#9776;</button>
+<ul class='dropdown-menu'><li><a href='#jobinfo'>Report summary</a>
+<li><a href='#seqdata'>Sequence data</a>
+<li><a href='#identification'>Species identification</a>
+<li><a href='#mlst'>MLST</a>
+<li><a href='#serotype'>Serotyping</a>
+<li><a href='#resistome'>Resistome</a>
+<li><a href='#assembly'>Assembly and annotation</a>
+<li><a href='#reference'>Reference genome</a>
+<li><a href='#core'>Core genome</a>
+<li><a href='#snptree'>Core SNP phylogeny</a>
+<li><a href='#snpdist'>Pairwise core SNP distances</a>
+<li><a href='#snpdensity'>Core SNP density</a>
+<li><a href='#pan'>Pan genome</a>
+<li><a href='#tools'>Software versions</a>
+<li><a href='#about'>About</a>
+</ul></span>
+Serotyping <a href='#' class='jump-home'>&#x25B2;</a> </h2>
+<table id='serotype' class='display compact table-sortable'>
+<thead>
+<tr>
+<th>Isolate
+<th>isSEROTYPE
+<th>AMPLICONS
+<th>Quality
+</thead>
+<tbody>
+<tr>
+<td>OFN-01
+<td>1/2b,3b,7
+<td>ORF2819,Prs
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-02
+<td>1/2b,3b,7
+<td>ORF2819,Prs
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-03
+<td>-
+<td>-
+<td><span class='traffic-light fail'>&#10008;</span>
+<tr>
+<td>OFN-04
+<td>1/2b,3b,7
+<td>ORF2819,Prs
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-55
+<td>1/2b,3b,7
+<td>ORF2819,Prs
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-56
+<td>1/2b,3b,7
+<td>ORF2819,Prs
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-57
+<td>1/2b,3b,7
+<td>ORF2819,Prs
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-58
+<td>1/2b,3b,7
+<td>ORF2819,Prs
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-59
+<td>1/2b,3b,7
+<td>ORF2819,Prs
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-60
+<td>1/2b,3b,7
+<td>ORF2819,Prs
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-61
+<td>1/2b,3b,7
+<td>ORF2819,Prs
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-62
+<td>1/2b,3b,7
+<td>ORF2819,Prs
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-63
+<td>1/2b,3b,7
+<td>ORF2819,Prs
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-64
+<td>1/2b,3b,7
+<td>ORF2819,Prs
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-65
+<td>1/2b,3b,7
+<td>ORF2819,Prs
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-66
+<td>1/2b,3b,7
+<td>ORF2819,Prs
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-67
+<td>1/2b,3b,7
+<td>ORF2819,Prs
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-68
+<td>1/2b,3b,7
+<td>ORF2819,Prs
+<td><span class='traffic-light pass'>&#10004;</span>
+</tbody><caption><span class='file-download-bar'>Download:  <a href='serotype.csv' class='file-download'>&#11015;serotype.csv</a></span>
+</caption>
+</table>
+</div><div class='container-fluid nullarbor-section' id='resistome'>
+<a name='resistome'></a>
+<h2><span class='dropdown'>
+<button class='btn btn-default dropdown-toggle' type='button' data-toggle='dropdown'>&#9776;</button>
+<ul class='dropdown-menu'><li><a href='#jobinfo'>Report summary</a>
+<li><a href='#seqdata'>Sequence data</a>
+<li><a href='#identification'>Species identification</a>
+<li><a href='#mlst'>MLST</a>
+<li><a href='#serotype'>Serotyping</a>
+<li><a href='#resistome'>Resistome</a>
+<li><a href='#assembly'>Assembly and annotation</a>
+<li><a href='#reference'>Reference genome</a>
+<li><a href='#core'>Core genome</a>
+<li><a href='#snptree'>Core SNP phylogeny</a>
+<li><a href='#snpdist'>Pairwise core SNP distances</a>
+<li><a href='#snpdensity'>Core SNP density</a>
+<li><a href='#pan'>Pan genome</a>
+<li><a href='#tools'>Software versions</a>
+<li><a href='#about'>About</a>
+</ul></span>
+Resistome <a href='#' class='jump-home'>&#x25B2;</a> </h2>
+<table id='resistome' class='display compact table-sortable'>
+<thead>
+<tr>
+<th>Isolate
+<th>Found
+</thead>
+<tbody>
+<tr>
+<td>OFN-57
+<td>0
+<tr>
+<td>OFN-61
+<td>0
+<tr>
+<td>OFN-55
+<td>0
+<tr>
+<td>OFN-62
+<td>0
+<tr>
+<td>OFN-60
+<td>0
+<tr>
+<td>OFN-58
+<td>0
+<tr>
+<td>OFN-01
+<td>0
+<tr>
+<td>OFN-04
+<td>0
+<tr>
+<td>OFN-59
+<td>0
+<tr>
+<td>OFN-64
+<td>0
+<tr>
+<td>OFN-65
+<td>0
+<tr>
+<td>OFN-56
+<td>0
+<tr>
+<td>OFN-68
+<td>0
+<tr>
+<td>OFN-67
+<td>0
+<tr>
+<td>OFN-66
+<td>0
+<tr>
+<td>OFN-03
+<td>0
+<tr>
+<td>OFN-63
+<td>0
+<tr>
+<td>OFN-02
+<td>0
+</tbody><caption><span class='file-download-bar'>Download:  <a href='resistome.csv' class='file-download'>&#11015;resistome.csv</a></span>
+</caption>
+</table>
+</div><div class='container-fluid nullarbor-section' id='assembly'>
+<a name='assembly'></a>
+<h2><span class='dropdown'>
+<button class='btn btn-default dropdown-toggle' type='button' data-toggle='dropdown'>&#9776;</button>
+<ul class='dropdown-menu'><li><a href='#jobinfo'>Report summary</a>
+<li><a href='#seqdata'>Sequence data</a>
+<li><a href='#identification'>Species identification</a>
+<li><a href='#mlst'>MLST</a>
+<li><a href='#serotype'>Serotyping</a>
+<li><a href='#resistome'>Resistome</a>
+<li><a href='#assembly'>Assembly and annotation</a>
+<li><a href='#reference'>Reference genome</a>
+<li><a href='#core'>Core genome</a>
+<li><a href='#snptree'>Core SNP phylogeny</a>
+<li><a href='#snpdist'>Pairwise core SNP distances</a>
+<li><a href='#snpdensity'>Core SNP density</a>
+<li><a href='#pan'>Pan genome</a>
+<li><a href='#tools'>Software versions</a>
+<li><a href='#about'>About</a>
+</ul></span>
+Assembly and annotation <a href='#' class='jump-home'>&#x25B2;</a> </h2>
+<table id='assembly' class='display compact table-sortable'>
+<thead>
+<tr>
+<th>Isolate
+<th>Contigs
+<th>bp
+<th>ok
+<th>Ns
+<th>gaps
+<th>min
+<th>avg
+<th>max
+<th>N50
+<th>Insert size (25,50,75)%
+<th>CDS
+<th>rRNA
+<th>tRNA
+<th>tmRNA
+<th>Quality
+</thead>
+<tbody>
+<tr>
+<td>OFN-01
+<td>118
+<td>3079295
+<td>3079295
+<td>0
+<td>0
+<td>503
+<td>26095
+<td>311920
+<td>63596
+<td>(356, 491, 624)
+<td>3027
+<td>2
+<td>45
+<td>1
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-02
+<td>104
+<td>3076915
+<td>3076915
+<td>0
+<td>0
+<td>500
+<td>29585
+<td>296665
+<td>97924
+<td>(356, 488, 618)
+<td>3018
+<td>2
+<td>47
+<td>1
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-03
+<td>2074
+<td>5661956
+<td>5661956
+<td>0
+<td>0
+<td>500
+<td>2729
+<td>47421
+<td>4354
+<td>(207, 273, 361)
+<td>5287
+<td>3
+<td>39
+<td>
+<td><span class='traffic-light fail'>&#10008;</span>
+<tr>
+<td>OFN-04
+<td>775
+<td>2944028
+<td>2944028
+<td>0
+<td>0
+<td>500
+<td>3798
+<td>31893
+<td>6271
+<td>(214, 282, 369)
+<td>2790
+<td>
+<td>27
+<td>1
+<td><span class='traffic-light fail'>&#10008;</span>
+<tr>
+<td>OFN-55
+<td>506
+<td>3334287
+<td>3334287
+<td>0
+<td>0
+<td>500
+<td>6589
+<td>293410
+<td>100195
+<td>(299, 397, 507)
+<td>3181
+<td>6
+<td>48
+<td>1
+<td><span class='traffic-light fail'>&#10008;</span>
+<tr>
+<td>OFN-56
+<td>114
+<td>3006358
+<td>3006358
+<td>0
+<td>0
+<td>517
+<td>26371
+<td>248174
+<td>54113
+<td>(271, 369, 480)
+<td>2941
+<td>
+<td>44
+<td>1
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-57
+<td>67
+<td>2957057
+<td>2957057
+<td>0
+<td>0
+<td>503
+<td>44135
+<td>324634
+<td>123016
+<td>(290, 394, 509)
+<td>2900
+<td>1
+<td>46
+<td>1
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-58
+<td>82
+<td>3014361
+<td>3014361
+<td>0
+<td>0
+<td>510
+<td>36760
+<td>251137
+<td>115046
+<td>(335, 460, 580)
+<td>2959
+<td>3
+<td>42
+<td>1
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-59
+<td>61
+<td>3004754
+<td>3004754
+<td>0
+<td>0
+<td>566
+<td>49258
+<td>439136
+<td>135564
+<td>(290, 397, 510)
+<td>2948
+<td>2
+<td>48
+<td>1
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-60
+<td>75
+<td>3006879
+<td>3006879
+<td>0
+<td>0
+<td>503
+<td>40091
+<td>397472
+<td>102259
+<td>(256, 349, 458)
+<td>2952
+<td>2
+<td>47
+<td>1
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-61
+<td>65
+<td>3004441
+<td>3004441
+<td>0
+<td>0
+<td>532
+<td>46222
+<td>595023
+<td>126896
+<td>(270, 356, 465)
+<td>2951
+<td>2
+<td>44
+<td>1
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-62
+<td>43
+<td>3005219
+<td>3005219
+<td>0
+<td>0
+<td>543
+<td>69888
+<td>595503
+<td>176104
+<td>(299, 438, 562)
+<td>2952
+<td>2
+<td>47
+<td>1
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-63
+<td>53
+<td>3005659
+<td>3005659
+<td>0
+<td>0
+<td>527
+<td>56710
+<td>447525
+<td>164693
+<td>(356, 480, 609)
+<td>2949
+<td>2
+<td>47
+<td>1
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-64
+<td>74
+<td>3006500
+<td>3006500
+<td>0
+<td>0
+<td>548
+<td>40628
+<td>401333
+<td>97924
+<td>(345, 478, 605)
+<td>2949
+<td>2
+<td>47
+<td>1
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-65
+<td>42
+<td>3008500
+<td>3008500
+<td>0
+<td>0
+<td>540
+<td>71630
+<td>595568
+<td>293255
+<td>(322, 449, 575)
+<td>2955
+<td>3
+<td>47
+<td>1
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-66
+<td>62
+<td>3006054
+<td>3006054
+<td>0
+<td>0
+<td>515
+<td>48484
+<td>308846
+<td>155920
+<td>(327, 453, 581)
+<td>2950
+<td>2
+<td>47
+<td>1
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-67
+<td>53
+<td>3004568
+<td>3004568
+<td>0
+<td>0
+<td>526
+<td>56689
+<td>469587
+<td>124208
+<td>(327, 457, 586)
+<td>2951
+<td>2
+<td>47
+<td>1
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-68
+<td>47
+<td>3005256
+<td>3005256
+<td>0
+<td>0
+<td>503
+<td>63941
+<td>475435
+<td>170229
+<td>(330, 458, 584)
+<td>2954
+<td>3
+<td>53
+<td>1
+<td><span class='traffic-light pass'>&#10004;</span>
+</tbody><caption><span class='file-download-bar'>Download:  <a href='assembly.csv' class='file-download'>&#11015;assembly.csv</a></span>
+</caption>
+</table>
+</div><div class='container-fluid nullarbor-section' id='reference'>
+<a name='reference'></a>
+<h2><span class='dropdown'>
+<button class='btn btn-default dropdown-toggle' type='button' data-toggle='dropdown'>&#9776;</button>
+<ul class='dropdown-menu'><li><a href='#jobinfo'>Report summary</a>
+<li><a href='#seqdata'>Sequence data</a>
+<li><a href='#identification'>Species identification</a>
+<li><a href='#mlst'>MLST</a>
+<li><a href='#serotype'>Serotyping</a>
+<li><a href='#resistome'>Resistome</a>
+<li><a href='#assembly'>Assembly and annotation</a>
+<li><a href='#reference'>Reference genome</a>
+<li><a href='#core'>Core genome</a>
+<li><a href='#snptree'>Core SNP phylogeny</a>
+<li><a href='#snpdist'>Pairwise core SNP distances</a>
+<li><a href='#snpdensity'>Core SNP density</a>
+<li><a href='#pan'>Pan genome</a>
+<li><a href='#tools'>Software versions</a>
+<li><a href='#about'>About</a>
+</ul></span>
+Reference genome <a href='#' class='jump-home'>&#x25B2;</a> </h2>
+<table id='reference' class='display compact table-sortable'>
+<thead>
+<tr>
+<th>Sequence
+<th>Length
+<th>Description
+</thead>
+<tbody>
+<tr>
+<td>CP011398
+<td>3039897
+<td>Listeria monocytogenes strain CFSAN008100, complete genome.
+<tr>
+<td>CP011399
+<td>68224
+<td>Listeria monocytogenes strain CFSAN008100 plasmid pCFSAN008100, complete sequence.
+<tr>
+<td>TOTAL
+<td>3108121
+<td>Total reference size in bp
+</tbody><caption><span class='file-download-bar'>Download:  <a href='reference.csv' class='file-download'>&#11015;reference.csv</a></span>
+</caption>
+</table>
+</div><div class='container-fluid nullarbor-section' id='core'>
+<a name='core'></a>
+<h2><span class='dropdown'>
+<button class='btn btn-default dropdown-toggle' type='button' data-toggle='dropdown'>&#9776;</button>
+<ul class='dropdown-menu'><li><a href='#jobinfo'>Report summary</a>
+<li><a href='#seqdata'>Sequence data</a>
+<li><a href='#identification'>Species identification</a>
+<li><a href='#mlst'>MLST</a>
+<li><a href='#serotype'>Serotyping</a>
+<li><a href='#resistome'>Resistome</a>
+<li><a href='#assembly'>Assembly and annotation</a>
+<li><a href='#reference'>Reference genome</a>
+<li><a href='#core'>Core genome</a>
+<li><a href='#snptree'>Core SNP phylogeny</a>
+<li><a href='#snpdist'>Pairwise core SNP distances</a>
+<li><a href='#snpdensity'>Core SNP density</a>
+<li><a href='#pan'>Pan genome</a>
+<li><a href='#tools'>Software versions</a>
+<li><a href='#about'>About</a>
+</ul></span>
+Core genome <a href='#' class='jump-home'>&#x25B2;</a> </h2>
+<table id='core' class='display compact table-sortable'>
+<thead>
+<tr>
+<th>Isolate
+<th>Aligned Bases
+<th>Reference bases
+<th>% Aligned Bases
+<th>Quality
+</thead>
+<tbody>
+<tr>
+<td>OFN-01
+<td>2922354
+<td>3108121
+<td>94.02
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-02
+<td>2921293
+<td>3108121
+<td>93.99
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-03
+<td>2951391
+<td>3108121
+<td>94.96
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-04
+<td>2926110
+<td>3108121
+<td>94.14
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-55
+<td>2924614
+<td>3108121
+<td>94.10
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-56
+<td>2925058
+<td>3108121
+<td>94.11
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-57
+<td>2898554
+<td>3108121
+<td>93.26
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-58
+<td>2369028
+<td>3108121
+<td>76.22
+<td><span class='traffic-light dunno'>?</span>
+<tr>
+<td>OFN-59
+<td>2924415
+<td>3108121
+<td>94.09
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-60
+<td>2924971
+<td>3108121
+<td>94.11
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-61
+<td>2924856
+<td>3108121
+<td>94.10
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-62
+<td>2921905
+<td>3108121
+<td>94.01
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-63
+<td>2923076
+<td>3108121
+<td>94.05
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-64
+<td>2922762
+<td>3108121
+<td>94.04
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-65
+<td>2919225
+<td>3108121
+<td>93.92
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-66
+<td>2922977
+<td>3108121
+<td>94.04
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-67
+<td>2919816
+<td>3108121
+<td>93.94
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>OFN-68
+<td>2922597
+<td>3108121
+<td>94.03
+<td><span class='traffic-light pass'>&#10004;</span>
+<tr>
+<td>AVERAGE
+<td>2892500
+<td>3108121
+<td>93.06
+<td><span class='traffic-light pass'>&#10004;</span>
+</tbody><caption><span class='file-download-bar'>Download:  <a href='core.csv' class='file-download'>&#11015;core.csv</a></span>
+</caption>
+</table>
+</div><div class='container-fluid nullarbor-section' id='snptree'>
+<a name='snptree'></a>
+<h2><span class='dropdown'>
+<button class='btn btn-default dropdown-toggle' type='button' data-toggle='dropdown'>&#9776;</button>
+<ul class='dropdown-menu'><li><a href='#jobinfo'>Report summary</a>
+<li><a href='#seqdata'>Sequence data</a>
+<li><a href='#identification'>Species identification</a>
+<li><a href='#mlst'>MLST</a>
+<li><a href='#serotype'>Serotyping</a>
+<li><a href='#resistome'>Resistome</a>
+<li><a href='#assembly'>Assembly and annotation</a>
+<li><a href='#reference'>Reference genome</a>
+<li><a href='#core'>Core genome</a>
+<li><a href='#snptree'>Core SNP phylogeny</a>
+<li><a href='#snpdist'>Pairwise core SNP distances</a>
+<li><a href='#snpdensity'>Core SNP density</a>
+<li><a href='#pan'>Pan genome</a>
+<li><a href='#tools'>Software versions</a>
+<li><a href='#about'>About</a>
+</ul></span>
+Core SNP phylogeny <a href='#' class='jump-home'>&#x25B2;</a> </h2>
+<span class='file-download-bar'>Download:  <a href='core.aln' class='file-download'>&#11015;core.aln</a> <a href='tree.newick' class='file-download'>&#11015;tree.newick</a></span>
+<p class='container-fluid'>
+<svg viewBox="0 0 1024 328" width='1024' height='328' version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' ><defs><style type='text/css'><![CDATA[
+ .leaf-label {font-size:12;font-family:sans-serif;}
+ .inner-label {opacity:0}
+ .edge-label {opacity:0}
+]]></style></defs>
+<!-- arguments: -S -s -w 1024 -l font-size:12;font-family:sans-serif; -i opacity:0 -b opacity:0 -v 16 tree.newick  -->
+<g transform='translate(0,20)'><g  style='stroke:black;fill:none;stroke-width:1;stroke-linecap:round'><line class='clade_0' x1='10.0000' y1='0.0000' x2='11.5348' y2='0.0000'/><line class='clade_0' x1='10.0000' y1='16.0000' x2='10.5104' y2='16.0000'/><line class='clade_0' x1='10.0000' y1='0.0000' x2='10.0000' y2='16.0000'/><line class='clade_0' x1='10.0000' y1='8.0000' x2='10.0000' y2='8.0000'/><line class='clade_0' x1='10.0000' y1='32.0000' x2='10.5106' y2='32.0000'/><line class='clade_0' x1='13.5968' y1='48.0000' x2='14.6192' y2='48.0000'/><line class='clade_0' x1='14.3292' y1='64.0000' x2='20.8139' y2='64.0000'/><line class='clade_0' x1='100.5097' y1='80.0000' x2='100.5097' y2='80.0000'/><line class='clade_0' x1='529.3288' y1='96.0000' x2='893.4610' y2='96.0000'/><line class='clade_0' x1='933.7713' y1='112.0000' x2='942.0000' y2='112.0000'/><line class='clade_0' x1='933.7713' y1='128.0000' x2='933.7713' y2='128.0000'/><line class='clade_0' x1='933.7713' y1='112.0000' x2='933.7713' y2='128.0000'/><line class='clade_0' x1='529.3288' y1='120.0000' x2='933.7713' y2='120.0000'/><line class='clade_0' x1='529.3288' y1='96.0000' x2='529.3288' y2='120.0000'/><line class='clade_0' x1='100.5097' y1='108.0000' x2='529.3288' y2='108.0000'/><line class='clade_0' x1='100.5097' y1='80.0000' x2='100.5097' y2='108.0000'/><line class='clade_0' x1='14.3292' y1='94.0000' x2='100.5097' y2='94.0000'/><line class='clade_0' x1='14.3292' y1='64.0000' x2='14.3292' y2='94.0000'/><line class='clade_0' x1='13.5968' y1='79.0000' x2='14.3292' y2='79.0000'/><line class='clade_0' x1='13.5968' y1='48.0000' x2='13.5968' y2='79.0000'/><line class='clade_0' x1='10.0000' y1='63.5000' x2='13.5968' y2='63.5000'/><line class='clade_0' x1='10.0000' y1='32.0000' x2='10.0000' y2='63.5000'/><line class='clade_0' x1='10.0000' y1='47.7500' x2='10.0000' y2='47.7500'/><line class='clade_0' x1='10.0000' y1='144.0000' x2='10.5106' y2='144.0000'/><line class='clade_0' x1='10.0000' y1='160.0000' x2='10.5107' y2='160.0000'/><line class='clade_0' x1='10.0000' y1='144.0000' x2='10.0000' y2='160.0000'/><line class='clade_0' x1='10.0000' y1='152.0000' x2='10.0000' y2='152.0000'/><line class='clade_0' x1='10.0000' y1='176.0000' x2='11.5333' y2='176.0000'/><line class='clade_0' x1='10.0000' y1='192.0000' x2='12.0540' y2='192.0000'/><line class='clade_0' x1='10.0000' y1='176.0000' x2='10.0000' y2='192.0000'/><line class='clade_0' x1='10.0000' y1='184.0000' x2='10.0000' y2='184.0000'/><line class='clade_0' x1='10.0000' y1='208.0000' x2='12.0559' y2='208.0000'/><line class='clade_0' x1='10.0000' y1='224.0000' x2='12.0503' y2='224.0000'/><line class='clade_0' x1='10.0000' y1='208.0000' x2='10.0000' y2='224.0000'/><line class='clade_0' x1='10.0000' y1='216.0000' x2='10.0000' y2='216.0000'/><line class='clade_0' x1='10.0000' y1='240.0000' x2='11.0226' y2='240.0000'/><line class='clade_0' x1='10.5124' y1='256.0000' x2='11.0227' y2='256.0000'/><line class='clade_0' x1='10.5124' y1='272.0000' x2='10.5124' y2='272.0000'/><line class='clade_0' x1='10.5124' y1='288.0000' x2='10.5124' y2='288.0000'/><line class='clade_0' x1='10.5124' y1='272.0000' x2='10.5124' y2='288.0000'/><line class='clade_0' x1='10.5124' y1='280.0000' x2='10.5124' y2='280.0000'/><line class='clade_0' x1='10.5124' y1='256.0000' x2='10.5124' y2='280.0000'/><line class='clade_0' x1='10.0000' y1='268.0000' x2='10.5124' y2='268.0000'/><line class='clade_0' x1='10.0000' y1='240.0000' x2='10.0000' y2='268.0000'/><line class='clade_0' x1='10.0000' y1='254.0000' x2='10.0000' y2='254.0000'/><line class='clade_0' x1='10.0000' y1='216.0000' x2='10.0000' y2='254.0000'/><line class='clade_0' x1='10.0000' y1='235.0000' x2='10.0000' y2='235.0000'/><line class='clade_0' x1='10.0000' y1='184.0000' x2='10.0000' y2='235.0000'/><line class='clade_0' x1='10.0000' y1='209.5000' x2='10.0000' y2='209.5000'/><line class='clade_0' x1='10.0000' y1='152.0000' x2='10.0000' y2='209.5000'/><line class='clade_0' x1='10.0000' y1='180.7500' x2='10.0000' y2='180.7500'/><line class='clade_0' x1='10.0000' y1='8.0000' x2='10.0000' y2='180.7500'/><line x1='0' y1='94.3750' x2='10.0000' y2='94.3750'/></g><g style='stroke:none'><text class='leaf-label' x='21.5348' y='4.0000'>OFN-57</text><text class='edge-label' x='10.767402' y='-4.000000'>0.002660154</text><text class='leaf-label' x='20.5104' y='20.0000'>OFN-59</text><text class='edge-label' x='10.255185' y='12.000000'>0.000884576</text><text class='inner-label' x='20.0000' y='12.0000'>0.927</text><text class='edge-label' x='10.000001' y='4.000000'>0.000000005</text><text class='leaf-label' x='20.5106' y='36.0000'>OFN-64</text><text class='edge-label' x='10.255285' y='28.000000'>0.000884923</text><text class='leaf-label' x='24.6192' y='52.0000'>OFN-62</text><text class='edge-label' x='14.107998' y='44.000000'>0.001772216</text><text class='leaf-label' x='30.8139' y='68.0000'>OFN-03</text><text class='edge-label' x='17.571573' y='60.000000'>0.011239376</text><text class='leaf-label' x='110.5097' y='84.0000'>OFN-58</text><text class='edge-label' x='100.509699' y='76.000000'>0.000000005</text><text class='leaf-label' x='903.4610' y='100.0000'>Reference</text><text class='edge-label' x='711.394880' y='92.000000'>0.631123664</text><text class='leaf-label' x='952.0000' y='116.0000'>OFN-01</text><text class='edge-label' x='937.885626' y='108.000000'>0.014262287</text><text class='leaf-label' x='943.7713' y='132.0000'>OFN-02</text><text class='edge-label' x='933.771254' y='124.000000'>0.000000005</text><text class='inner-label' x='943.7713' y='124.0000'>1.000</text><text class='edge-label' x='731.550029' y='116.000000'>0.700990559</text><text class='inner-label' x='539.3288' y='112.0000'>1.000</text><text class='edge-label' x='314.919252' y='104.000000'>0.743240844</text><text class='inner-label' x='110.5097' y='98.0000'>1.000</text><text class='edge-label' x='57.419472' y='90.000000'>0.149370283</text><text class='inner-label' x='24.3292' y='83.0000'>0.728</text><text class='edge-label' x='13.962999' y='75.000000'>0.001269582</text><text class='inner-label' x='23.5968' y='67.5000'>0.995</text><text class='edge-label' x='11.798377' y='59.500000'>0.006233980</text><text class='inner-label' x='20.0000' y='51.7500'>0.919</text><text class='edge-label' x='10.000001' y='43.750000'>0.000000005</text><text class='leaf-label' x='20.5106' y='148.0000'>OFN-60</text><text class='edge-label' x='10.255302' y='140.000000'>0.000884970</text><text class='leaf-label' x='20.5107' y='164.0000'>OFN-55</text><text class='edge-label' x='10.255349' y='156.000000'>0.000885133</text><text class='inner-label' x='20.0000' y='156.0000'>0.913</text><text class='edge-label' x='10.000005' y='148.000000'>0.000000006</text><text class='leaf-label' x='21.5333' y='180.0000'>OFN-65</text><text class='edge-label' x='10.766636' y='172.000000'>0.002657480</text><text class='leaf-label' x='22.0540' y='196.0000'>OFN-56</text><text class='edge-label' x='11.026995' y='188.000000'>0.003560002</text><text class='inner-label' x='20.0000' y='188.0000'>0.979</text><text class='edge-label' x='10.000007' y='180.000000'>0.000000005</text><text class='leaf-label' x='22.0559' y='212.0000'>OFN-67</text><text class='edge-label' x='11.027943' y='204.000000'>0.003563277</text><text class='leaf-label' x='22.0503' y='228.0000'>OFN-04</text><text class='edge-label' x='11.025139' y='220.000000'>0.003553556</text><text class='inner-label' x='20.0000' y='220.0000'>0.959</text><text class='edge-label' x='10.000010' y='212.000000'>0.000000005</text><text class='leaf-label' x='21.0226' y='244.0000'>OFN-61</text><text class='edge-label' x='10.511304' y='236.000000'>0.001772371</text><text class='leaf-label' x='21.0227' y='260.0000'>OFN-63</text><text class='edge-label' x='10.767557' y='252.000000'>0.000884562</text><text class='leaf-label' x='20.5124' y='276.0000'>OFN-66</text><text class='edge-label' x='10.512382' y='268.000000'>0.0</text><text class='leaf-label' x='20.5124' y='292.0000'>OFN-68</text><text class='edge-label' x='10.512382' y='284.000000'>0.0</text><text class='edge-label' x='10.512381' y='276.000000'>0.000000005</text><text class='inner-label' x='20.5124' y='272.0000'>0.896</text><text class='edge-label' x='10.256196' y='264.000000'>0.000888050</text><text class='inner-label' x='20.0000' y='258.0000'>0.936</text><text class='edge-label' x='10.000010' y='250.000000'>0.000000005</text><text class='inner-label' x='20.0000' y='239.0000'>0.000</text><text class='edge-label' x='10.000007' y='231.000000'>0.000000005</text><text class='inner-label' x='20.0000' y='213.5000'>0.000</text><text class='edge-label' x='10.000004' y='205.500000'>0.000000005</text><text class='inner-label' x='20.0000' y='184.7500'>0.000</text><text class='edge-label' x='10.000001' y='176.750000'>0.000000005</text></g></g></svg>
+
+</p>
+Core SNP alignment has 18 taxa and 1149 bp. </div><div class='container-fluid nullarbor-section' id='snpdist'>
+<a name='snpdist'></a>
+<h2><span class='dropdown'>
+<button class='btn btn-default dropdown-toggle' type='button' data-toggle='dropdown'>&#9776;</button>
+<ul class='dropdown-menu'><li><a href='#jobinfo'>Report summary</a>
+<li><a href='#seqdata'>Sequence data</a>
+<li><a href='#identification'>Species identification</a>
+<li><a href='#mlst'>MLST</a>
+<li><a href='#serotype'>Serotyping</a>
+<li><a href='#resistome'>Resistome</a>
+<li><a href='#assembly'>Assembly and annotation</a>
+<li><a href='#reference'>Reference genome</a>
+<li><a href='#core'>Core genome</a>
+<li><a href='#snptree'>Core SNP phylogeny</a>
+<li><a href='#snpdist'>Pairwise core SNP distances</a>
+<li><a href='#snpdensity'>Core SNP density</a>
+<li><a href='#pan'>Pan genome</a>
+<li><a href='#tools'>Software versions</a>
+<li><a href='#about'>About</a>
+</ul></span>
+Pairwise core SNP distances <a href='#' class='jump-home'>&#x25B2;</a> </h2>
+
+<div id='snpdist-histogram'>
+</div>
+<script>
+var nums = [ 715,728,725,728,727,696,725,725,726,719,726,725,727,725,728,725,689,25,22,25,24,159,22,22,23,16,23,22,24,22,25,22,802,5,8,7,160,5,5,6,13,6,5,7,5,8,5,827,5,4,157,2,2,3,10,3,2,4,2,5,2,824,7,160,5,5,6,13,6,5,7,5,8,5,827,157,4,4,5,12,5,4,6,4,7,4,826,157,157,158,151,158,157,159,157,160,157,671,2,3,10,3,2,4,2,5,2,824,3,10,3,2,4,2,5,2,824,11,4,3,5,3,6,3,825,11,10,12,10,13,10,818,3,5,1,6,1,825,4,2,5,2,824,4,7,4,826,5,0,824,5,827,824 ];
+var data = [ { 
+  type: 'histogram',
+  x: nums, 
+  autobinx: false,
+  xbins: { start: 0, end: 827, size: 1 },
+} ];
+var layout = {
+  title: 'Pairwise core SNP distance histogram',
+  xaxis: { title: 'SNP distance' },
+  yaxis: { title: 'Frequency' },
+};
+Plotly.newPlot('snpdist-histogram', data, layout);
+</script>
+<table id='snpdist' class='display compact table-sortable'>
+<thead>
+<tr>
+<th>ID
+<th><div class='vertical'>OFN-01</div>
+<th><div class='vertical'>OFN-02</div>
+<th><div class='vertical'>OFN-03</div>
+<th><div class='vertical'>OFN-04</div>
+<th><div class='vertical'>OFN-55</div>
+<th><div class='vertical'>OFN-56</div>
+<th><div class='vertical'>OFN-57</div>
+<th><div class='vertical'>OFN-58</div>
+<th><div class='vertical'>OFN-59</div>
+<th><div class='vertical'>OFN-60</div>
+<th><div class='vertical'>OFN-61</div>
+<th><div class='vertical'>OFN-62</div>
+<th><div class='vertical'>OFN-63</div>
+<th><div class='vertical'>OFN-64</div>
+<th><div class='vertical'>OFN-65</div>
+<th><div class='vertical'>OFN-66</div>
+<th><div class='vertical'>OFN-67</div>
+<th><div class='vertical'>OFN-68</div>
+<th><div class='vertical'>Reference</div>
+</thead>
+<tbody>
+<tr>
+<td>OFN-01
+<td>0
+<td>16
+<td>723
+<td>736
+<td>733
+<td>736
+<td>735
+<td>704
+<td>733
+<td>733
+<td>734
+<td>727
+<td>734
+<td>733
+<td>735
+<td>733
+<td>736
+<td>733
+<td>697
+<tr>
+<td>OFN-02
+<td>16
+<td>0
+<td>715
+<td>728
+<td>725
+<td>728
+<td>727
+<td>696
+<td>725
+<td>725
+<td>726
+<td>719
+<td>726
+<td>725
+<td>727
+<td>725
+<td>728
+<td>725
+<td>689
+<tr>
+<td>OFN-03
+<td>723
+<td>715
+<td>0
+<td>25
+<td>22
+<td>25
+<td>24
+<td>159
+<td>22
+<td>22
+<td>23
+<td>16
+<td>23
+<td>22
+<td>24
+<td>22
+<td>25
+<td>22
+<td>802
+<tr>
+<td>OFN-04
+<td>736
+<td>728
+<td>25
+<td>0
+<td>5
+<td>8
+<td>7
+<td>160
+<td>5
+<td>5
+<td>6
+<td>13
+<td>6
+<td>5
+<td>7
+<td>5
+<td>8
+<td>5
+<td>827
+<tr>
+<td>OFN-55
+<td>733
+<td>725
+<td>22
+<td>5
+<td>0
+<td>5
+<td>4
+<td>157
+<td>2
+<td>2
+<td>3
+<td>10
+<td>3
+<td>2
+<td>4
+<td>2
+<td>5
+<td>2
+<td>824
+<tr>
+<td>OFN-56
+<td>736
+<td>728
+<td>25
+<td>8
+<td>5
+<td>0
+<td>7
+<td>160
+<td>5
+<td>5
+<td>6
+<td>13
+<td>6
+<td>5
+<td>7
+<td>5
+<td>8
+<td>5
+<td>827
+<tr>
+<td>OFN-57
+<td>735
+<td>727
+<td>24
+<td>7
+<td>4
+<td>7
+<td>0
+<td>157
+<td>4
+<td>4
+<td>5
+<td>12
+<td>5
+<td>4
+<td>6
+<td>4
+<td>7
+<td>4
+<td>826
+<tr>
+<td>OFN-58
+<td>704
+<td>696
+<td>159
+<td>160
+<td>157
+<td>160
+<td>157
+<td>0
+<td>157
+<td>157
+<td>158
+<td>151
+<td>158
+<td>157
+<td>159
+<td>157
+<td>160
+<td>157
+<td>671
+<tr>
+<td>OFN-59
+<td>733
+<td>725
+<td>22
+<td>5
+<td>2
+<td>5
+<td>4
+<td>157
+<td>0
+<td>2
+<td>3
+<td>10
+<td>3
+<td>2
+<td>4
+<td>2
+<td>5
+<td>2
+<td>824
+<tr>
+<td>OFN-60
+<td>733
+<td>725
+<td>22
+<td>5
+<td>2
+<td>5
+<td>4
+<td>157
+<td>2
+<td>0
+<td>3
+<td>10
+<td>3
+<td>2
+<td>4
+<td>2
+<td>5
+<td>2
+<td>824
+<tr>
+<td>OFN-61
+<td>734
+<td>726
+<td>23
+<td>6
+<td>3
+<td>6
+<td>5
+<td>158
+<td>3
+<td>3
+<td>0
+<td>11
+<td>4
+<td>3
+<td>5
+<td>3
+<td>6
+<td>3
+<td>825
+<tr>
+<td>OFN-62
+<td>727
+<td>719
+<td>16
+<td>13
+<td>10
+<td>13
+<td>12
+<td>151
+<td>10
+<td>10
+<td>11
+<td>0
+<td>11
+<td>10
+<td>12
+<td>10
+<td>13
+<td>10
+<td>818
+<tr>
+<td>OFN-63
+<td>734
+<td>726
+<td>23
+<td>6
+<td>3
+<td>6
+<td>5
+<td>158
+<td>3
+<td>3
+<td>4
+<td>11
+<td>0
+<td>3
+<td>5
+<td>1
+<td>6
+<td>1
+<td>825
+<tr>
+<td>OFN-64
+<td>733
+<td>725
+<td>22
+<td>5
+<td>2
+<td>5
+<td>4
+<td>157
+<td>2
+<td>2
+<td>3
+<td>10
+<td>3
+<td>0
+<td>4
+<td>2
+<td>5
+<td>2
+<td>824
+<tr>
+<td>OFN-65
+<td>735
+<td>727
+<td>24
+<td>7
+<td>4
+<td>7
+<td>6
+<td>159
+<td>4
+<td>4
+<td>5
+<td>12
+<td>5
+<td>4
+<td>0
+<td>4
+<td>7
+<td>4
+<td>826
+<tr>
+<td>OFN-66
+<td>733
+<td>725
+<td>22
+<td>5
+<td>2
+<td>5
+<td>4
+<td>157
+<td>2
+<td>2
+<td>3
+<td>10
+<td>1
+<td>2
+<td>4
+<td>0
+<td>5
+<td>0
+<td>824
+<tr>
+<td>OFN-67
+<td>736
+<td>728
+<td>25
+<td>8
+<td>5
+<td>8
+<td>7
+<td>160
+<td>5
+<td>5
+<td>6
+<td>13
+<td>6
+<td>5
+<td>7
+<td>5
+<td>0
+<td>5
+<td>827
+<tr>
+<td>OFN-68
+<td>733
+<td>725
+<td>22
+<td>5
+<td>2
+<td>5
+<td>4
+<td>157
+<td>2
+<td>2
+<td>3
+<td>10
+<td>1
+<td>2
+<td>4
+<td>0
+<td>5
+<td>0
+<td>824
+<tr>
+<td>Reference
+<td>697
+<td>689
+<td>802
+<td>827
+<td>824
+<td>827
+<td>826
+<td>671
+<td>824
+<td>824
+<td>825
+<td>818
+<td>825
+<td>824
+<td>826
+<td>824
+<td>827
+<td>824
+<td>0
+</tbody><caption><span class='file-download-bar'>Download:  <a href='snpdist.csv' class='file-download'>&#11015;snpdist.csv</a></span>
+</caption>
+</table>
+</div><div class='container-fluid nullarbor-section' id='snpdensity'>
+<a name='snpdensity'></a>
+<h2><span class='dropdown'>
+<button class='btn btn-default dropdown-toggle' type='button' data-toggle='dropdown'>&#9776;</button>
+<ul class='dropdown-menu'><li><a href='#jobinfo'>Report summary</a>
+<li><a href='#seqdata'>Sequence data</a>
+<li><a href='#identification'>Species identification</a>
+<li><a href='#mlst'>MLST</a>
+<li><a href='#serotype'>Serotyping</a>
+<li><a href='#resistome'>Resistome</a>
+<li><a href='#assembly'>Assembly and annotation</a>
+<li><a href='#reference'>Reference genome</a>
+<li><a href='#core'>Core genome</a>
+<li><a href='#snptree'>Core SNP phylogeny</a>
+<li><a href='#snpdist'>Pairwise core SNP distances</a>
+<li><a href='#snpdensity'>Core SNP density</a>
+<li><a href='#pan'>Pan genome</a>
+<li><a href='#tools'>Software versions</a>
+<li><a href='#about'>About</a>
+</ul></span>
+Core SNP density <a href='#' class='jump-home'>&#x25B2;</a> </h2>
+
+<div id='snpdensity-histogram'>
+</div>
+<script>
+var nums = [ 6230,6258,11930,15332,21335,30682,39060,56281,56347,61031,70238,72372,77184,81375,81693,86755,89272,92310,96790,120023,130728,134592,135123,137157,151515,161697,163307,185477,192626,197340,204842,211913,213290,219283,225832,226593,234874,235669,256404,263982,265343,268641,288237,290686,294085,300520,302205,303185,303349,310878,315569,315570,317083,322602,322989,324762,331936,375874,387005,395081,395554,397721,404850,408711,412235,418521,420669,422054,424154,432361,434263,442013,444997,456075,457281,476647,478233,493251,509208,509239,509278,509279,509280,509311,509312,509313,509314,509320,509321,509322,509327,509342,509343,509344,509345,509346,509347,509348,509349,509350,509351,509352,509353,509354,509365,509382,509383,509384,509385,509386,510439,512438,513446,514564,514588,514615,514622,514755,514957,514994,515002,515037,515067,515086,516486,516503,516504,516505,516516,516529,516580,516628,517329,522560,527456,545816,553567,553568,553569,553570,553571,553572,553573,561861,562099,571659,584617,587311,601075,602075,603914,604678,611406,622280,624369,630899,634473,636390,642380,646669,651641,653104,653660,654723,664099,666287,673001,676017,688435,690238,694077,696290,712552,715998,718739,719630,728117,732555,740895,743293,745472,745696,746310,758827,759051,768493,768770,768771,770193,776535,777800,789011,803986,805946,810581,812954,815916,827550,828227,836372,839650,846630,858078,860547,861440,862003,864894,867823,872227,879485,880767,884879,891848,895365,895415,900344,904924,906507,930783,942451,958906,971511,989810,992412,993684,1001612,1014589,1017487,1022696,1026573,1027961,1033210,1056753,1057097,1070030,1070031,1070032,1070033,1076876,1112402,1112913,1124866,1130954,1133794,1145732,1147715,1157079,1160992,1168982,1179008,1200739,1204442,1211009,1223949,1231949,1231950,1239175,1243623,1247758,1253074,1254035,1257591,1257592,1257604,1257606,1257607,1257608,1257609,1257610,1257611,1257625,1257635,1257642,1257643,1257644,1257645,1257646,1257647,1257648,1257649,1257650,1257661,1257687,1257688,1257689,1257690,1257701,1257732,1257762,1257773,1257780,1257870,1257871,1257872,1257873,1257874,1257875,1257876,1257877,1257878,1257879,1257884,1257885,1257894,1257895,1257896,1257897,1257905,1257906,1257907,1257908,1257909,1257910,1257911,1257912,1257940,1257941,1257942,1257951,1257972,1257978,1257979,1257980,1257981,1257982,1257983,1257984,1257985,1257986,1257987,1257996,1257997,1257998,1257999,1258000,1258001,1258002,1258018,1258019,1258020,1258026,1258027,1258028,1258033,1258034,1258035,1258036,1258037,1258044,1258051,1258052,1258053,1258054,1258065,1258230,1258251,1258252,1258253,1258254,1258262,1258293,1258313,1258323,1258329,1258583,1258643,1258644,1258645,1258646,1258647,1258653,1258662,1258668,1258677,1258865,1258882,1258941,1259011,1259032,1259041,1259042,1259043,1259044,1259077,1259078,1259079,1259103,1259104,1259105,1259106,1259107,1259116,1259170,1259184,1259227,1259228,1259229,1259230,1259254,1259273,1259274,1259275,1259285,1259296,1259303,1259330,1259338,1259339,1259340,1259341,1259342,1259343,1259344,1259351,1259746,1259747,1259748,1259749,1259764,1259765,1259766,1259767,1259773,1259779,1259797,1259806,1259821,1259830,1259836,1259837,1259838,1259839,1259840,1259841,1259842,1259843,1259844,1259845,1259859,1259866,1259872,1259881,1259882,1259883,1259884,1259905,1259906,1259907,1259908,1259943,1259950,1259968,1259980,1259985,1259992,1259993,1259994,1259995,1259996,1259997,1259998,1260113,1260118,1260143,1260144,1260145,1260146,1260253,1260299,1260308,1260335,1260380,1260518,1260551,1260604,1260650,1260651,1260652,1266679,1266877,1266895,1266901,1266924,1266985,1266991,1267009,1267024,1267036,1267037,1267038,1267039,1267040,1267041,1267042,1267043,1267044,1267050,1267056,1267071,1267072,1267073,1267074,1267075,1267076,1267077,1267078,1267079,1267080,1267081,1267082,1267083,1267092,1267093,1267094,1267095,1267101,1267108,1267116,1267122,1267123,1267124,1267125,1267126,1267131,1267137,1267143,1267144,1267150,1267151,1267152,1267158,1267167,1267173,1267225,1267237,1267251,1267252,1267273,1267274,1267275,1267276,1267277,1267278,1267283,1267296,1267297,1267332,1267370,1267371,1267380,1267401,1267411,1267412,1267413,1267414,1267415,1267421,1267422,1267423,1267429,1267437,1267438,1267439,1267440,1267441,1267453,1267460,1267465,1267471,1267472,1267473,1267474,1267480,1267481,1267482,1267483,1267484,1267485,1267498,1267507,1267508,1267509,1267510,1267511,1267512,1267513,1267520,1267528,1267534,1267540,1267541,1267542,1267543,1267544,1267545,1267546,1267547,1267548,1267549,1267550,1267551,1267552,1267553,1267554,1267555,1267561,1267562,1267570,1267580,1267706,1267744,1267745,1267762,1267763,1267764,1267765,1267766,1267786,1267795,1267807,1267808,1267825,1267826,1267827,1267828,1267846,1267847,1267848,1267849,1267855,1267870,1267904,1267955,1267982,1267983,1267984,1267985,1267986,1267987,1267988,1267989,1267990,1267991,1268000,1268001,1268013,1268018,1268024,1268048,1268049,1268050,1268051,1268063,1268096,1268208,1268234,1268252,1268294,1268351,1268352,1268353,1268354,1268375,1268376,1268377,1268378,1268379,1268380,1268381,1268396,1268397,1268398,1268399,1268400,1268401,1268402,1268445,1268474,1268483,1268484,1268485,1268486,1268487,1268488,1268489,1268498,1268528,1268540,1268552,1268562,1268571,1268576,1268583,1268590,1268611,1268625,1268658,1268670,1268682,1268683,1268684,1268685,1268693,1268714,1268726,1268735,1268736,1268737,1268738,1268747,1268748,1268765,1268766,1268767,1268768,1268769,1268777,1268792,1268798,1268806,1268812,1268813,1268814,1268815,1268816,1268817,1268818,1268819,1268827,1268828,1268829,1268830,1268831,1268837,1268843,1268855,1268856,1268857,1268858,1268865,1268866,1268867,1268868,1268869,1268870,1268871,1268872,1268873,1268882,1268888,1268889,1268890,1268891,1268900,1268922,1268930,1268931,1268932,1268933,1268948,1268949,1268963,1268964,1268965,1268966,1268967,1268968,1268969,1268970,1268971,1268972,1268973,1268974,1268975,1268984,1268990,1268999,1269000,1269001,1269002,1269008,1269029,1269030,1269031,1269032,1269033,1269034,1269035,1269047,1269059,1269068,1269077,1269078,1269079,1269080,1269088,1269089,1269090,1269091,1269092,1269100,1269101,1269102,1269103,1269104,1269105,1269106,1269107,1269132,1269133,1269134,1269135,1269136,1269137,1269149,1269158,1269164,1269165,1269166,1269167,1269188,1269189,1269190,1269195,1269203,1269204,1269205,1269206,1269207,1269208,1269209,1269210,1269211,1269212,1269213,1269214,1269215,1269227,1269233,1269242,1269251,1269260,1269261,1269262,1269263,1269264,1269265,1269266,1269267,1269268,1269269,1269291,1269292,1269293,1269300,1269301,1269302,1269303,1269311,1269312,1269313,1269314,1269315,1269335,1269348,1269349,1269356,1269365,1269366,1269367,1269368,1269369,1269374,1269383,1269384,1269385,1269386,1269387,1269401,1269407,1269408,1269409,1269410,1269411,1269412,1269413,1269414,1269415,1269416,1269422,1269428,1269429,1269430,1269431,1269440,1269446,1269447,1269448,1269449,1269450,1269451,1269452,1269470,1269471,1269472,1269473,1269479,1269480,1269485,1269486,1269497,1269503,1269516,1269521,1269572,1269584,1269623,1269686,1269691,1269692,1269693,1269694,1269695,1269696,1269697,1269698,1269699,1269706,1269707,1269716,1269731,1269750,1269751,1269752,1269753,1269754,1269755,1269760,1269777,1269782,1269788,1269809,1269816,1269826,1269827,1269828,1269829,1269830,1269863,1269873,1269874,1269875,1269878,1269886,1269887,1269888,1269889,1269890,1269901,1269903,1269941,1269942,1269960,1269968,1269969,1269974,1269975,1269976,1269977,1269999,1270000,1270001,1270002,1270005,1270014,1270015,1270016,1270017,1270023,1270029,1270030,1270031,1270032,1270040,1270044,1270068,1270074,1270080,1270098,1270099,1270100,1270101,1270120,1270157,1270176,1270177,1270178,1270179,1270185,1270192,1270193,1270194,1270195,1270196,1270197,1270198,1270199,1270200,1270201,1270202,1270203,1270209,1270215,1270216,1270217,1270218,1270219,1270220,1270221,1270222,1270228,1270229,1270230,1270231,1270232,1270233,1270234,1270240,1270245,1270251,1270252,1270253,1270254,1270266,1270267,1270268,1270269,1270275,1270281,1270287,1270296,1270312,1270320,1270326,1270338,1270353,1270354,1270365,1270380,1270381,1270382,1270383,1270389,1270390,1270391,1270392,1270410,1270426,1270427,1270428,1270448,1270453,1270459,1270460,1270461,1270462,1270463,1270464,1270465,1270472,1270480,1270507,1270525,1270540,1270543,1270555,1270559,1270560,1270561,1270562,1270563,1270564,1270565,1270566,1270567,1270573,1270582,1270583,1270584,1270585,1270591,1270603,1270619,1270620,1270624,1270625,1270626,1270627,1270628,1270629,1270630,1270631,1270632,1270633,1270637,1270642,1270648,1270654,1270660,1270661,1270662,1270663,1270664,1270665,1270666,1270667,1270668,1270669,1270672,1270673,1270674,1270675,1270676,1270677,1270678,1270679,1270680,1270681,1270684,1270693,1270694,1270695,1270696,1270697,1270698,1270699,1270700,1270708,1270726,1270732,1270733,1270734,1270735,1270741,1270742,1270743,1270744,1270749,1270750,1270751,1270752,1270753,1270756,1270765,1270766,1270767,1270768,1270769,1270770,1270771,1270777,1270778,1270779,1270780,1270783,1270795,1270796,1270797,1270798,1270799,1270800,1270801,1270802,1270803,1270804,1270813,1270816,1270819,1270825,1270826,1270827,1270828,1270829,1270830,1270831,1270843,1270844,1270845,1270846,1270847,1270848,1270849,1270855,1270861,1270864,1270870,1270871,1270872,1270873,1270874,1270875,1270876,1270882,1270888,1270889,1270890,1270891,1270897,1270906,1270907,1270908,1270909,1270910,1270915,1270921,1270922,1270927,1270936,1270937,1270938,1270939,1270942,1270945,1270946,1270947,1270948,1270963,1270964,1270965,1270966,1270972,1270973,1270974,1270975,1270976,1270977,1270978,1271032,1271059,1271083,1271092,1271119,1271146,1271147,1271148,1271149,1271155,1271167,1271168,1271169,1271170,1271171,1271172,1271173,1271174,1271175,1271176,1271177,1271178,1271179,1271194,1271195,1271196,1271197,1271198,1271199,1271200,1271201,1271202,1271203,1271204,1271205,1271206,1271212,1271221,1271222,1271223,1271224,1271233,1271242,1271243,1271244,1271245,1271251,1271252,1271253,1271254,1271255,1271256,1271257,1271258,1271259,1271260,1271269,1271275,1271395,1271396,1271397,1271398,1271399,1271400,1271401,1271407,1271416,1271417,1271418,1271419,1271439,1271440,1271441,1271442,1271443,1271470,1271476,1271482,1271491,1271497,1271498,1271499,1271500,1271506,1271507,1271508,1271509,1271516,1271517,1271518,1271519,1271520,1271521,1271522,1271523,1271524,1271533,1271534,1271535,1271536,1271537,1271538,1271539,1271545,1271581,1271582,1271583,1271584,1271596,1271597,1271598,1271599,1271600,1271601,1271602,1271603,1271608,1271653,1271674,1271675,1271676,1271677,1271683,1271689,1271690,1271691,1271692,1271693,1271704,1271710,1271711,1271712,1271713,1271731,1271732,1271746,1271752,1271753,1271754,1271755,1271761,1271764,1271770,1271788,1271789,1271790,1271791,1271792,1271793,1271794,1271803,1271809,1271815,1271824,1271828,1271829,1271830,1271831,1271832,1271833,1271854,1271861,1271869,1271870,1271871,1271872,1271873,1271874,1271875,1271881,1271890,1271902,1271903,1271904,1271905,1271906,1271907,1271908,1271909,1271910,1271911,1271920,1271923,1271929,1271938,1271944,1271945,1271946,1271947,1271953,1271954,1271955,1271956,1271965,1271966,1271967,1271968,1271977,1271978,1271979,1271980,1271989,1271990,1271991,1271992,1271998,1271999,1272000,1272001,1272002,1272003,1272004,1272010,1272013,1272014,1272015,1272016,1272017,1272018,1272019,1272022,1272025,1272026,1272027,1272028,1272043,1272049,1272050,1272051,1272052,1272064,1272073,1272074,1272075,1272076,1272077,1272078,1272079,1272080,1272088,1272091,1272097,1272106,1272109,1272115,1272118,1272121,1272127,1272136,1272145,1272175,1272176,1272177,1272178,1272184,1272185,1272186,1272187,1272188,1272189,1272190,1272196,1272197,1272198,1272199,1272202,1272205,1272206,1272207,1272208,1272209,1272210,1272211,1272212,1272213,1272214,1272215,1272216,1272217,1272229,1272238,1272247,1272253,1272254,1272255,1272256,1272257,1272258,1272259,1272260,1272271,1272277,1272280,1272286,1272287,1272295,1272301,1272302,1272303,1272304,1272305,1272306,1272307,1272308,1272309,1272310,1272311,1272312,1272313,1272319,1272322,1272323,1272324,1272325,1272331,1272337,1272338,1272339,1272340,1272349,1272358,1272364,1272365,1272366,1272367,1272368,1272369,1272370,1272376,1272385,1272391,1272392,1272393,1272394,1272400,1272401,1272402,1272403,1272404,1272405,1272406,1272416,1272417,1272418,1272424,1272425,1272426,1272427,1272430,1272436,1272437,1272438,1272439,1272440,1272445,1273011,1273012,1273082,1273088,1273115,1273124,1273130,1273136,1273137,1273138,1273139,1273145,1273166,1273172,1273173,1273174,1273175,1273176,1273177,1273178,1273193,1273214,1273215,1273216,1273217,1273223,1273224,1273225,1273226,1273227,1273228,1273229,1273235,1273240,1273256,1273264,1273265,1273266,1273267,1273268,1273269,1273270,1273271,1273272,1273273,1273274,1273275,1273276,1273277,1273278,1273279,1273280,1273286,1273295,1273296,1273297,1273298,1273299,1273300,1273301,1273311,1273420,1273495,1273508,1273517,1273524,1273529,1273539,1273545,1273546,1273547,1273548,1273549,1273560,1273561,1273562,1273563,1273564,1273565,1273566,1273567,1273568,1273574,1273579,1273585,1273586,1273587,1273602,1273608,1273613,1273626,1273633,1273639,1273640,1273641,1273642,1273643,1273644,1273645,1273646,1273647,1273673,1273674,1273682,1273691,1273707,1273719,1273726,1273727,1273728,1273743,1273744,1273745,1273746,1273747,1273748,1273749,1274017,1274025,1274038,1274043,1274049,1274063,1274064,1274065,1274066,1274067,1274079,1274116,1274117,1274118,1274123,1274124,1274125,1274126,1274127,1274128,1274129,1274130,1274145,1274151,1274152,1274153,1274154,1274155,1274156,1274157,1274158,1274159,1274160,1274161,1274162,1274163,1274169,1274178,1274184,1274193,1274194,1274195,1274196,1274197,1274198,1274199,1274214,1274215,1274216,1274217,1274218,1274219,1274220,1274272,1274461,1274509,1274535,1274536,1274537,1274550,1274586,1274587,1274588,1274589,1274590,1274591,1274592,1274593,1274594,1274595,1274596,1274597,1274598,1274611,1274619,1274620,1274621,1274622,1274628,1274629,1274630,1274631,1274632,1274633,1274641,1274656,1274657,1274658,1274659,1275003,1275012,1275013,1275021,1275028,1275029,1275030,1275153,1275210,1275252,1275267,1275318,1275319,1275320,1275321,1275336,1275354,1275546,1275553,1275562,1275571,1275572,1275573,1275574,1275595,1275635,1275688,1275717,1275725,1275726,1275727,1275745,1275764,1275769,1275774,1275798,1275814,1275834,1275849,1275864,1275876,1275883,1275907,1275908,1275909,1275910,1275920,1275925,1275926,1275927,1275928,1275973,1275983,1275984,1275985,1275991,1276018,1276027,1276063,1276082,1276093,1276099,1276123,1276129,1276162,1276195,1276216,1276221,1276231,1276232,1276233,1276234,1276235,1276236,1276237,1276238,1276252,1276253,1276256,1276264,1276265,1276273,1276292,1276298,1276498,1276531,1276538,1276544,1276545,1276546,1276547,1276548,1276556,1276665,1276671,1276711,1276735,1276756,1276757,1276758,1276759,1276780,1276786,1276795,1276810,1276811,1276812,1276813,1276814,1276815,1276816,1276837,1276852,1276864,1276903,1276921,1276930,1276937,1276959,1276989,1277038,1277113,1277167,1277168,1277169,1277170,1277177,1277179,1277185,1277197,1277200,1277287,1277380,1277433,1277434,1277435,1277436,1277437,1277448,1277481,1277520,1277529,1277577,1277578,1277579,1277580,1277581,1277589,1277606,1277613,1277676,1277721,1277769,1277802,1277818,1277913,1278000,1278012,1278078,1278079,1278080,1278081,1278111,1278112,1278117,1278118,1278119,1278120,1278126,1278258,1278291,1278312,1278319,1278381,1278408,1278429,1278435,1278441,1278457,1278458,1278459,1278465,1278513,1278528,1278538,1278603,1278608,1278609,1278610,1278611,1278612,1278624,1278625,1278626,1278627,1278630,1278633,1278639,1278651,1278652,1278653,1278654,1278660,1278684,1278747,1278748,1278753,1278754,1278755,1278756,1278765,1278777,1278783,1278784,1278785,1278786,1278787,1278788,1278789,1278795,1278804,1278805,1278806,1278807,1278813,1278814,1278815,1278816,1278825,1278831,1278837,1278853,1278871,1278880,1278892,1278893,1278894,1278895,1278901,1278910,1278934,1278935,1278946,1279056,1279065,1279066,1279067,1279068,1279074,1279080,1279081,1279082,1279083,1279089,1279110,1279125,1279126,1279127,1279128,1279129,1279156,1279157,1279158,1279159,1279164,1279173,1279174,1279180,1279181,1279182,1279183,1279184,1279185,1279186,1279187,1279188,1279201,1279252,1279261,1279267,1279268,1279273,1279282,1279288,1279294,1279309,1279330,1279345,1279414,1279415,1279416,1279417,1279441,1279453,1279475,1279523,1279524,1279525,1279526,1279547,1279548,1279549,1279550,1279551,1279552,1279553,1279562,1279563,1279564,1279565,1279577,1279586,1279643,1279644,1279645,1279646,1279652,1279661,1279671,1279672,1279673,1279682,1279683,1279684,1279685,1279691,1279692,1279693,1279694,1279709,1279710,1279711,1279712,1279718,1279724,1279730,1279742,1279766,1279772,1279773,1279774,1279775,1279784,1279785,1279786,1279787,1279793,1279794,1279795,1279796,1279797,1279798,1279799,1279800,1279801,1279802,1279803,1279804,1279805,1279811,1279812,1279813,1279814,1279823,1279832,1279844,1279889,1279918,1279919,1279925,1279931,1280003,1280040,1280093,1280108,1280118,1280155,1280218,1280238,1280248,1280335,1280371,1280449,1280491,1280509,1280545,1280581,1280661,1280662,1280696,1280792,1280804,1280818,1280824,1280834,1280852,1280864,1280872,1280879,1280880,1280881,1280882,1280883,1280884,1280891,1280892,1280893,1280894,1280895,1280896,1280897,1280905,1280906,1280907,1280908,1280979,1280980,1280981,1280982,1280988,1281000,1281012,1281033,1281034,1281035,1281036,1281051,1281052,1281053,1281054,1281055,1281056,1281057,1281078,1281099,1281105,1281117,1281126,1281127,1281128,1281129,1281130,1281131,1281132,1281133,1281134,1281135,1281246,1281261,1281292,1281293,1281294,1281295,1281296,1281297,1281298,1281299,1281300,1281301,1281302,1281303,1281318,1281372,1281373,1281374,1281375,1281376,1281377,1281378,1281390,1281399,1281400,1281401,1281402,1281408,1281426,1281435,1281436,1281437,1281438,1281439,1281440,1281441,1281442,1281447,1281448,1281449,1281450,1281456,1281457,1281458,1281459,1281460,1281461,1281462,1281463,1281464,1281465,1281480,1281486,1281491,1281498,1281504,1281510,1281516,1281531,1281532,1281533,1281534,1281540,1281552,1281561,1281568,1281569,1281600,1281624,1281637,1281650,1281654,1281672,1281678,1281679,1281684,1281685,1281686,1281687,1281688,1281689,1281690,1281699,1281723,1281724,1281725,1281726,1281753,1281754,1281755,1281756,1281757,1281758,1281759,1281760,1281761,1281762,1281763,1281771,1281786,1281787,1281788,1281789,1281795,1281801,1281807,1281813,1281822,1281831,1281837,1281838,1281839,1281840,1281852,1281853,1281854,1281855,1281856,1281857,1281858,1281859,1281860,1281861,1281915,1281922,1281940,1281949,1281950,1281951,1281952,1281953,1281954,1281955,1282002,1282026,1282035,1282044,1282051,1282052,1282053,1282077,1282078,1282079,1282080,1282081,1282086,1282140,1282152,1282153,1282154,1282155,1282179,1282212,1282216,1282221,1282231,1282245,1282251,1282329,1282389,1282437,1282438,1282439,1282440,1282441,1282464,1282503,1282552,1282553,1282554,1282555,1282556,1282609,1282610,1282611,1282612,1282621,1282653,1282654,1282655,1282656,1282684,1282685,1282686,1282687,1282688,1282689,1282690,1282691,1282692,1282693,1282694,1282695,1282696,1282732,1282733,1282734,1282735,1282747,1282792,1282849,1282855,1282899,1282904,1282916,1282917,1282918,1282953,1282974,1282983,1282984,1282985,1282986,1282987,1283010,1283029,1283040,1283043,1283044,1283045,1283046,1283052,1283061,1283091,1283097,1283103,1283112,1283113,1283114,1283115,1283142,1283211,1283248,1283249,1283250,1283263,1283268,1283269,1283270,1283271,1283332,1283351,1283352,1283363,1283411,1283430,1283435,1283436,1283437,1283438,1283439,1283446,1283447,1283453,1283459,1283465,1283466,1283467,1283468,1283484,1283492,1283501,1283507,1283508,1283509,1283510,1283511,1283512,1283513,1283514,1283515,1283516,1283517,1283518,1283540,1283546,1283553,1283556,1283558,1283566,1283567,1283568,1283569,1283570,1283571,1283572,1283573,1283574,1283585,1283608,1283615,1283621,1283636,1283637,1283638,1283639,1283651,1283663,1283664,1283665,1283666,1283687,1283688,1283689,1283690,1283699,1283702,1283705,1283767,1283773,1283774,1283775,1283776,1283781,1283800,1283807,1283821,1283851,1283857,1283876,1283878,1283879,1283880,1283881,1283896,1283897,1283898,1283899,1283900,1283901,1283902,1283903,1283904,1283905,1283911,1283938,1283953,1283954,1283955,1283956,1283957,1283962,1283971,1283972,1283973,1283974,1283975,1283976,1283977,1283989,1283990,1284013,1284034,1284047,1284048,1284049,1284050,1284051,1284052,1284058,1284059,1284060,1284061,1284070,1284085,1284097,1284103,1284116,1284124,1284164,1284165,1284166,1284181,1284182,1284183,1284184,1284202,1284220,1284235,1284236,1284237,1284238,1284244,1284274,1284275,1284276,1284277,1284292,1284309,1284316,1284328,1284347,1284363,1284369,1284375,1284405,1284413,1284419,1284420,1284421,1284422,1284423,1284424,1284425,1284426,1284427,1284443,1284444,1284445,1284446,1284454,1284461,1284482,1284483,1284484,1284485,1284492,1284493,1284494,1284518,1284519,1284520,1284521,1284531,1284536,1284537,1284538,1284539,1284547,1284548,1284549,1284550,1284551,1284552,1284553,1284554,1284563,1284564,1284565,1284566,1284572,1284573,1284574,1284575,1284576,1284577,1284578,1284588,1284589,1284590,1284591,1284592,1284593,1284594,1284595,1284596,1284597,1284598,1284599,1284600,1284601,1284602,1284603,1284604,1284605,1284606,1284607,1284608,1284635,1284636,1284637,1284638,1284647,1284653,1284671,1284672,1284673,1284674,1284689,1284690,1284691,1284692,1284693,1284694,1284695,1284696,1284697,1284704,1284705,1284706,1284707,1284708,1284709,1284710,1284711,1284712,1284713,1284714,1284715,1284716,1284811,1284877,1284905,1284913,1284926,1284935,1284965,1284966,1284967,1284973,1284974,1284979,1284980,1284989,1284990,1284991,1284992,1284993,1284994,1284995,1284996,1284997,1284998,1284999,1285000,1285021,1285022,1285033,1285057,1285066,1285067,1285068,1285069,1285075,1285076,1285077,1285078,1285090,1285097,1285098,1285099,1285111,1285112,1285113,1285114,1285120,1285168,1285169,1285170,1285171,1285183,1285192,1285225,1285240,1285270,1285282,1285312,1285327,1285342,1285345,1285364,1285378,1285388,1285393,1285394,1285395,1285396,1285397,1285411,1285444,1285459,1285504,1285516,1285517,1285518,1285519,1285520,1285561,1285567,1285573,1285579,1285580,1285581,1285582,1285588,1285597,1285606,1285612,1285613,1285614,1285615,1285636,1285637,1285638,1285639,1285640,1285641,1285642,1285654,1285655,1285656,1285657,1285663,1285675,1285682,1285683,1285684,1285690,1285696,1285697,1285698,1285699,1285700,1285701,1285702,1285712,1285726,1285738,1285756,1285774,1285786,1285801,1285825,1285837,1285838,1285839,1285840,1285841,1285842,1285843,1285844,1285845,1285846,1285847,1285848,1285849,1285850,1285851,1285852,1285853,1285854,1285855,1285876,1285909,1285910,1285911,1285912,1285927,1285928,1285929,1285930,1285931,1285932,1285933,1285984,1286002,1286020,1286021,1286050,1286056,1286065,1286066,1286067,1286068,1286074,1286083,1286101,1286104,1286105,1286106,1286107,1286125,1286131,1286143,1286149,1286161,1286164,1286165,1286166,1286167,1286173,1286174,1286175,1286176,1286177,1286178,1286179,1286180,1286181,1286182,1286189,1286206,1286207,1286208,1286209,1286221,1286227,1286236,1286248,1286263,1286269,1286270,1286271,1286272,1286273,1286274,1286275,1286278,1286279,1286280,1286281,1286282,1286283,1286284,1286326,1286338,1286344,1286356,1286362,1286377,1286378,1286379,1286380,1286381,1286382,1286383,1286384,1286385,1286386,1286392,1286393,1286394,1286395,1286396,1286397,1286398,1286422,1286431,1286456,1286470,1286479,1286480,1286481,1286482,1286483,1286484,1286485,1286486,1286487,1286488,1286494,1286497,1286539,1286569,1286570,1286571,1286572,1286578,1286581,1286593,1286602,1286614,1286615,1286616,1286617,1286618,1286619,1286620,1286647,1286683,1286686,1286692,1286698,1286699,1286700,1286701,1286716,1286729,1286743,1286750,1286758,1286773,1286794,1286803,1286836,1286872,1286873,1286874,1286875,1286878,1286900,1286908,1286926,1286927,1286928,1286929,1286935,1286947,1286956,1286971,1286977,1286992,1287019,1287041,1287049,1287050,1287058,1287070,1287071,1287072,1287073,1287106,1287109,1287124,1287125,1287127,1287128,1287129,1287130,1287135,1287136,1287137,1287138,1287139,1287145,1287190,1287199,1287200,1287201,1287202,1287217,1287223,1287224,1287225,1287226,1287227,1287228,1287229,1287235,1287236,1287237,1287238,1287239,1287240,1287241,1287247,1287248,1287249,1287250,1287251,1287252,1287253,1287254,1287255,1287256,1287257,1287258,1287259,1287277,1287283,1287289,1287290,1287291,1287292,1287293,1287298,1287305,1287307,1287313,1287314,1287315,1287316,1287317,1287318,1287319,1287320,1287321,1287322,1287323,1287324,1287325,1287394,1287403,1287404,1287405,1287437,1287448,1287511,1287526,1287541,1287556,1287565,1287577,1287580,1287581,1287582,1287583,1287619,1287628,1287637,1287659,1287666,1287673,1287682,1287683,1287684,1287685,1287691,1287700,1287701,1287702,1287703,1287704,1287705,1287706,1287707,1287708,1287709,1287710,1287711,1287712,1287713,1287714,1287715,1287730,1287733,1287734,1287735,1287736,1287737,1287738,1287739,1287757,1287763,1287764,1287765,1287766,1287781,1287782,1287783,1287784,1287785,1287786,1287787,1287788,1287789,1287790,1287791,1287792,1287793,1287799,1287811,1287820,1287821,1287822,1287823,1287829,1287830,1287831,1287832,1287833,1287834,1287835,1287841,1287859,1287881,1287892,1287893,1287894,1287895,1287904,1287913,1287914,1287915,1287916,1287917,1287918,1287919,1287920,1287921,1287922,1287928,1287929,1287930,1287931,1287940,1287949,1287955,1287961,1287967,1287973,1287974,1287975,1287976,1287977,1287978,1287979,1287980,1287981,1287982,1287983,1287984,1287985,1287986,1287987,1287988,1287998,1288003,1288004,1288005,1288006,1288007,1288008,1288009,1288021,1288033,1288034,1288035,1288036,1288037,1288042,1288050,1288051,1288066,1288067,1288068,1288069,1288070,1288075,1288076,1288093,1288094,1288095,1288096,1288103,1288168,1288192,1288198,1288199,1288200,1288201,1288202,1288203,1288204,1288210,1288211,1288212,1288213,1288214,1288215,1288216,1288217,1288218,1288219,1288225,1288226,1288227,1288228,1288229,1288230,1288231,1288232,1288233,1288234,1288243,1288244,1288245,1288246,1288247,1288248,1288249,1288255,1288256,1288257,1288258,1288259,1288260,1288261,1288262,1288263,1288264,1288265,1288266,1288267,1288273,1288279,1288288,1288294,1288297,1288309,1288310,1288311,1288312,1288313,1288314,1288315,1288335,1288342,1288343,1288344,1288345,1288354,1288355,1288356,1288357,1288358,1288359,1288360,1288361,1288362,1288363,1288364,1288365,1288366,1288375,1288387,1288388,1288389,1288390,1288391,1288392,1288393,1288402,1288420,1288421,1288422,1288423,1288429,1288430,1288438,1288439,1288440,1288441,1288453,1288454,1288455,1288456,1288457,1288458,1288459,1288460,1288461,1288462,1288468,1288480,1288495,1288500,1288501,1288504,1288507,1288516,1288519,1288522,1288543,1288544,1288545,1288546,1288577,1288578,1288579,1288580,1288581,1288582,1288583,1288589,1288590,1288591,1288592,1288593,1288594,1288595,1288596,1288598,1288648,1288649,1288650,1288665,1288677,1288683,1288684,1288685,1288686,1288704,1288720,1288730,1288733,1288734,1288735,1288736,1288737,1288738,1288739,1288740,1288741,1288742,1288745,1288751,1288752,1288753,1288754,1288766,1288772,1288785,1288846,1288847,1288848,1288849,1288864,1288870,1288898,1288911,1288920,1288921,1288922,1288923,1288924,1288929,1288938,1289076,1289123,1289171,1289177,1289336,1289337,1289338,1289339,1289340,1289341,1289342,1289351,1289352,1289353,1289354,1289369,1289370,1289371,1289372,1289373,1289374,1289375,1289376,1289377,1289378,1289379,1289380,1289381,1289387,1289399,1289405,1289411,1289423,1289424,1289425,1289426,1289432,1289453,1289465,1289466,1289467,1289468,1289477,1289478,1289479,1289480,1289489,1289504,1289511,1289519,1289520,1289521,1289522,1289537,1289600,1289606,1289612,1289613,1289624,1289642,1289643,1289644,1289645,1289654,1289732,1289762,1289763,1289764,1289765,1289773,1289795,1289803,1289815,1289874,1289890,1289893,1289899,1289956,1289971,1289977,1290008,1290015,1290016,1290017,1290056,1290154,1290155,1290200,1290302,1290311,1290491,1290668,1290707,1290728,1290761,1290767,1290773,1290785,1290807,1290808,1290809,1290869,1290969,1290989,1291007,1291058,1291112,1291113,1291114,1291115,1291121,1291145,1291208,1291301,1291302,1291303,1291304,1291305,1291306,1291307,1291308,1291334,1291349,1291388,1291418,1291481,1291490,1291491,1291492,1291493,1291499,1291505,1291511,1291524,1291525,1291526,1291527,1291528,1291529,1291538,1291539,1291540,1291541,1291542,1291543,1291544,1291545,1291546,1291547,1291558,1291559,1291577,1291628,1291655,1291721,1291761,1291766,1291793,1291794,1291795,1291796,1291802,1291832,1291841,1291847,1291848,1291849,1291850,1291857,1291858,1291859,1291860,1291861,1291862,1291877,1291880,1291886,1291895,1291901,1291913,1291928,1291943,1291952,1291979,1291980,1291981,1291982,1292012,1292039,1292040,1292041,1292042,1292051,1292087,1292088,1292089,1292090,1292123,1292153,1292183,1292184,1292185,1292186,1292187,1292188,1292189,1292190,1292195,1292202,1292204,1292205,1292207,1292222,1292223,1292224,1292225,1292226,1292240,1292265,1292270,1292297,1292324,1292349,1292350,1292351,1292352,1292353,1292354,1292384,1292385,1292386,1292387,1292417,1292426,1292432,1292462,1292474,1292480,1292681,1292702,1292707,1292708,1292738,1292744,1292763,1292822,1292823,1292824,1292825,1292841,1292846,1292867,1292894,1292906,1292912,1292933,1292936,1292937,1292938,1292939,1292953,1292954,1292955,1292956,1292957,1292958,1292963,1292964,1292965,1292966,1292967,1292968,1292969,1292970,1292971,1292972,1292978,1292984,1292990,1292991,1292992,1292993,1292994,1292995,1292996,1292997,1292998,1292999,1293000,1293008,1293041,1293042,1293043,1293044,1293045,1298044,1298045,1298046,1298047,1298048,1298049,1298055,1298069,1298070,1298218,1305105,1320662,1324743,1324939,1324952,1324953,1324954,1324955,1324956,1324957,1324958,1324959,1324960,1324961,1324962,1324963,1324964,1324974,1324984,1324999,1325000,1325001,1325002,1325003,1325013,1325032,1325033,1325034,1325035,1325044,1325053,1325077,1325082,1325083,1325107,1325108,1325109,1325110,1325111,1325112,1325131,1325143,1325144,1325145,1325146,1325147,1325148,1325161,1325162,1325163,1325164,1325165,1325180,1325181,1325191,1325202,1325245,1325246,1325247,1325248,1325249,1325250,1325251,1325252,1325253,1325254,1325270,1325296,1325313,1325323,1325407,1325599,1325605,1325622,1325623,1325630,1325716,1325740,1325788,1325841,1325847,1325863,1325876,1325886,1325904,1325905,1325906,1325907,1325908,1325932,1325933,1325934,1325935,1325936,1325937,1325938,1325947,1325948,1325949,1325950,1325951,1325952,1325953,1325959,1325960,1325961,1325962,1325968,1325974,1325975,1325976,1325977,1325989,1325995,1326000,1326013,1326049,1326050,1326051,1326052,1326067,1326068,1326069,1326070,1326094,1326099,1326100,1326101,1326102,1326111,1326130,1326139,1326140,1326141,1326142,1326143,1326144,1326157,1326169,1326170,1326171,1326172,1328402,1328403,1328404,1328405,1328406,1328407,1328821,1328827,1329138,1329139,1329140,1329141,1329142,1329166,1329167,1329168,1329169,1329170,1329171,1329172,1339340,1339357,1339363,1339364,1339365,1339366,1339381,1339387,1339417,1339432,1339438,1339439,1339440,1339441,1339442,1339448,1339449,1339450,1339483,1339782,1339783,1339784,1339785,1339794,1339801,1339807,1339808,1339809,1339810,1339811,1339812,1339813,1339821,1339831,1339832,1339833,1339847,1339849,1339850,1339851,1339852,1339862,1339863,1339875,1339876,1339877,1339878,1339879,1339880,1339881,1339882,1339883,1339884,1339885,1339886,1339887,1339893,1339894,1339895,1339896,1339929,1341237,1341238,1341245,1341246,1341247,1341272,1341277,1371107,1371108,1371109,1371110,1371191,1371192,1371193,1371194,1371202,1372183,1372184,1372185,1372204,1379737,1390070,1401166,1401394,1420977,1422264,1425178,1428690,1447411,1447975,1449868,1451548,1463485,1487844,1502933,1507247,1508002,1511099,1516197,1518108,1518143,1526538,1531542,1536551,1563560,1565753,1566991,1567969,1580558,1582815,1587245,1592296,1599601,1600835,1603376,1605244,1607409,1650488,1697366,1713710,1717347,1720028,1723162,1740301,1744320,1754937,1761808,1762018,1763090,1774949,1783360,1785543,1786870,1790922,1795959,1799978,1802791,1804609,1818042,1831911,1835710,1851516,1863553,1867186,1871261,1884475,1884925,1890395,1902752,1915078,1923222,1924913,1941946,1951419,1951420,1951432,1951433,1951434,1951435,1951436,1951437,1951438,1951439,1951440,1951441,1951462,1951468,1951528,1951529,1951530,1951531,1951537,1951552,1951570,1951594,1951726,1951727,1951728,1951729,1951735,1951741,1951750,1951768,1951783,1951888,1951990,1956329,1982993,1983616,1985493,1985886,1987012,1987424,1988040,1989524,2003728,2009789,2014186,2023231,2024770,2033704,2036224,2060136,2061089,2066862,2072761,2073425,2074093,2074821,2076767,2099483,2104615,2106034,2106120,2108849,2109412,2109680,2114959,2125807,2126412,2129997,2133201,2155370,2156299,2161628,2166005,2177656,2185656,2187168,2187418,2187753,2195430,2195437,2195438,2195486,2195487,2195488,2195489,2213181,2213363,2214837,2219744,2225974,2239369,2242949,2245399,2252688,2252931,2254745,2269190,2291801,2291914,2296944,2305953,2306999,2311100,2323321,2324300,2328897,2373296,2379476,2379637,2408660,2414262,2417773,2421424,2428790,2439159,2446283,2448757,2449975,2451462,2454300,2454318,2454375,2454381,2454410,2454411,2454412,2454413,2454414,2454466,2455274,2455306,2455321,2455327,2455367,2455402,2455480,2455481,2455495,2455594,2455609,2455621,2455622,2455623,2455624,2455625,2455626,2455633,2455639,2455648,2455649,2455650,2455663,2455664,2455665,2455666,2455675,2455723,2455729,2455783,2455801,2455802,2455803,2455819,2455825,2455834,2455849,2455891,2455892,2455893,2455894,2455928,2455929,2455937,2455938,2455939,2455940,2455941,2455942,2455948,2455953,2455960,2455966,2455967,2455968,2455969,2455990,2455999,2456006,2456011,2456071,2456072,2456073,2456074,2456092,2456100,2456106,2456828,2456838,2456839,2456840,2456853,2456879,2456895,2456901,2456902,2456903,2456904,2456905,2456918,2456919,2456920,2456921,2456922,2456931,2456986,2456995,2457027,2457028,2457029,2457030,2457031,2459190,2459195,2459201,2459210,2459216,2459222,2459223,2459224,2459225,2459226,2459227,2459228,2459243,2459249,2459255,2459261,2459288,2459333,2459354,2459367,2459372,2459391,2459401,2459408,2459417,2459423,2459429,2459430,2459431,2459432,2459433,2459434,2459435,2459436,2459437,2459438,2459461,2459951,2459957,2459958,2459959,2459969,2460008,2460009,2460010,2460011,2460020,2460021,2460022,2460028,2460029,2460030,2460031,2460032,2460033,2460034,2460035,2460036,2460037,2460038,2460059,2460060,2460061,2460070,2460071,2460072,2460073,2460074,2460075,2460076,2460077,2460078,2460095,2460096,2460097,2460098,2460099,2460100,2460101,2460102,2460103,2460104,2460105,2460106,2460107,2460122,2460128,2460143,2460144,2460145,2460146,2460147,2460148,2460149,2460150,2460151,2460161,2460166,2460167,2460168,2460169,2460170,2460171,2460172,2460173,2460178,2460179,2460180,2460181,2460182,2460209,2460225,2460226,2460227,2460233,2460242,2460251,2460257,2460308,2460309,2460310,2460311,2460323,2460329,2460338,2460347,2460410,2460424,2460433,2460445,2460446,2460447,2460448,2460469,2460487,2460499,2460511,2460749,2460769,2460775,2460781,2460782,2460783,2460784,2460798,2460799,2460817,2460828,2460829,2460830,2460831,2460832,2460833,2460834,2460835,2460852,2460853,2460862,2460880,2460892,2460898,2460907,2460916,2460917,2460918,2460919,2460940,2460967,2460968,2460969,2460970,2460971,2460972,2460973,2460974,2460975,2460976,2460977,2460978,2460979,2460999,2461024,2461025,2461026,2461027,2461028,2461029,2461030,2461031,2461032,2461033,2461034,2461042,2461057,2461075,2461076,2461077,2461078,2461084,2461090,2461099,2461100,2461101,2461102,2461103,2461104,2461105,2461114,2461126,2461132,2461147,2461162,2461177,2461186,2461210,2461222,2461223,2461224,2461225,2461253,2461259,2461270,2461277,2461283,2461298,2461313,2461319,2461352,2461353,2461354,2461355,2461356,2461357,2461358,2461382,2461394,2461409,2461410,2461411,2461412,2461413,2461414,2461415,2461416,2461417,2461418,2461419,2461420,2461421,2461439,2461456,2461466,2461467,2461468,2461469,2461483,2461484,2461485,2461486,2461487,2461499,2461514,2461532,2461542,2461562,2461568,2461577,2461578,2461579,2461580,2461589,2461590,2461591,2461592,2461593,2461594,2461595,2461596,2461597,2461598,2461599,2461600,2461601,2461610,2461611,2461612,2461613,2461614,2461615,2461616,2461628,2461629,2461630,2461631,2461637,2461647,2461655,2461685,2461729,2461734,2461748,2461749,2461750,2461751,2461775,2461835,2461862,2461868,2461880,2461892,2461910,2461911,2461912,2461913,2461914,2461915,2461934,2461943,2461952,2461964,2461970,2461985,2462013,2462014,2462015,2462016,2462017,2462018,2462019,2462020,2462021,2462026,2462027,2462033,2462045,2462064,2462065,2462066,2462075,2462081,2462090,2462120,2462132,2462180,2462181,2462182,2462183,2462188,2462189,2462215,2462222,2462228,2462229,2462230,2462246,2462252,2462253,2462254,2462255,2462256,2462257,2462258,2462259,2462260,2462261,2462267,2462276,2462277,2462278,2462279,2462280,2462281,2462282,2462283,2462284,2462285,2462291,2462302,2462314,2462324,2462325,2462326,2462327,2462328,2462329,2462330,2462471,2462492,2462493,2462494,2462495,2462503,2463179,2463180,2463181,2463182,2463183,2463184,2463185,2463186,2463187,2463194,2463195,2463196,2463197,2463203,2463221,2463242,2463257,2463303,2463326,2463332,2463338,2463392,2463393,2463523,2463524,2463525,2463526,2463527,2463542,2463543,2463544,2463545,2463546,2463547,2463548,2463560,2463572,2463578,2463579,2463580,2463581,2464064,2464065,2464066,2464067,2464068,2464069,2464070,2464076,2464077,2464078,2464079,2464080,2464081,2464082,2464083,2464084,2464085,2464086,2464087,2464088,2464103,2464104,2464105,2464106,2464107,2464108,2464109,2464110,2464111,2464112,2464121,2464130,2464131,2464132,2464133,2464134,2464135,2464136,2464151,2464157,2464158,2464159,2464160,2464161,2464162,2464175,2464176,2464177,2464178,2464184,2464190,2464191,2464192,2464193,2464194,2464195,2464196,2464205,2464206,2464207,2464208,2464223,2464229,2464230,2464231,2464232,2464233,2464234,2464235,2464236,2464237,2464253,2464254,2464255,2464256,2464265,2464301,2464307,2464308,2464309,2464310,2464316,2464337,2464345,2464346,2464347,2464348,2464364,2464365,2464366,2464367,2464368,2464369,2464370,2464371,2464372,2464373,2464374,2464375,2464376,2464377,2464378,2464379,2464380,2464381,2464382,2464412,2464418,2464419,2464420,2464421,2464422,2464423,2464424,2464430,2464439,2464440,2464445,2464453,2464831,2464850,2464964,2465004,2465525,2465552,2465603,2465604,2465605,2465606,2465612,2465613,2465614,2465615,2465621,2465631,2465636,2465637,2465638,2465639,2465645,2465646,2465647,2465648,2465649,2465650,2465651,2465657,2465658,2465659,2465660,2466054,2466065,2466066,2466067,2466068,2466116,2466121,2466122,2466150,2466155,2466166,2466173,2466221,2466233,2466234,2466235,2466236,2466245,2466257,2466290,2466291,2466292,2466293,2467262,2467263,2467264,2467265,2467266,2467267,2467283,2467292,2467293,2467294,2467295,2467301,2467340,2467346,2467347,2467348,2467349,2467350,2467351,2467352,2467362,2467372,2467373,2467374,2467375,2467376,2467390,2467391,2467392,2467393,2467394,2467395,2467396,2467397,2467412,2467418,2467673,2467687,2467688,2467689,2467690,2467691,2467701,2468284,2468285,2468286,2468287,2468314,2468321,2468322,2468323,2468329,2468330,2468331,2468332,2468333,2468334,2468335,2468336,2468337,2468338,2468339,2468340,2468341,2468353,2468354,2468355,2468356,2468357,2468358,2468359,2468371,2468372,2468373,2468374,2468406,2468435,2468436,2468437,2468438,2468439,2468448,2468449,2468450,2468451,2468452,2468453,2468454,2468570,2468571,2468572,2468573,2468574,2468583,2468584,2468585,2468586,2468587,2468588,2468589,2468590,2468591,2468592,2468619,2468625,2468673,2468739,2468740,2468741,2468742,2468763,2468775,2468781,2468793,2468836,2468846,2468867,2468933,2468945,2468966,2469005,2469014,2469020,2469041,2469042,2469043,2469044,2469045,2469046,2469047,2469151,2469160,2469178,2469185,2469226,2469253,2469254,2469255,2469256,2469257,2469258,2469264,2469274,2469280,2469301,2469322,2469352,2469353,2469354,2469355,2469367,2469376,2469377,2469378,2469379,2469384,2469385,2469397,2469398,2469399,2469400,2469406,2469411,2469421,2469430,2469475,2469476,2469477,2469478,2469487,2469558,2469577,2469582,2469729,2469730,2469731,2469732,2469744,2469745,2469746,2469747,2469748,2469749,2469750,2469751,2469752,2469753,2469759,2469760,2469761,2469762,2469763,2469774,2469780,2469781,2469782,2469783,2469784,2469785,2469786,2469787,2469788,2469789,2469790,2469791,2469792,2469810,2469858,2469859,2469860,2469861,2469862,2469863,2469864,2469865,2469866,2469867,2469868,2469879,2469885,2469963,2470011,2470016,2470026,2470027,2470028,2470029,2470083,2470110,2470130,2470131,2470137,2470149,2470150,2470151,2470152,2470167,2470179,2470191,2470197,2470212,2470218,2470233,2470234,2470235,2470236,2470245,2470260,2470275,2470295,2470296,2470297,2470298,2470299,2470362,2470380,2470397,2470440,2470460,2470461,2470462,2470463,2470464,2470476,2470539,2470566,2470578,2470579,2470580,2470581,2470582,2470583,2470584,2470596,2470605,2470617,2470632,2470633,2470634,2470635,2470650,2470659,2470660,2470661,2470662,2470671,2470672,2470673,2470674,2470680,2470689,2470690,2470691,2470707,2470758,2470767,2470768,2470769,2470770,2470785,2470786,2470787,2470788,2470797,2470821,2470822,2470823,2470824,2470830,2470839,2470845,2470857,2470858,2470859,2470860,2470887,2470912,2470982,2470983,2470984,2470985,2470986,2470987,2470988,2471006,2471007,2471008,2471009,2471010,2471011,2471012,2471013,2471014,2471015,2471021,2471022,2471023,2471024,2471025,2471026,2471027,2471033,2471039,2471066,2471084,2471096,2471105,2471119,2471134,2471153,2471163,2471181,2471194,2471201,2471202,2471203,2471204,2471205,2471206,2471207,2471219,2471228,2471246,2471254,2471255,2471268,2471269,2471270,2471282,2471312,2471313,2471314,2471326,2471327,2471348,2471363,2471369,2471381,2471414,2471428,2471429,2471430,2471431,2471432,2471438,2471480,2471481,2471482,2471483,2471484,2471485,2471486,2471491,2471507,2471508,2471509,2471510,2471520,2471588,2471607,2471608,2471609,2471610,2471611,2471612,2471613,2471614,2471615,2471623,2471624,2471625,2471626,2471627,2471628,2471629,2471630,2471654,2471675,2471681,2471682,2471683,2471684,2471726,2471727,2471728,2471741,2471750,2471751,2471752,2471753,2471762,2471763,2471764,2471765,2471780,2471781,2471782,2471823,2471824,2471825,2471826,2471827,2471828,2471852,2471858,2471894,2471900,2471914,2471915,2471916,2471917,2471936,2471990,2472014,2472023,2472024,2472025,2472026,2472047,2472056,2472069,2472101,2472107,2472108,2472109,2472110,2472185,2472186,2472187,2472188,2472204,2472211,2472278,2472284,2472285,2472286,2472287,2472302,2472322,2472323,2472324,2472325,2472326,2472386,2472387,2472388,2472389,2472390,2472391,2472392,2472393,2472394,2472395,2472396,2472397,2472398,2472399,2472400,2472401,2472422,2472427,2472428,2472429,2472430,2472431,2472464,2472521,2472528,2472529,2472530,2472531,2472532,2472533,2472623,2472624,2472625,2472626,2472627,2472628,2472629,2472641,2472653,2472671,2472680,2472701,2472707,2472708,2472709,2472856,2472889,2472890,2472891,2472892,2472919,2472925,2472934,2472955,2472979,2472980,2472981,2473050,2473078,2473084,2473096,2473147,2473159,2473160,2473161,2473162,2473171,2473177,2473178,2473179,2473180,2473181,2473182,2473204,2473216,2473225,2473242,2473243,2473244,2473245,2473246,2473247,2473248,2473249,2473250,2473251,2473252,2473253,2473254,2473255,2473256,2473257,2473258,2473259,2473260,2473261,2473279,2473280,2473281,2473282,2473303,2473309,2473310,2473311,2473312,2473329,2473330,2473339,2473351,2473352,2473353,2473354,2473360,2473372,2473381,2473382,2473383,2473384,2473385,2473386,2473387,2473388,2473389,2473390,2473438,2473453,2473495,2473510,2473516,2473517,2473518,2473519,2473520,2473521,2473522,2473523,2473524,2473525,2473526,2473527,2473528,2473534,2473535,2473536,2473537,2473543,2473544,2473545,2473546,2473564,2473565,2473566,2473572,2473573,2473574,2473575,2473576,2473577,2473609,2473610,2473611,2473612,2473627,2473633,2473639,2473640,2473641,2473642,2473643,2473644,2473645,2473652,2473660,2473669,2473670,2473671,2473672,2473692,2473699,2473700,2473701,2473702,2473810,2473811,2473812,2473813,2473822,2473823,2473824,2473825,2473826,2473827,2473828,2473837,2473838,2473839,2473840,2473846,2473867,2473885,2473891,2473892,2473893,2473894,2473895,2473896,2473897,2473951,2473963,2473984,2473985,2473986,2473987,2473992,2474011,2474020,2474021,2474022,2474023,2474032,2474033,2474034,2474035,2474036,2474037,2474038,2474039,2474040,2474041,2474065,2474086,2474104,2474137,2474143,2474144,2474149,2474157,2474158,2474159,2474160,2474200,2474231,2474237,2474245,2474259,2474260,2474261,2474262,2474263,2474278,2474279,2474280,2474281,2474290,2474317,2474318,2474319,2474320,2474332,2474344,2474359,2474360,2474361,2474362,2474363,2474364,2474365,2474422,2474423,2474424,2474425,2474431,2474432,2474433,2474434,2474435,2474436,2474455,2474464,2474465,2474466,2474479,2474521,2474522,2474523,2474524,2474525,2474526,2474527,2474528,2474529,2474530,2474531,2474532,2474533,2474725,2474737,2474749,2474812,2474813,2474814,2474815,2474850,2474866,2474867,2474868,2474869,2474870,2474871,2474872,2474940,2475022,2475047,2475064,2475065,2475066,2475067,2475088,2475097,2475098,2475099,2475100,2475109,2475118,2475119,2475120,2475121,2475122,2475123,2475124,2475133,2475134,2475135,2475136,2475181,2475214,2475235,2475236,2475237,2475238,2475239,2475240,2475241,2475242,2475243,2475244,2475245,2475246,2475259,2475260,2475261,2475262,2475271,2475272,2475273,2475274,2475301,2475302,2475303,2475304,2475346,2475358,2475359,2475360,2475361,2475362,2475363,2475364,2475365,2475366,2475367,2475368,2475369,2475370,2475415,2475442,2475448,2475449,2475450,2475451,2475487,2475496,2475502,2475503,2475504,2475505,2475506,2475507,2475508,2475509,2475510,2475511,2475512,2475532,2475554,2475567,2475568,2475569,2475570,2475605,2475767,2475812,2475869,2475870,2475871,2475872,2475873,2475874,2475875,2475876,2475877,2475878,2475887,2475888,2475889,2475890,2475908,2475952,2475959,2475979,2475986,2476680,2476690,2476702,2476711,2476972,2476983,2477135,2477141,2477147,2477148,2477149,2477150,2477151,2477152,2477153,2477159,2477165,2477176,2477177,2477178,2477179,2477180,2477181,2477182,2477183,2477189,2477201,2477202,2477203,2477204,2477205,2477206,2477207,2477212,2477219,2477220,2477221,2477222,2477231,2477232,2477233,2477234,2477235,2477236,2477237,2477238,2477239,2477240,2477241,2477242,2477243,2477244,2477249,2477254,2477282,2477300,2477309,2477310,2477311,2477312,2477348,2477369,2477402,2477403,2477404,2477405,2477411,2477412,2477413,2477414,2477423,2477429,2477439,2477440,2477441,2477442,2477443,2477444,2477450,2477451,2477452,2477453,2477513,2477564,2478713,2478716,2478722,2478725,2478726,2478727,2478728,2478753,2478754,2478755,2478780,2478825,2478830,2478836,2478845,2478862,2478874,2478899,2478913,2478920,2478929,2478930,2478931,2478932,2478933,2478935,2478938,2478941,2478947,2478950,2478953,2478954,2478955,2478956,2478957,2478958,2478959,2478960,2478961,2478962,2478971,2478972,2478973,2478974,2478980,2478992,2478993,2478994,2479013,2479097,2479108,2479109,2479110,2479111,2479112,2479117,2479120,2479139,2479140,2479141,2479142,2479178,2479184,2479470,2479481,2479491,2479492,2479493,2479494,2479508,2479509,2479510,2479517,2479518,2479519,2479520,2479521,2479522,2479523,2479524,2479525,2479530,2479531,2479532,2479557,2479566,2479567,2479568,2479569,2479570,2479571,2479590,2479602,2479603,2479615,2479620,2479756,2479757,2479758,2479759,2479760,2479761,2479762,2479770,2479807,2479818,2479875,2479898,2479905,2479906,2479907,2479908,2479909,2479910,2479918,2479919,2479923,2479924,2479925,2479926,2479927,2479948,2479975,2479976,2479977,2479978,2479979,2481077,2481108,2481821,2481836,2482869,2482870,2482871,2482872,2482873,2482888,2482942,2483233,2483860,2484540,2484552,2484553,2484554,2484555,2484556,2484557,2484558,2484559,2484565,2484566,2484567,2484568,2484580,2484581,2484582,2484583,2484598,2484599,2484600,2484601,2484602,2484762,2484763,2484772,2484773,2484774,2484775,2484790,2484791,2484792,2484803,2484811,2484823,2484824,2484825,2484826,2484832,2484841,2484853,2484862,2484868,2484874,2484875,2484876,2484877,2484878,2484879,2484880,2484895,2484896,2484897,2484908,2484913,2484922,2484936,2484937,2484938,2484939,2484940,2484976,2487309,2487316,2487367,2487374,2487375,2487376,2487381,2487406,2487407,2487408,2487409,2487417,2487418,2487449,2487454,2487455,2487461,2487462,2487463,2487464,2487465,2487466,2487467,2487468,2487469,2487470,2487482,2487483,2487484,2487485,2487486,2487487,2487488,2487499,2487500,2487501,2487502,2487503,2487504,2487505,2487514,2487523,2487524,2487525,2487547,2487548,2487549,2487550,2487551,2487552,2487553,2487554,2487555,2487556,2487571,2487572,2487573,2487574,2487575,2487576,2487586,2487587,2487588,2487589,2487590,2487591,2487592,2487593,2487594,2487595,2487596,2487597,2487598,2487607,2487620,2487621,2487622,2487646,2487652,2487681,2487703,2487709,2487753,2487754,2488024,2488057,2488058,2488063,2488078,2488079,2488080,2488081,2488312,2488324,2488325,2488326,2488327,2488345,2488346,2488347,2488348,2488349,2488350,2488351,2488352,2488353,2488354,2488355,2488356,2488357,2488358,2488359,2488360,2488381,2488382,2488383,2488384,2488385,2488386,2488398,2488399,2488400,2488401,2488402,2488411,2488412,2488413,2488414,2488420,2488421,2488422,2488423,2488424,2488425,2488426,2488427,2488428,2488429,2488435,2488436,2488437,2488438,2488456,2488457,2488458,2488459,2488460,2488461,2488462,2488480,2488516,2488517,2488518,2488519,2488520,2488521,2488555,2488556,2488592,2489144,2489375,2489402,2489986,2490070,2490444,2490825,2490826,2490827,2490828,2490887,2490901,2490938,2490968,2490969,2490980,2490987,2491036,2491466,2492106,2492112,2492118,2492123,2492136,2492157,2492163,2492947,2492948,2492949,2492950,2492958,2492974,2494717,2494731,2494732,2494733,2494734,2494735,2494741,2494747,2494777,2494778,2494779,2494780,2494781,2494782,2494783,2494789,2494795,2494801,2494802,2494803,2494804,2494826,2494831,2494837,2494843,2494852,2494859,2494870,2494879,2494884,2494885,2494886,2494887,2494888,2494889,2494890,2494891,2494892,2494893,2494894,2494900,2494909,2494910,2494911,2494912,2494924,2494930,2494931,2494932,2494933,2495047,2495062,2495072,2495084,2495085,2495086,2495087,2495088,2495089,2495090,2495091,2495092,2495093,2495094,2495095,2495101,2495102,2495110,2495119,2495120,2495121,2495122,2495123,2495131,2495137,2495138,2495139,2495140,2495164,2495165,2495166,2495167,2495168,2495169,2495170,2495171,2495198,2495203,2495221,2495272,2495278,2495290,2495296,2495314,2495327,2495328,2495335,2495341,2495362,2495368,2495374,2495449,2495470,2495471,2495472,2495473,2495474,2495475,2495476,2495482,2495494,2495495,2495496,2495497,2495503,2495504,2495505,2495506,2495515,2495530,2495548,2495549,2495550,2495551,2495569,2495578,2495584,2495599,2495611,2495620,2495632,2495638,2495660,2495685,2495686,2495692,2495706,2495713,2495714,2495734,2495746,2495747,2495748,2495749,2495750,2495751,2495752,2495753,2495754,2495755,2495756,2495757,2495758,2495777,2495786,2495787,2495788,2495794,2495800,2495806,2495812,2495818,2495819,2495820,2495821,2495822,2495823,2495833,2495839,2495851,2495878,2495900,2495915,2495962,2496022,2496023,2496024,2496025,2496026,2496027,2496028,2496029,2496030,2496031,2497641,2508414,2516118,2519539,2524657,2555201,2555370,2556214,2561898,2566754,2586941,2595011,2597390,2603705,2604163,2615079,2644370,2651031,2658687,2662377,2670569,2687121,2687139,2689222,2697205,2711721,2712298,2714318,2715084,2732210,2732249,2737355,2737418,2753982,2755803,2756864,2766142,2766148,2766149,2766150,2775086,2776671,2779933,2780286,2780855,2781174,2791484,2796177,2808264,2844406,2855648,2858828,2864004,2867859,2909811,2912271,2925447,2935199,2941633,2945662,2949892,2951862,2951923,2969001,2970912,2982608,2992067,2992658,2992859,2999023,3028189,3029130,3034341,9101,14671,14676,14888,14944,15387,15388,15393,15402,15573,15579,15580,15581,15582,15583,15596,15597,15598,15603,15625,15626,15627,15628,15629,15630,15631,15632,15633,15634,15635,15636,15637,15638,15639,15645,15653,15654,15655,15656,15657,15666,15667,15668,15669,15684,15685,15686,15687,15708,15709,15710,15711,15712,15713,15750,15774,15798,15807,15815,15816,15828,15849,15854,15993,16004,16005,16006,16007,16044,16095,16146,16162,16170,29216,29229,29230,29231,29232,29233,29242,29243,29244,29250,29274,29299,29470,29479,29488,29505,29563,30183,30189,30226,30301,30302,30303,30304,30337,30343,30360,30377,30383,30391,30392,30393,30394,30520,30598,30645,30732,30759,30768,30771,30783,30789,30790,30791,30792,30793,30794,30795,30796,30797,30798,30812,30831,30832,30843,30844,30845,30846,30847,30848,30849,30850,30851,30852,30853,30854,30855,30856,30857,30858,30865,30866,30867,30868,30869,30870,30957,30958,30959,30960,30961,30962,30963,30972,30973,30974,30975,30984,30985,30986,30987,30999,31008,31034,31035,31047,31053,31054,31059,31071,31072,31073,31074,31075,31076,31077,31078,31079,31080,31086,31087,31088,31089,31097,31098,31099,31100,31101,31116,31128,31155,31156,31157,31158,31170,31171,31172,31173,31174,31175,31176,31194,31201,31202,31203,31204,31205,31206,31218,31230,31231,31232,31233,31239,31240,31241,31242,31243,31248,31262,31263,31264,31265,31266,31267,31268,31269,31270,31271,31272,31273,31274,31275,31280,31281,31282,31283,31284,31291,31292,31293,31299,31300,31301,31302,31303,31304,31305,31306,31307,31308,31309,31310,31311,31318,31319,31326,31327,31328,31329,31338,31339,31340,31341,31342,31353,31363,31364,31365,31370,31371,31372,31373,31374,31380,31381,31382,31383,31395,31401,31407,31417,31418,31419,31428,31429,31430,31431,31432,31433,31434,31440,31449,31467,31468,31469,31470,31482,31483,31484,31485,31493,31534,31535,31536,31569,31602,31603,31604,31605,31638,31639,31640,31641,31642,31659,31660,31661,31662,31663,31664,31665,31732,31733,31734,31770,31782,31783,31784,31785,31786,31787,31788,31797,31803,31804,31805,31806,31807,31808,31809,31810,31811,31812,31813,31814,31815,31821,31822,31823,31824,31833,31881,31882,33231,33530,35018,35026,35069,36070,36394,36435,37118,37209,38927,39297,40557,40904,41190,41360,41382,41383,41384,41385,41386,41387,41408,41409,41414,41415,41416,41417,41422,41427,41428,41429,41430,41431,41432,41433,41458,41459,41460,41461,41462,41463,41470,41480,41485,41486,41491,41499,41500,41501,41502,41503,41504,41505,41506,41507,41508,41509,41510,41511,41530,41547,41562,41571,41578,41579,41580,41601,41614,41619,41620,41621,41622,41623,41624,41625,41626,41631,41637,41638,41639,41640,41649,41654,41685,41698,41699,41700,41701,41702,41703,41704,41705,41706,41707,41708,41709,41710,41711,41712,41713,41714,41715,41721,41722,41723,41724,41725,41730,41731,41732,41737,41745,41762,41777,42026,42032,42033,42034,42035,42036,42046,42047,42056,42062,42063,42064,42065,42074,42083,42089,42090,42091,42092,42093,42094,42095,42096,42097,42098,42099,42100,42101,42125,42137,42147,42148,42149,42150,42151,42161,42167,42179,42180,42181,42182,42183,42184,42185,42186,42187,42188,42189,42190,42191,42201,42202,42203,42213,42214,42215,42216,42217,42218,42219,42220,42221,42222,42231,42232,42233,42234,42235,42236,42237,42238,42239,42240,42252,42253,42254,42255,42256,42257,42258,42270,42279,42280,42285,42286,42287,42288,42289,42294,42330,42331,42332,42333,42334,42335,42342,42354,42355,42375,42376,42377,42378,42379,42380,42381,42387,42388,42389,42390,42391,42392,42393,42414,42426,42433,42447,42459,42466,42467,42468,42469,42470,42471,42472,42478,42479,42502,42503,42504,42505,42506,42507,42508,42509,42510,42519,42520,42521,42522,42523,42524,42525,42531,42532,42533,42534,42543,42544,42545,42546,42550,42567,42568,42569,42570,42576,42577,42578,42579,42602,42603,42604,42605,42606,42607,42608,42609,42642,42643,42644,42645,42646,42647,42648,42649,42660,42669,42677,42678,42684,42685,42686,42687,42693,42708,42723,42729,42738,42744,42745,42746,42747,42748,42749,42750,42751,42752,42753,42761,42768,42777,42791,42792,42793,42794,42795,42796,42797,42798,42816,42817,42818,42819,42820,42821,42822,42823,42824,42825,42852,42858,42859,42860,42861,42867,42873,42879,43014,43020,43032,43033,43034,43041,43042,43043,43044,43045,43046,43047,43062,43068,43069,43070,43071,43086,43087,43088,43089,43090,43091,43092,43098,43173,43174,43175,43176,43177,43178,43179,43180,43181,43182,43191,43197,43198,43199,43200,43218,43224,43225,43226,43227,43233,43254,43260,43261,43266,43425,43431,43452,43464,43465,43466,43467,43473,43479,43485,43486,43487,43488,43489,43490,43491,43498,43503,43504,43505,43506,43507,43508,43509,43521,43636,43645,43654,43665,43675,43681,43691,43692,43693,43694,43720,43738,43744,43745,43746,43747,43748,43749,43750,43751,43752,43753,43754,43755,43756,43783,43792,43798,43799,43800,43801,43807,43813,43814,43828,43834,43835,43836,43837,43838,43839,43840,43846,43855,43856,43857,43858,43867,43868,43869,43870,43900,43907,43908,43909,43910,43911,43912,43930,43945,43950,43955,43960,43961,43962,43963,43964,43973,43982,43992,43998,43999,44000,44006,44033,44051,44057,44129,44289,44390,44399,44406,44418,44423,44424,44425,44426,44427,44428,44429,44434,44450,44459,44460,44461,44462,44471,44477,44483,44489,44498,44499,44538,44606,44607,44612,44872,44884,44890,44900,44932,44941,44948,44956,44977,44983,44984,44985,44986,44987,44988,44989,44990,44991,44992,44993,44994,44995,44996,44997,44998,44999,45000,45001,45002,45003,45004,45010,45011,45012,45013,45014,45019,45025,45037,45038,45039,45040,45041,45042,45043,45044,45045,45046,45047,45048,45058,45065,45148,45268,45732,45836,45854,46535,46835,47096,47273,47347,47383,47442,47451,47452,47467,47468,47469,47470,47471,47472,47473,47484,47485,47486,47487,47488,47500,47505,47544,47568,47586,47658,47659,47660,47661,47670,47789,47790,47791,47792,48626,54454,56794,56795,56796,56797,56798,56807,56837,57134,57135,57136,57137,57155,57164,57170,57171,57172,57173,57191,57437,57444,57449,57456,57457,57493,58137,58243,58252,58258,58259,58260,58261,58273,58274,58275,58276,58277,58278,58279,58280,58281,58282,58291,58297,58298,58299,58300,58338,58339,58340,58341,58347,58549,58561,58562,58563,58564,58571,58590,58599,58600,58601,58646,58664,58673,58674,58675,58676,58677,58678,58679,58680,58681,58682,58691,58697,58698,58699,58700,58701,58702,58703,58704,58705,58706,58707,58708,58709,58715,58716,58717,58718,58719,58720,58727,58728,58729,58730,58731,59160,59161,59162,59184,59185,62648,63221,63486,63487,64043,64076,64177,64198,64628 ];
+var data = [ { 
+  type: 'histogram',
+  x: nums, 
+//  autobinx: false,
+//  xbins: { start: 0, end: 3034341, size: 1 },
+} ];
+var layout = {
+  title: '7634 SNPs across 3108121 bp',
+  xaxis: { title: 'Genome position' },
+  yaxis: { title: 'SNPs' },
+};
+Plotly.newPlot('snpdensity-histogram', data, layout);
+</script>
+</div><div class='container-fluid nullarbor-section' id='pan'>
+<a name='pan'></a>
+<h2><span class='dropdown'>
+<button class='btn btn-default dropdown-toggle' type='button' data-toggle='dropdown'>&#9776;</button>
+<ul class='dropdown-menu'><li><a href='#jobinfo'>Report summary</a>
+<li><a href='#seqdata'>Sequence data</a>
+<li><a href='#identification'>Species identification</a>
+<li><a href='#mlst'>MLST</a>
+<li><a href='#serotype'>Serotyping</a>
+<li><a href='#resistome'>Resistome</a>
+<li><a href='#assembly'>Assembly and annotation</a>
+<li><a href='#reference'>Reference genome</a>
+<li><a href='#core'>Core genome</a>
+<li><a href='#snptree'>Core SNP phylogeny</a>
+<li><a href='#snpdist'>Pairwise core SNP distances</a>
+<li><a href='#snpdensity'>Core SNP density</a>
+<li><a href='#pan'>Pan genome</a>
+<li><a href='#tools'>Software versions</a>
+<li><a href='#about'>About</a>
+</ul></span>
+Pan genome <a href='#' class='jump-home'>&#x25B2;</a> </h2>
+<img src='pan.png'>
+<table id='pan' class='table table-bordered table-condensed'>
+<thead>
+<tr>
+<th>Ortholog class
+<th>Definition
+<th>Count
+</thead>
+<tbody>
+<tr>
+<td>Core genes
+<td>(99% <= strains <= 100%)
+<td>2154
+<tr>
+<td>Soft core genes
+<td>(95% <= strains < 99%)
+<td>0
+<tr>
+<td>Shell genes
+<td>(15% <= strains < 95%)
+<td>832
+<tr>
+<td>Cloud genes
+<td>(0% <= strains < 15%)
+<td>3173
+<tr>
+<td>Total genes
+<td>(0% <= strains <= 100%)
+<td>6159
+</tbody><caption><span class='file-download-bar'>Download:  <a href='pan.csv' class='file-download'>&#11015;pan.csv</a></span>
+</caption>
+</table>
+<p class='container-fluid'>
+<svg viewBox="0 0 1024 312" width='1024' height='312' version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' ><defs><style type='text/css'><![CDATA[
+ .leaf-label {font-size:12;font-family:sans-serif;}
+ .inner-label {opacity:0}
+ .edge-label {opacity:0}
+]]></style></defs>
+<!-- arguments: -S -s -w 1024 -l font-size:12;font-family:sans-serif; -i opacity:0 -b opacity:0 -v 16 -  -->
+<g transform='translate(0,20)'><g  style='stroke:black;fill:none;stroke-width:1;stroke-linecap:round'><line class='clade_0' x1='10.0000' y1='0.0000' x2='30.9707' y2='0.0000'/><line class='clade_0' x1='11.2274' y1='16.0000' x2='38.8279' y2='16.0000'/><line class='clade_0' x1='11.2274' y1='32.0000' x2='17.7487' y2='32.0000'/><line class='clade_0' x1='11.2274' y1='16.0000' x2='11.2274' y2='32.0000'/><line class='clade_0' x1='11.2274' y1='24.0000' x2='11.2274' y2='24.0000'/><line class='clade_0' x1='40.9720' y1='48.0000' x2='894.2699' y2='48.0000'/><line class='clade_0' x1='40.9720' y1='64.0000' x2='60.1443' y2='64.0000'/><line class='clade_0' x1='40.9720' y1='48.0000' x2='40.9720' y2='64.0000'/><line class='clade_0' x1='21.1775' y1='56.0000' x2='40.9720' y2='56.0000'/><line class='clade_0' x1='40.5718' y1='80.0000' x2='71.0559' y2='80.0000'/><line class='clade_0' x1='40.5718' y1='96.0000' x2='966.0000' y2='96.0000'/><line class='clade_0' x1='40.5718' y1='80.0000' x2='40.5718' y2='96.0000'/><line class='clade_0' x1='21.1775' y1='88.0000' x2='40.5718' y2='88.0000'/><line class='clade_0' x1='21.1775' y1='56.0000' x2='21.1775' y2='88.0000'/><line class='clade_0' x1='11.2274' y1='72.0000' x2='21.1775' y2='72.0000'/><line class='clade_0' x1='11.2274' y1='24.0000' x2='11.2274' y2='72.0000'/><line class='clade_0' x1='10.0000' y1='48.0000' x2='11.2274' y2='48.0000'/><line class='clade_0' x1='38.5824' y1='112.0000' x2='113.9394' y2='112.0000'/><line class='clade_0' x1='396.5580' y1='128.0000' x2='432.6596' y2='128.0000'/><line class='clade_0' x1='396.5580' y1='144.0000' x2='430.9483' y2='144.0000'/><line class='clade_0' x1='396.5580' y1='128.0000' x2='396.5580' y2='144.0000'/><line class='clade_0' x1='38.5824' y1='136.0000' x2='396.5580' y2='136.0000'/><line class='clade_0' x1='38.5824' y1='112.0000' x2='38.5824' y2='136.0000'/><line class='clade_0' x1='14.0368' y1='124.0000' x2='38.5824' y2='124.0000'/><line class='clade_0' x1='17.9095' y1='160.0000' x2='27.1473' y2='160.0000'/><line class='clade_0' x1='17.9095' y1='176.0000' x2='33.4775' y2='176.0000'/><line class='clade_0' x1='17.9095' y1='160.0000' x2='17.9095' y2='176.0000'/><line class='clade_0' x1='14.0368' y1='168.0000' x2='17.9095' y2='168.0000'/><line class='clade_0' x1='15.3239' y1='192.0000' x2='40.3933' y2='192.0000'/><line class='clade_0' x1='26.0302' y1='208.0000' x2='36.8727' y2='208.0000'/><line class='clade_0' x1='26.0302' y1='224.0000' x2='45.2889' y2='224.0000'/><line class='clade_0' x1='26.0302' y1='208.0000' x2='26.0302' y2='224.0000'/><line class='clade_0' x1='16.8985' y1='216.0000' x2='26.0302' y2='216.0000'/><line class='clade_0' x1='21.6866' y1='240.0000' x2='51.9384' y2='240.0000'/><line class='clade_0' x1='21.6866' y1='256.0000' x2='21.6866' y2='256.0000'/><line class='clade_0' x1='21.6866' y1='272.0000' x2='35.9869' y2='272.0000'/><line class='clade_0' x1='21.6866' y1='256.0000' x2='21.6866' y2='272.0000'/><line class='clade_0' x1='21.6866' y1='264.0000' x2='21.6866' y2='264.0000'/><line class='clade_0' x1='21.6866' y1='240.0000' x2='21.6866' y2='264.0000'/><line class='clade_0' x1='16.8985' y1='252.0000' x2='21.6866' y2='252.0000'/><line class='clade_0' x1='16.8985' y1='216.0000' x2='16.8985' y2='252.0000'/><line class='clade_0' x1='15.3239' y1='234.0000' x2='16.8985' y2='234.0000'/><line class='clade_0' x1='15.3239' y1='192.0000' x2='15.3239' y2='234.0000'/><line class='clade_0' x1='14.0368' y1='213.0000' x2='15.3239' y2='213.0000'/><line class='clade_0' x1='14.0368' y1='168.0000' x2='14.0368' y2='213.0000'/><line class='clade_0' x1='14.0368' y1='190.5000' x2='14.0368' y2='190.5000'/><line class='clade_0' x1='14.0368' y1='124.0000' x2='14.0368' y2='190.5000'/><line class='clade_0' x1='10.0000' y1='157.2500' x2='14.0368' y2='157.2500'/><line class='clade_0' x1='10.0000' y1='0.0000' x2='10.0000' y2='157.2500'/><line x1='0' y1='78.6250' x2='10.0000' y2='78.6250'/></g><g style='stroke:none'><text class='leaf-label' x='40.9707' y='4.0000'>OFN-61</text><text class='edge-label' x='20.485343' y='-4.000000'>0.015122558</text><text class='leaf-label' x='48.8279' y='20.0000'>OFN-60</text><text class='edge-label' x='25.027696' y='12.000000'>0.019903501</text><text class='leaf-label' x='27.7487' y='36.0000'>OFN-68</text><text class='edge-label' x='14.488084' y='28.000000'>0.004702674</text><text class='inner-label' x='21.2274' y='28.0000'>0.159</text><text class='edge-label' x='11.227445' y='20.000000'>0.000000005</text><text class='leaf-label' x='904.2699' y='52.0000'>OFN-03</text><text class='edge-label' x='467.620970' y='44.000000'>0.615337320</text><text class='leaf-label' x='70.1443' y='68.0000'>OFN-58</text><text class='edge-label' x='50.558167' y='60.000000'>0.013825654</text><text class='inner-label' x='50.9720' y='60.0000'>0.907</text><text class='edge-label' x='31.074770' y='52.000000'>0.014274407</text><text class='leaf-label' x='81.0559' y='84.0000'>OFN-56</text><text class='edge-label' x='55.813847' y='76.000000'>0.021983008</text><text class='leaf-label' x='976.0000' y='100.0000'>OFN-04</text><text class='edge-label' x='503.285878' y='92.000000'>0.667352591</text><text class='inner-label' x='50.5718' y='92.0000'>0.222</text><text class='edge-label' x='30.874628' y='84.000000'>0.013985750</text><text class='inner-label' x='31.1775' y='76.0000'>0.920</text><text class='edge-label' x='16.202470' y='68.000000'>0.007175269</text><text class='inner-label' x='21.2274' y='52.0000'>0.737</text><text class='edge-label' x='10.613721' y='44.000000'>0.000885143</text><text class='leaf-label' x='123.9394' y='116.0000'>OFN-57</text><text class='edge-label' x='76.260884' y='108.000000'>0.054342097</text><text class='leaf-label' x='442.6596' y='132.0000'>OFN-01</text><text class='edge-label' x='414.608817' y='124.000000'>0.026033918</text><text class='leaf-label' x='440.9483' y='148.0000'>OFN-02</text><text class='edge-label' x='413.753153' y='140.000000'>0.024799831</text><text class='inner-label' x='406.5580' y='140.0000'>1.000</text><text class='edge-label' x='217.570182' y='132.000000'>0.258146394</text><text class='inner-label' x='48.5824' y='128.0000'>0.979</text><text class='edge-label' x='26.309589' y='120.000000'>0.017700498</text><text class='leaf-label' x='37.1473' y='164.0000'>OFN-62</text><text class='edge-label' x='22.528414' y='156.000000'>0.006661662</text><text class='leaf-label' x='43.4775' y='180.0000'>OFN-64</text><text class='edge-label' x='25.693502' y='172.000000'>0.011226532</text><text class='inner-label' x='27.9095' y='172.0000'>0.915</text><text class='edge-label' x='15.973158' y='164.000000'>0.002792700</text><text class='leaf-label' x='50.3933' y='196.0000'>OFN-55</text><text class='edge-label' x='27.858607' y='188.000000'>0.018078310</text><text class='leaf-label' x='46.8727' y='212.0000'>OFN-63</text><text class='edge-label' x='31.451488' y='204.000000'>0.007818842</text><text class='leaf-label' x='55.2889' y='228.0000'>OFN-66</text><text class='edge-label' x='35.659557' y='220.000000'>0.013887958</text><text class='inner-label' x='36.0302' y='220.0000'>0.942</text><text class='edge-label' x='21.464350' y='212.000000'>0.006585175</text><text class='leaf-label' x='61.9384' y='244.0000'>OFN-59</text><text class='edge-label' x='36.812521' y='236.000000'>0.021815443</text><text class='leaf-label' x='31.6866' y='260.0000'>OFN-65</text><text class='edge-label' x='21.686624' y='252.000000'>0.000000005</text><text class='leaf-label' x='45.9869' y='276.0000'>OFN-67</text><text class='edge-label' x='28.836756' y='268.000000'>0.010312331</text><text class='inner-label' x='31.6866' y='268.0000'>0.107</text><text class='edge-label' x='21.686617' y='260.000000'>0.000000005</text><text class='inner-label' x='31.6866' y='256.0000'>0.938</text><text class='edge-label' x='19.292541' y='248.000000'>0.003452868</text><text class='inner-label' x='26.8985' y='238.0000'>0.735</text><text class='edge-label' x='16.111169' y='230.000000'>0.001135487</text><text class='inner-label' x='25.3239' y='217.0000'>0.776</text><text class='edge-label' x='14.680344' y='209.000000'>0.000928130</text><text class='inner-label' x='24.0368' y='194.5000'>0.824</text><text class='edge-label' x='14.036814' y='186.500000'>0.000000005</text><text class='inner-label' x='24.0368' y='161.2500'>0.925</text><text class='edge-label' x='12.018405' y='153.250000'>0.002911059</text></g></g></svg>
+
+</p>
+</div><div class='container-fluid nullarbor-section' id='tools'>
+<a name='tools'></a>
+<h2><span class='dropdown'>
+<button class='btn btn-default dropdown-toggle' type='button' data-toggle='dropdown'>&#9776;</button>
+<ul class='dropdown-menu'><li><a href='#jobinfo'>Report summary</a>
+<li><a href='#seqdata'>Sequence data</a>
+<li><a href='#identification'>Species identification</a>
+<li><a href='#mlst'>MLST</a>
+<li><a href='#serotype'>Serotyping</a>
+<li><a href='#resistome'>Resistome</a>
+<li><a href='#assembly'>Assembly and annotation</a>
+<li><a href='#reference'>Reference genome</a>
+<li><a href='#core'>Core genome</a>
+<li><a href='#snptree'>Core SNP phylogeny</a>
+<li><a href='#snpdist'>Pairwise core SNP distances</a>
+<li><a href='#snpdensity'>Core SNP density</a>
+<li><a href='#pan'>Pan genome</a>
+<li><a href='#tools'>Software versions</a>
+<li><a href='#about'>About</a>
+</ul></span>
+Software versions <a href='#' class='jump-home'>&#x25B2;</a> </h2>
+<table id='tools' class='table table-bordered table-condensed'>
+<thead>
+<tr>
+<th>Tool
+<th>Version
+</thead>
+<tbody>
+<tr>
+<td>Abricate
+<td>0.3
+<tr>
+<td>BWA MEM
+<td>0.7.13-r1126
+<tr>
+<td>FastTree
+<td>2.1.8 Double precision (No SSE3), OpenMP (8 threads):
+<tr>
+<td>FreeBayes
+<td>1.0.2-dirty
+<tr>
+<td>Kraken
+<td>0.10.5-beta
+<tr>
+<td>MLST
+<td>2.6
+<tr>
+<td>MegaHit
+<td>1.0.3
+<tr>
+<td>Newick-Utils
+<td>(unable to determine version)
+<tr>
+<td>Nullarbor
+<td>1.20
+<tr>
+<td>Prokka
+<td>1.12-beta
+<tr>
+<td>Roary
+<td>6.2
+<tr>
+<td>SAMtools
+<td>1.3
+<tr>
+<td>SPAdes
+<td>3.8.0
+<tr>
+<td>Snippy
+<td>3.1
+<tr>
+<td>Trimmomatic
+<td>(unable to determine version)
+</tbody><caption><span class='file-download-bar'>Download:  <a href='tools.csv' class='file-download'>&#11015;tools.csv</a></span>
+</caption>
+</table>
+</div><div class='container-fluid nullarbor-section' id='about'>
+<a name='about'></a>
+<h2><span class='dropdown'>
+<button class='btn btn-default dropdown-toggle' type='button' data-toggle='dropdown'>&#9776;</button>
+<ul class='dropdown-menu'><li><a href='#jobinfo'>Report summary</a>
+<li><a href='#seqdata'>Sequence data</a>
+<li><a href='#identification'>Species identification</a>
+<li><a href='#mlst'>MLST</a>
+<li><a href='#serotype'>Serotyping</a>
+<li><a href='#resistome'>Resistome</a>
+<li><a href='#assembly'>Assembly and annotation</a>
+<li><a href='#reference'>Reference genome</a>
+<li><a href='#core'>Core genome</a>
+<li><a href='#snptree'>Core SNP phylogeny</a>
+<li><a href='#snpdist'>Pairwise core SNP distances</a>
+<li><a href='#snpdensity'>Core SNP density</a>
+<li><a href='#pan'>Pan genome</a>
+<li><a href='#tools'>Software versions</a>
+<li><a href='#about'>About</a>
+</ul></span>
+About <a href='#' class='jump-home'>&#x25B2;</a> </h2>
+
+<ul class='list-unstyled'>
+<li>This primary author of Nullarbor is <a href="http://tseemann.github.io/">Torsten Seemann</a>.
+<li>You can download the software from <a href="https://github.com/tseemann/nullarbor">Github</a>.
+<li>Please report bugs at the <a href="https://github.com/tseemann/nullarbor/issues">Nullarbor Issue Tracker</a>.
+<li>If you use Nullarbor please use the <a href="https://github.com/tseemann/nullarbor/#citation">latest citation</a>.
+</ul>
+  </div></div>
+ 
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+    <!-- Datatables (to sort tables) -->
+    <script src="https://cdn.datatables.net/1.10.11/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.11/js/dataTables.bootstrap.min.js"></script>
+
+    <!-- Graphing library --> 
+    <!-- <script src="https://cdn.plot.ly/plotly-latest.min.js"></script> -->
+    
+    <script>
+    $(document).ready( function () {
+      $('table.table-sortable').DataTable( {
+        lengthMenu: [[10, 25, 100, -1], [10, 25, 100, "All"]],
+        //scrollY: '50vh',
+        scrollCollapse: true,
+        paging: false,
+        //scrollX: true,
+        //order: [[ -1, "desc" ]],
+      } );
+    } );
+    
+//    $('#go-plain').on('click', function () {
+//      $(this).button('XXX');
+//      $('table.table-sortable').DataTable().destroy(false);
+//    } );
+    </script>
+        
+  </body>
+</html>

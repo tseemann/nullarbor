@@ -1,0 +1,16 @@
+Tool,Version
+Abricate,0.3
+BWA MEM,0.7.13-r1126
+FastTree,2.1.8 Double precision (No SSE3)~ OpenMP (8 threads):
+FreeBayes,1.0.2-dirty
+Kraken,0.10.5-beta
+MLST,2.6
+MegaHit,1.0.3
+Newick-Utils,(unable to determine version)
+Nullarbor,1.20
+Prokka,1.12-beta
+Roary,6.2
+SAMtools,1.3
+SPAdes,3.8.0
+Snippy,3.1
+Trimmomatic,(unable to determine version)
