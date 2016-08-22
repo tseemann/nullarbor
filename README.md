@@ -73,7 +73,6 @@ by @stephenturner.
 Please first install the [Linuxbrew](https://github.com/Homebrew/linuxbrew) package manner, then:
 
     brew tap homebrew/science
-    brew tap chapmanb/cbl
     brew tap tseemann/bioinformatics-linux
     brew install nullarbor --HEAD
 
