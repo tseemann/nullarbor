@@ -261,7 +261,7 @@ for my $s ($set->isolates) {
     CMD => [ "mkdir -p $make_target" ],
   };
   $make{"$id/yield.dirty.tab"} = {
-    DEP => [ @reads ],
+    DEP => [ @reads, $REF ],
     CMD => "fq --quiet --ref $REF @reads > $make_target",
   };
   $make{"$id/yield.clean.tab"} = {
