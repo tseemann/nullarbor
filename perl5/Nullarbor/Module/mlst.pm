@@ -56,7 +56,9 @@ sub html {
     $row->[0] =~ s/ref.fa/Reference/;
     my $ST = $row->[2];
 #    my $missing = $row->[2] eq '-' ? 1E9 : sum( map { $row->[$_] =~ m/[-~?]/ ? 1 : 0 } (3 .. $#$row) );
-    my $missing = sum( map { $row->[$_] =~ m/[-?]/ ? 1 : 0 } (3 .. $#$row) ); # not ~
+#    my $missing = sum( map { $row->[$_] =~ m/[-?]/ ? 1 : 0 } (3 .. $#$row) ); # not ~
+    my $missing = $row->[2] eq '-' ? 1E9 : sum( map { $row->[$_] =~ m/[-?]/ ? 1 : 0 } (3 .. $#$row) ); # not ~
+#    print Dumper($row, $missing);
     for my $i (3 .. $#$row) {
       my $g = $row->[$i];
       $g =~ s/^_//; # fix bold bug for alleles ending in _ !
