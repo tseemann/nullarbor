@@ -34,9 +34,9 @@ distributing the work across a high performance cluster.
    * remove adaptors, low quality bases and reads (Trimmomatic)
 2. Species identification
    * k-mer analysis against known genome database (Kraken)
-3. De novo assembly
+3. _De novo_ assembly
    * Fast mostly-good-enough assembly (MEGA-HIT)
-   * More accuratebut slower assembly (SPAdes) using `--accurate`
+   * More accurate, but slower assembly (SPAdes) using `--accurate`
 4. Annotation
    * Genome annotation (Prokka)
 5. MLST
@@ -50,7 +50,7 @@ distributing the work across a high performance cluster.
 
 1. Core genome SNPs
    * From reads (Snippy-core)
-2. Draw tree
+2. Infer core SNP phylogeny 
    * Maximum likelihood (FastTree)
    * SNP distance matrix (afa-pairwise)
 3. Pan genome
@@ -162,5 +162,3 @@ Submit problems to the [Issues Page](https://github.com/tseemann/nullarbor/issue
 Seemann T, Goncalves da Silva A, Bulach DM, Schultz MB, Kwong JC, Howden BP.
 *Nullarbor* 
 **Github** https://github.com/tseemann/nullarbor
-
-
