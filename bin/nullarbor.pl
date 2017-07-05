@@ -623,6 +623,8 @@ sub check_deps {
   my $value = require_var('KRAKEN_DEFAULT_DB', 'kraken');
   require_file("$value/database.idx", 'kraken');
   require_file("$value/database.kdb", 'kraken');
+
+  msg("All $EXE $VERSION dependencies seem to be installed correctly :-)")
 }
 
 #-------------------------------------------------------------------
