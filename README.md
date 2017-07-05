@@ -82,7 +82,7 @@ You need to install a [Kraken](https://ccb.jhu.edu/software/kraken/) database.
     
 Choose a folder (say `$HOME`) to put it in, you need ~4 GB free:
 
-    tar -C $HOME minikraken.tgz
+    tar -C $HOME -zxvf minikraken.tgz
 
 Then add the following to your `$HOME/.bashrc` so Nullarbor can use it:
 
