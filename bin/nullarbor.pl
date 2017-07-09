@@ -109,23 +109,16 @@ $set->load($input);
 msg("Loaded", $set->num, "isolates:", $set->ids);
 $input = File::Spec->rel2abs($input);
 
-if (not $mlst) {
-  require_exe( qw'any2fasta.pl bash mash sort head' );
-  msg("No --mlst specified, attempting to auto-detect using $ref ...");
-  my($line) = qx{bash -c "mash dist '$FindBin::RealBin/../db/mlst.msh' <(any2fasta.pl '$ref') | sort -k3g | head -n 1"};
-  chomp $line;
-  my @col = split m/\t/, $line;
-  $mlst = $col[0] || '';
-  msg( $mlst ? "Chose MLST scheme: $mlst" : "Could not auto-detect MLST scheme" );
+if ($mlst) {
+  require_exe('mlst');
+  my %scheme = ( map { $_=>1 } split ' ', qx(mlst --list) );
+  msg("Found", scalar(keys %scheme), "MLST schemes");
+  err("Invalid --mlst '$mlst' - type 'mlst --list` to see available schemes.") if ! exists $scheme{$mlst}; 
+  msg("Using scheme: $mlst");
 }
-
-$mlst or err("Please provide an MLST scheme");
-require_exe('mlst');
-my %scheme = ( map { $_=>1 } split ' ', qx(mlst --list) );
-$mlst or err("Invalid --mlst scheme. Please choose from:\n", sort keys %scheme);
-msg("Found", scalar(keys %scheme), "MLST schemes");
-err("Invalid --mlst '$mlst'") if ! exists $scheme{$mlst}; 
-msg("Using scheme: $mlst");
+else {
+  msg("Will auto-detect the MLST scheme");
+}
 
 $outdir or err("Please provide an --outdir folder.");
 if (-d $outdir) {
@@ -217,7 +210,7 @@ $make{'report'} = {
 #};
 
 $make{'report/index.html'} = {
-  DEP => [ $REF, qw(yields kraken abricate virulome mlst.tab mlst2.tab denovo.tab core.aln tree.gif distances.tab roary) ],
+  DEP => [ $REF, qw(yields kraken abricate virulome mlst.tab denovo.tab core.aln tree.gif distances.tab roary) ],
   CMD => "$FindBin::RealBin/nullarbor-report.pl --name $name --indir $outdir --outdir $outdir/report",
 };
 
@@ -323,11 +316,7 @@ for my $s ($set->isolates) {
   };
   $make{"$id/mlst.tab"} = {
     DEP => "$id/$CTG",
-    CMD => "mlst --scheme $mlst $make_deps > $make_target",
-  };
-  $make{"$id/mlst2.tab"} = {
-    DEP => "$id/$CTG",
-    CMD => "mlst $make_deps > $make_target",
+    CMD => "mlst ".($mlst ? "--scheme $mlst" : "")." $make_deps > $make_target",
   };
   $make{"$id/denovo.tab"} = {
     DEP => "$id/$CTG",
@@ -429,17 +418,8 @@ $make{"roary/gene_presence_absence.csv"} = {
   ],
 };
 
-$make{"mlst"} = {
-  DEP => [ "mlst.tab", "mlst2.tab" ],
-};
-
 $make{"mlst.tab"} = {
   DEP => [ map { "$_/mlst.tab" } $set->ids ],
-  CMD => "(head -n 1 $make_dep && tail -q -n +2 $make_deps) > $make_target",
-};
-
-$make{"mlst2.tab"} = {
-  DEP => [ map { "$_/mlst2.tab" } $set->ids ],
   CMD => "cat $make_deps > $make_target",
 };
   
@@ -621,11 +601,11 @@ sub check_deps {
 
   require_perlmod( qw'Data::Dumper Moo Bio::SeqIO File::Copy Time::Piece YAML::Tiny File::Slurp File::Copy' );
 
-  require_version('megahit', 1.0);
-  require_version('snippy', 2.5);
-  require_version('prokka', 1.10);
+  require_version('megahit', 1.1);
+  require_version('snippy', 3.1);
+  require_version('prokka', 1.12);
   require_version('roary', 3.5);
-  require_version('mlst', 1.4);
+  require_version('mlst', 2.10);
   #require_version('spades.py', 3.5); # does not have a --version flag
 
   my $value = require_var('KRAKEN_DEFAULT_DB', 'kraken');

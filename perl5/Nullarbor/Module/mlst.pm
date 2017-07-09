@@ -27,6 +27,8 @@ sub html {
     [ "(-)", "allele missing" ],
   ];
 
+# LEGACY
+if (0) {
   my $mlst = Nullarbor::Tabular::load(-file=>"$indir/mlst.tab", -sep=>"\t", -header=>1);
 #  print STDERR Dumper($mlst);
   
@@ -42,11 +44,12 @@ sub html {
   }
   $mlst->[0][0] = 'Isolate';
   $mlst->[0][-1] = 'ST';
+}
 
   #...........................................................................................
   # MLST
   
-  my $mlst2 = Nullarbor::Tabular::load(-file=>"$indir/mlst2.tab", -sep=>"\t", -header=>0);
+  my $mlst2 = Nullarbor::Tabular::load(-file=>"$indir/mlst.tab", -sep=>"\t", -header=>0);
 
   # find maximum width (#columns) amongst the rows  
   my $width = max( map { scalar(@$_) } @$mlst2 );
