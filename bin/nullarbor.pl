@@ -110,6 +110,7 @@ $input or err("Please specify an dataset with --input <dataset.tab>");
 my $set = Nullarbor::IsolateSet->new();
 $set->load($input);
 msg("Loaded", $set->num, "isolates:", $set->ids);
+$set->num >= 4 or err("$EXE requires a mininum of 4 isolates to run (due to Roary)");
 $input = File::Spec->rel2abs($input);
 
 if ($mlst) {
