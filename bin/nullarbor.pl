@@ -49,6 +49,7 @@ my $name = '';
 my $accurate = 0;
 my $conf_file = "$FindBin::RealBin/../conf/nullarbor.conf";
 my $check = 0;
+my $gcode = 0; # prokka genetic code (0=auto)
 
 @ARGV or usage();
 
@@ -60,6 +61,7 @@ GetOptions(
   "quiet"    => \$quiet,
   "conf=s"   => \$conf_file,
   "mlst=s"   => \$mlst,
+  "gcode=i"  => \$gcode,
   "ref=s"    => \$ref,
   "cpus=i"   => \$cpus,
   "input=s"  => \$input,
@@ -328,7 +330,7 @@ for my $s ($set->isolates) {
   };
   $make{"$id/prokka/$id.gff"} = {
     DEP => "$id/$CTG",
-    CMD => "prokka --centre X --compliant --force --fast --locustag $id --prefix $id --outdir $id/prokka --cpus $CPUS $make_deps",
+    CMD => "prokka --gcode $gcode --centre X --compliant --force --fast --locustag $id --prefix $id --outdir $id/prokka --cpus $CPUS $make_deps",
   };
   $make{"$id/$id.msh"} = { 
     DEP => [ @clipped ],
@@ -576,6 +578,7 @@ sub usage {
   print "  $EXE [options] --name NAME --mlst SCHEME --ref REF.FA/GBK --input INPUT.TAB --outdir DIR\n";
   print "    --check     Check dependencies only\n";
   print "    --accurate  Invest more effort in the de novo assembly\n";
+  print "    --gcode     Genetic code for prokka ($gcode)\n";
   print "    --force     Overwrite --outdir (useful for adding samples to existing analysis)\n";
   print "    --cpus      Maximum number of CPUs to use in total ($cpus)\n";
   print "    --quiet     No output\n";
