@@ -60,7 +60,7 @@ sub html {
   # add CSS to help rotate the labels to this big table!
   my $W = scalar( @{$grid[0]} );
   for my $i (2 .. $W-1) {
-    $grid[0][$i] = " <DIV CLASS='vertical'>$grid[0][$i]</DIV>";
+    $grid[0][$i] = "<DIV CLASS='vertical'>$grid[0][$i]</DIV>";
   }
   
   return $self->matrix_to_html(\@grid);
