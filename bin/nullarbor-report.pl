@@ -90,7 +90,7 @@ my @html;
 push @html, scalar read_file("${TEMPLATE_DIR}/report.header.html");
 push @html, "<h1>$name</h1>\n";
 
-my @section = qw(jobinfo seqdata identification mlst serotype resistome
+my @section = qw(jobinfo seqdata identification mlst serotype resistome virulome
                  assembly reference core snptree snpdist snpdensity pan
                  tools about);
 

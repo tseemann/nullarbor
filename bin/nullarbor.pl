@@ -217,7 +217,7 @@ $make{'report'} = {
 #};
 
 $make{'report/index.html'} = {
-  DEP => [ $REF, qw(yields kraken abricate mlst.tab mlst2.tab denovo.tab core.aln tree.gif distances.tab roary) ],
+  DEP => [ $REF, qw(yields kraken abricate virulome mlst.tab mlst2.tab denovo.tab core.aln tree.gif distances.tab roary) ],
   CMD => "$FindBin::RealBin/nullarbor-report.pl --name $name --indir $outdir --outdir $outdir/report",
 };
 
@@ -317,6 +317,10 @@ for my $s ($set->isolates) {
     DEP => "$id/$CTG",
     CMD => "abricate $make_deps > $make_target",
   };
+  $make{"$id/virulome.tab"} = {
+    DEP => "$id/$CTG",
+    CMD => "abricate --db vfdb $make_deps > $make_target",
+  };
   $make{"$id/mlst.tab"} = {
     DEP => "$id/$CTG",
     CMD => "mlst --scheme $mlst $make_deps > $make_target",
@@ -367,6 +371,10 @@ $make{"yields"} = {
 
 $make{"abricate"} = { 
   DEP => [ map { "$_/abricate.tab" } $set->ids ],
+};
+
+$make{"virulome"} = { 
+  DEP => [ map { "$_/virulome.tab" } $set->ids ],
 };
 
 $make{"kraken"} = { 
