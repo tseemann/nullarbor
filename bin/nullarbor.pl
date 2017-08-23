@@ -465,30 +465,6 @@ $make{'distances.tab'} = {
   CMD => "snp-dists -b $make_dep > $make_target",
 };
 
-$make{"parsnp"} = { 
-  DEP => "parsnp/parsnp.png",
-};
-
-$make{"parsnp/parsnp.png"} = {
-  DEP => "parsnp/parsnp.svg",
-  CMD => "convert $make_dep $make_target"
-};
-
-$make{"parsnp/parsnp.svg"} = {
-  DEP => "parsnp/parsnp.tree",
-  CMD => "$NW_DISPLAY $make_dep > $make_target",
-};
-
-$make{"parsnp/parsnp.tree"} = {
-  DEP => [ $REF, map { "$_/$CTG" } $set->ids ],
-  CMD => [ 
-    "rm -fr parsnp",
-    "mkdir -p parsnp/genomes",
-    (map { "ln -sf $outdir/$_/contigs.fa $outdir/parsnp/genomes/$_.fa" } $set->ids),
-    "parsnp -x -p $CPUS -c -d parsnp/genomes -r $REF -o parsnp",
-  ],
-};
-
 my $help_file = "$FindBin::RealBin/../conf/make_help.txt";
 $make{"help"} = {
   DEP => $help_file,
