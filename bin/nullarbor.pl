@@ -232,7 +232,8 @@ if (my $dir = $cfg->{publish}) {
 $make{$REF} = { 
   DEP => $ref, 
   CMD => [
-    "any2fasta.pl $make_dep > $make_target",
+#    "any2fasta.pl $make_dep > $make_target",
+    "seqret -auto -filter -osformat2 fasta < $make_dep > $make_target",
     "samtools faidx $make_target",
   ],
 };
@@ -579,8 +580,8 @@ sub check_deps {
   my($self) = @_;
 
   require_exe( qw'convert head cat install env nl' );
-  require_exe( qw'trimmomatic prokka roary kraken snippy mlst abricate megahit spades.py nw_order nw_display FastTree snp-dists' );
-  require_exe( qw'fq fa any2fasta.pl roary2svg.pl' );
+  require_exe( qw'trimmomatic prokka roary kraken snippy mlst abricate megahit spades.py nw_order nw_display FastTree snp-dists seqret' );
+  require_exe( qw'fq fa roary2svg.pl' );
 
   require_perlmod( qw'Data::Dumper Moo Bio::SeqIO File::Copy Time::Piece YAML::Tiny File::Slurp File::Copy' );
 
