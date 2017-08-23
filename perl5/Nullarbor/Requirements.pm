@@ -36,12 +36,13 @@ sub require_file {
 
 #----------------------------------------------------------------------
 sub require_version {
-  my($exe, $minver, $maxver) = @_;
+  my($exe, $minver, $maxver, $switch) = @_;
   err("missing minver or maxver parameter") unless $minver || $maxver;
-  my($line) = qx"$exe --version 2>&1";
+  $switch ||= '--version';
+  my($line) = qx"$exe $switch 2>&1";
   chomp $line;
   $line =~ m/(\d+(\.\d+)?)/;
-  my $ver = $1 or err("Could not determine $exe version: $line");
+  my $ver = $1 or err("Could not determine $exe version using '$switch': $line");
   msg("Parsed version '$ver' from '$line'");
   err("Need $exe >= $minver (found $ver)") if defined $minver && $ver < $minver;
   err("Need $exe <= $maxver (found $ver)") if defined $maxver && $ver > $maxver;
