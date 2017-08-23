@@ -583,7 +583,7 @@ sub check_deps {
   require_exe( qw'trimmomatic prokka roary kraken snippy mlst abricate megahit spades.py nw_order nw_display FastTree snp-dists seqret' );
   require_exe( qw'fq fa roary2svg.pl' );
 
-  require_perlmod( qw'Data::Dumper Moo Bio::SeqIO File::Copy Time::Piece YAML::Tiny File::Slurp File::Copy' );
+  require_perlmod( qw'Data::Dumper Moo Bio::SeqIO File::Copy Time::Piece YAML::Tiny File::Slurp File::Copy SVG Text::CSV List::MoreUtils' );
 
   require_version('megahit', 1.1);
   require_version('snippy', 3.1);
