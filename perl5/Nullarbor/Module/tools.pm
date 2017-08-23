@@ -44,7 +44,8 @@ sub html {
   for my $tool (sort keys %getver) {
     my($ver) = qx($getver{$tool} 2>&1);
     chomp $ver;
-    $ver =~ s/^.*?(?=\d)//g; # skip over anything not numeric
+#    $ver =~ s/^.*?(?=\d)//g; # skip over anything not numeric
+    $ver =~ s/^\D*//g; # skip over anything not numeric
     $ver ||= '(unable to determine version)';
     push @inv, [ $tool, $ver ];
   }
