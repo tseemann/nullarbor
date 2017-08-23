@@ -591,6 +591,7 @@ sub check_deps {
   require_version('roary', 3.9, undef, '-w'); # uses -w
   require_version('mlst', 2.10);
   require_version('snp-dists', 0.2, undef, '-v'); # supports -v not --version
+  require_version('trimmomatic', 0.36, undef, '-version'); # supports -v not --version
   #require_version('spades.py', 3.5); # does not have a --version flag
 
   my $value = require_var('KRAKEN_DEFAULT_DB', 'kraken');
