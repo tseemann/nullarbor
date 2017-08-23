@@ -18,24 +18,28 @@ sub html {
   my $outdir = $self->outdir;
   
   my $pan_ss = "$roary/summary_statistics.txt";
-  my $pan_png = "$roary/roary.png";
+#  my $pan_png = "$roary/roary.png";
   my $pan_svg = "$roary/roary.png.svg";
-  my $acc_tree = "$roary/accessory_binary_genes.fa.newick";
+#  my $acc_tree = "$roary/accessory_binary_genes.fa.newick";
   my $acc_svg = "$roary/accessory_binary_genes.fa.newick.svg";
 
-  return unless -r $pan_ss and -r $pan_png;
+  for my $need ($pan_ss, $pan_svg, $acc_svg) {
+    return unless -r $need;
+  }
   
   my $html = '';
 
-  copy($pan_png, "$outdir/pan.png");
-  $html .= "<img src='pan.png'>\n";
+#  copy($pan_png, "$outdir/pan.png");
+#  $html .= "<img src='pan.png'>\n";
+  my $svg1 = $self->load_svg($pan_svg);
+  $html .= "<p class='container-fluid'>\n$svg1\n</p>\n";
   
   my $ss = Nullarbor::Tabular::load(-file=>$pan_ss, -sep=>"\t");
   unshift @$ss, [ "Ortholog class", "Definition", "Count" ];
   $html .= $self->matrix_to_html($ss, 1);
- 
-  my $svg = $self->load_svg($acc_svg);
-  $html .= "<p class='container-fluid'>\n$svg\n</p>\n";
+
+  my $svg2 = $self->load_svg($acc_svg);
+  $html .= "<p class='container-fluid'>\n$svg2\n</p>\n";
   
   return $html;
 }
