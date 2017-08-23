@@ -28,7 +28,7 @@ use Nullarbor::Utils qw(num_cpus);
 # constants
 
 my $EXE = "$FindBin::RealScript";
-my $VERSION = '1.25';
+my $VERSION = '1.26';
 my $AUTHOR = 'Torsten Seemann <torsten.seemann@gmail.com>';
 my @CMDLINE = ($0, @ARGV);
 
@@ -462,7 +462,7 @@ $make{'tree.gif'} = {
 
 $make{'distances.tab'} = {
   DEP => 'core.aln',
-  CMD => "afa-pairwise.pl $make_dep > $make_target",
+  CMD => "snp-dists -b $make_dep > $make_target",
 };
 
 $make{"parsnp"} = { 
@@ -603,16 +603,17 @@ sub check_deps {
   my($self) = @_;
 
   require_exe( qw'convert head cat install env nl' );
-  require_exe( qw'trimmomatic prokka roary kraken snippy mlst abricate megahit spades.py nw_order nw_display FastTree' );
-  require_exe( qw'fq fa afa-pairwise.pl any2fasta.pl roary2svg.pl' );
+  require_exe( qw'trimmomatic prokka roary kraken snippy mlst abricate megahit spades.py nw_order nw_display FastTree snp-dists' );
+  require_exe( qw'fq fa any2fasta.pl roary2svg.pl' );
 
   require_perlmod( qw'Data::Dumper Moo Bio::SeqIO File::Copy Time::Piece YAML::Tiny File::Slurp File::Copy' );
 
   require_version('megahit', 1.1);
   require_version('snippy', 3.1);
   require_version('prokka', 1.12);
-  require_version('roary', 3.5);
+  require_version('roary', 3.9, undef, '-w'); # uses -w
   require_version('mlst', 2.10);
+  require_version('snp-dists', 0.2, undef, '-v'); # supports -v not --version
   #require_version('spades.py', 3.5); # does not have a --version flag
 
   my $value = require_var('KRAKEN_DEFAULT_DB', 'kraken');
