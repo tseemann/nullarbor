@@ -5,12 +5,13 @@ use Data::Dumper;
 use List::Util qw(min max sum);
 use List::MoreUtils qw(uniq all any);
 use Text::CSV;
+use File::Slurp;
 use SVG;
 
 use constant FONT_ASPECT => 0.8;
 
 my(@Options, $verbose, $taxacol, $width, $height, $acconly, 
-             $consensus, $border, $colour, $sepcolour);
+             $consensus, $border, $colour, $sepcolour, $sortlist);
 setOptions();
 
 # read gene_presence_absence.csv from stdin
@@ -41,8 +42,16 @@ while (my $row = $csv->getline(\*ARGV) ) {
     $C++;
   }
   $count++;
+  print STDERR "Processing cluster: $count\r";
 }
-print STDERR "Found $C clusters.\n";
+print STDERR "\nFound $C clusters.\n";
+
+if ($sortlist) {
+  -r $sortlist or die "Can't open --sortlist '$sortlist'";
+  my @order = read_file($sortlist);
+  print STDERR "Read ", 0+@order, " taxa from file: $sortlist\n";
+  @order == $N or die "Mismatch with number of taxa from Roary ($N)";
+}
 
 my $real_height = $height*($N+1);
 my $svg = SVG->new(width=>$width, height=>$real_height);
@@ -64,14 +73,27 @@ print STDERR "Left label = $lchars chr x $fontsize px\n";
 print STDERR "Right label = $rchars chr x $fontsize px\n";
 
 for my $j (0 .. $N-1) {
-  for my $i (0 .. $C-1) {
+  my $last_i=0;
+  my $last_p=$matrix[$j][0];
+#  $svg->comment(join(' ', @{$matrix[$j]}));
+  COL: 
+  for my $i (1 .. $C-1) {
 #    print STDERR "$j $i $matrix[$j][$i]\n";
-    if ($matrix[$j][$i]) {
-      # box for each present gene
+    my $p = $matrix[$j][$i];
+#    print STDERR "> j=$j/$N i=$i/$C | last_p=$last_p p=$p | last_i=$last_i i=$i\n";    
+#    $svg->comment("j=$j/$N i=$i/$C | dx=$dx | last_p=$last_p p=$p | last_i=$last_i i=$i");
+    if ($p != $last_p or $i==$C-1) {
+      #$svg->comment("j=$j/$N i=$i/$C | last_p=$last_p p=$p | last_i=$last_i i=$i");
       $svg->rectangle( 
-          'x' => $llen+$i*$dx, 'y' => $j*$dy, 'width' => $dx, 'height' => $dy-1, 
-          'style' => { fill=>$colour, opacity=>($is_core[$i] ? 1 : 0.75) },
-      );      
+        'x' => $llen+($last_i*$dx), 'y' => $j*$dy, 
+        'width' => $dx*($i-$last_i), 'height' => $dy-1, 
+#        'style' => { fill=>"rgb(255,$i,$i)" },
+        'style' => { fill=>$colour },
+#        'style' => { fill=>$colour, opacity=>($is_core[$i] ? 1 : 0.75) },
+      ) if $last_p;      
+#      $svg->comment("Switching p to $p");
+      $last_i = $i;
+      $last_p = $p;
     }
   }
   # taxon label for each row
@@ -113,11 +135,12 @@ sub setOptions {
     {OPT=>"width=i",  VAR=>\$width, DEFAULT=>1024, DESC=>"Canvas width"},
     {OPT=>"height=i",  VAR=>\$height, DEFAULT=>20, DESC=>"Row height"},
     {OPT=>"taxacolumn=i",  VAR=>\$taxacol, DEFAULT=>14, DESC=>"Column in gpa.csv where taxa begin"},
-    {OPT=>"colour=s",  VAR=>\$colour, DEFAULT=>'DimGray', DESC=>"Colour of core cells"},
+    {OPT=>"colour=s",  VAR=>\$colour, DEFAULT=>'SteelBlue', DESC=>"Colour of core cells"}, # was DimGray
     {OPT=>"sepcolour=s",  VAR=>\$sepcolour, DEFAULT=>'LightGray', DESC=>"Colour of horizontal separators/borders"},
     {OPT=>"acconly!",  VAR=>\$acconly, DEFAULT=>0, DESC=>"Only draw accessory (non-core) genes"},
 #    {OPT=>"consensus!",  VAR=>\$consensus, DEFAULT=>0, DESC=>"Add consensus row"},
     {OPT=>"border!",  VAR=>\$border, DEFAULT=>0, DESC=>"Add outline border"},
+#    {OPT=>"sortlist=s",  VAR=>\$sortlist, DEFAULT=>'', DESC=>"File with sorting list"},  # NOT SUPPORTED YET
   );
 
   (!@ARGV) && (usage());
@@ -142,4 +165,3 @@ sub usage {
 }
  
 #----------------------------------------------------------------------
-
