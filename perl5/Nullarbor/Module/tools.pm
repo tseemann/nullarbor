@@ -24,6 +24,8 @@ my %getver = (
   'BWA MEM' => 'bwa 2>&1 | grep ^Version',
   'FastTree' => 'FastTree',
   'Newick-Utils' => 'echo',
+  'snp-dists' => 'snp-dists -v',
+  'seqret' => 'seqret -h 2>&1 | grep ^Version',
 );
 
 #...........................................................................................
