@@ -51,8 +51,18 @@ sub html {
     # embed BWA MEM insert size results
     push @{ $ass->[$row] }, extract_insert_size("$indir/$id/$id/snps.log");
     # embed prokka results in table
-    my %anno = (map { ($_->[0] => $_->[1]) } @{ Nullarbor::Tabular::load(-file=>"$indir/$id/prokka/$id.txt", -sep=>': ') } );
-    push @{ $ass->[$row] }, (map { $anno{$_} } @annofeat);
+    my $prokka = "$indir/$id/prokka/$id";
+    if (-r "$prokka.txt") {
+      my %anno = (map { ($_->[0] => $_->[1]) } @{ Nullarbor::Tabular::load(-file=>"$prokka.txt", -sep=>': ') } );
+      push @{ $ass->[$row] }, (map { $anno{$_} } @annofeat);
+    }
+    elsif (-r "$prokka.gff") {
+      for my $ftype (@annofeat) {
+        my($count) = qx(grep -c -w '$ftype' '$prokka.gff');
+        chomp $count;
+        push @{ $ass->[$row] }, $count;
+      }
+    }
     # final traffic light
     my($ctgs, $bp) = @{$ass->[$row]}[1,2];
     my $bad = ($ctgs > 999) || ($ctgs > 1.5*$mean_ctgs) || ($bp < 0.8*$mean_bp) || ($bp > 1.2*$mean_bp);
