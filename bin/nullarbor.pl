@@ -50,6 +50,7 @@ my $run = 0;
 my $indir = '';
 my $name = '';
 my $accurate = 0;
+my $fullanno = 0;
 my $trim = 0;
 my $conf_file = "$FindBin::RealBin/../conf/nullarbor.conf";
 my $check = 0;
@@ -86,15 +87,16 @@ GetOptions(
   "trim!"    => \$trim,
   "indir=s"  => \$indir,
   "name=s"   => \$name,
+  "fullanno!"         => \$fullanno,
   # plugins
-  "trimmer=s" => \$trimmer,
-  "trimmer-opt=s" => \$trimmer_opt,
-  "assembler=s" => \$assembler,
-  "assembler-opt=s" => \$assembler_opt,
-  "treebuilder=s" => \$treebuilder,
+  "trimmer=s"         => \$trimmer,
+  "trimmer-opt=s"     => \$trimmer_opt,
+  "assembler=s"       => \$assembler,
+  "assembler-opt=s"   => \$assembler_opt,
+  "treebuilder=s"     => \$treebuilder,
   "treebuilder-opt=s" => \$treebuilder_opt,
-  "recomb=s" => \$recomb,
-  "recomb-opt=s" => \$recomb_opt,
+  "recomb=s"          => \$recomb,
+  "recomb-opt=s"      => \$recomb_opt,
 ) 
 or usage();
 
@@ -355,9 +357,11 @@ for my $s ($set->isolates) {
     DEP => [ $ref, @clipped ],
     CMD => "$SNIPPY --cpus $CPUS --force --outdir $id/$id --ref $ref --R1 $clipped[0] --R2 $clipped[1]",
   };
+  my $prokka_opt = "--centre X --compliant --force";
+  $prokka_opt .= " --fast" unless $fullanno;
   $make{"$id/prokka/$id.gff"} = {
     DEP => "$id/$CTG",
-    CMD => "prokka --gcode $gcode --centre X --compliant --force --fast --locustag $id --prefix $id --outdir $id/prokka --cpus $CPUS $make_deps",
+    CMD => "prokka $prokka_opt --gcode $gcode --locustag $id --prefix $id --outdir $id/prokka --cpus $CPUS $make_deps",
   };
   $make{"$id/$id.msh"} = { 
     DEP => [ @clipped ],
@@ -600,6 +604,7 @@ sub usage {
   print "    --trim                   Trim reads of adaptors ($trim)\n";
   print "    --mlst SCHEME            Force this MLST scheme (AUTO)\n";
   print "    --accurate               Invest more effort in the de novo assembly\n";
+  print "    --fullanno               Don't use --fast for Prokka\n";
   print "PLUGINS\n";
 #  print "    --trimmer NAME           Read trimmer to use ($trimmer)\n";
 #  print "    --trimmer-opt STR        Read trimmer options to pass ($trimmer_opt)\n";
