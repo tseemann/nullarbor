@@ -552,9 +552,9 @@ sub write_makefile {
   print $fh "MAKEFLAGS += --no-builtin-variables\n";
   print $fh "CPUS=$threads\n";
   print $fh "SNIPPY=snippy\n";
-#  print $fh "MAKEFLAGS += --load-average=$CPUS\n";
   print $fh ".SUFFIXES:\n";
 #  print $fh ".SUFFIXES: .newick .tree .aln .png .svg\n";
+  print $fh ".DELETE_ON_ERROR:\n\n";
   
   print $fh "%.png : %.svg\n",
             "\tconvert $make_dep $make_target\n";
@@ -612,8 +612,8 @@ sub usage {
   print "    --assembler-opt STR      Extra assembler options to pass ($assembler_opt)\n";
   print "    --treebuilder NAME       Tree-builder to use ($treebuilder)\n";
   print "    --treebuilder-opt STR    Extra tree-builder options to pass ($treebuilder_opt)\n";
-  print "    --recomb NAME            Recombination masker ($recomb)\n";
-  print "    --recomb-opt STR         Extra recombination marker options to pass ($recomb_opt)\n";
+#  print "    --recomb NAME            Recombination masker ($recomb)\n";
+#  print "    --recomb-opt STR         Extra recombination marker options to pass ($recomb_opt)\n";
   print "DOCUMENTATION\n";
   print "    $URL\n";
   exit;
