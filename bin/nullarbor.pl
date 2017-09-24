@@ -586,6 +586,9 @@ sub write_makefile {
 
 #-------------------------------------------------------------------
 sub usage {
+  my($ok) = @_;
+  select STDERR if not $ok;
+
   print "NAME\n  $EXE $VERSION\n";
   print "SYNOPSIS\n  Reads to reports for public health microbiology\n";
   print "AUTHOR\n  $AUTHOR\n";
@@ -623,7 +626,8 @@ sub usage {
 #  print "    --recomb-opt STR         Extra recombination marker options to pass ($recomb_opt)\n";
   print "DOCUMENTATION\n";
   print "    $URL\n";
-  exit;
+  
+  exit( $ok ? 0 : 1);
 }
 
 #-------------------------------------------------------------------
