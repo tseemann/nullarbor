@@ -68,7 +68,7 @@ $outdir or err("Please set the --outdir output folder.");
 $indir = File::Spec->rel2abs($indir);
 $outdir = File::Spec->rel2abs($outdir);
 
-if (-f $outdir) {
+if (-d $outdir) {
   msg("Folder --outdir $outdir already exists.");
 }
 else {
