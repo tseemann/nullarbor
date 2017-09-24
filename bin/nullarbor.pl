@@ -50,6 +50,7 @@ my $run = 0;
 my $indir = '';
 my $name = '';
 my $accurate = 0;
+my $keepfiles = 0;
 my $fullanno = 0;
 my $trim = 0;
 my $conf_file = "$FindBin::RealBin/../conf/nullarbor.conf";
@@ -88,6 +89,7 @@ GetOptions(
   "indir=s"  => \$indir,
   "name=s"   => \$name,
   "fullanno!"         => \$fullanno,
+  "keepfiles!"        => \$keepfiles,
   # plugins
   "trimmer=s"         => \$trimmer,
   "trimmer-opt=s"     => \$trimmer_opt,
@@ -214,7 +216,7 @@ my $zcat = 'gzip -f -c -d';
 my $CPUS = '$(CPUS)';
 my $NW_DISPLAY = "nw_display ".($cfg->{nw_display} || '');
 my $SNIPPY = '$(SNIPPY)';
-my $DELETE = "rm -v -f";
+my $DELETE = "rm -f";
 
 my $TEMPDIR = $cfg->{tempdir} || $ENV{TMPDIR} || '/tmp';
 msg("Will use temp folder: $TEMPDIR");
@@ -234,11 +236,7 @@ $make{'again'} = {
 $make{'report'} = {
   DEP => [ 'report/index.html' ],
 };
-
-#$make{'report/index.html'} = {
-#  DEP => 'report/index.md',
-#  CMD => "pandoc --standalone --toc --from markdown_github+pandoc_title_block --to html --css 'nullarbor.css' $make_dep > $make_target"
-#};
+$make{'report'}{'CMD'} = "make space" unless $keepfiles;
 
 $make{'report/index.html'} = {
   DEP => [ $REF, qw(yields kraken abricate virulome mlst.tab denovo.tab core.aln tree.gif distances.tab roary) ],
@@ -513,10 +511,18 @@ $make{'panic'} = {
 
 $make{'space'} = {
   CMD => [
-#    "$DELETE core.full.aln core.nogaps.aln",
+    # overall
     "$DELETE core.full.aln core.vcf",
+    # roary
     "$DELETE roary/*.{tab,embl,dot,Rtab}",
-    (map { "$DELETE $_/*.ctx $_/prokka/*.{err,ffn,fsa,sqn,tbl} $_/$_/*consensus*fa $_/$_/*.{vcf,vcf.gz,vcf.tbi,bed,bam,bai,html}" } $set->ids),
+    # isolate :: denovo et al
+    (map { "$DELETE $_/*.ctx $_/megahit.log" } $set->ids),
+    # isolate :: prokka
+    (map { "$DELETE $_/prokka/*.{err,ffn,fsa,sqn,tbl,tsv}" } $set->ids),
+    # isolate :: snippy
+    (map { "$DELETE $_/$_/*consensus*fa $_/$_/*.{gz,tbi,vcf,vcf.gz,bed,bam,bai,html,csv,gff,txt,log}" } $set->ids),
+    # isolate :: snipppy :: reference (recursive)
+    (map { "$DELETE -r $_/$_/reference/" } $set->ids),
   ],
 };
 
@@ -588,24 +594,25 @@ sub usage {
   print "REQUIRED\n";
   print "    --name STR               Job name\n";
   print "    --ref FILE               Reference file in FASTA or GBK format\n";
-  print "    --input FILE             Input TSV file: Isolate_ID,R1,R2\n";
-  print "    --outdir DIR             Folder to put results into\n";
+  print "    --input FILE             Input TSV file with format:  | Isolate_ID | R1.fq.gz | R2.fq.gz |\n";
+  print "    --outdir DIR             Output folder\n";
   print "OPTIONS\n";
-  print "    --quiet                  No output\n";
-  print "    --verbose                More output\n";
-  print "    --version                Print version and exit\n";
-  print "    --check                  Check dependencies only\n";
-  print "    --force                  Overwrite --outdir (useful for adding samples to existing analysis)\n";
   print "    --cpus INT               Maximum number of CPUs to use in total ($cpus)\n";
+  print "    --force                  Overwrite --outdir (useful for adding samples to existing analysis)\n";
+  print "    --quiet                  No screen output\n";
+  print "    --verbose                More screen output\n";
+  print "    --version                Print version and exit\n";
+  print "    --check                  Check dependencies and exit\n";
   print "    --run                    Immediately launch Makefile\n";
   print "ADVANCED OPTIONS\n";
   print "    --conf FILE              Config file ($conf_file)\n";
   print "    --gcode INT              Genetic code for prokka ($gcode)\n";
   print "    --trim                   Trim reads of adaptors ($trim)\n";
   print "    --mlst SCHEME            Force this MLST scheme (AUTO)\n";
-  print "    --accurate               Invest more effort in the de novo assembly\n";
+  print "    --accurate               Run as slow as possible for the hope of improved accuracy\n";
   print "    --fullanno               Don't use --fast for Prokka\n";
-  print "PLUGINS\n";
+  print "    --keepfiles              Keep ALL ancillary files to annoy your sysadmin\n";
+  print "PLUGINS (CURRENTLY NOT WORKING)\n";
 #  print "    --trimmer NAME           Read trimmer to use ($trimmer)\n";
 #  print "    --trimmer-opt STR        Read trimmer options to pass ($trimmer_opt)\n";
   print "    --assembler NAME         Assembler to use ($assembler)\n";
