@@ -4,6 +4,11 @@ base="$( cd "$( dirname "$0" )" && pwd )"
 . "$base/../common.inc"
 . "$base/common.inc"
 
-msg "This is $0"
+WORKDIR=$(mktemp -d)
 
-echo shovill --outdir "$outdir" --R1 "$read1" --R2 "$read2" --cpus "$cpus" --tmpdir "$tmpdir/spades.$$" -o "$outdir" $opts
+shovill --force --outdir "$WORKDIR" --R1 "$read1" --R2 "$read2" --cpus "$cpus" $opts
+
+cp -v -f "$WORKDIR/"contigs.{fa,gfa} "$outdir"
+cat "$WORKDIR/"*.log > "$outdir/contigs.log"
+
+rm -frv "$WORKDIR"

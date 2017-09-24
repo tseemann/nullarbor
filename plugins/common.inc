@@ -1,7 +1,7 @@
 # common functions for all the plugins
 
 # https://sipb.mit.edu/doc/safe-shell/
-set -euf -o pipefail
+set -eu -o pipefail
 
 # print message to stderr
 function msg {
@@ -28,4 +28,3 @@ function needVar {
 }
 
 needVar USER
-needVar LUSER

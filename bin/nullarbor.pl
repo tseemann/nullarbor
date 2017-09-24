@@ -60,12 +60,15 @@ my $gcode = 0; # prokka genetic code (0=auto)
 #plugins
 my $trimmer = '';
 my $trimmer_opt = '';
-my $assembler = 'shovill';
+my $assembler = '';
 my $assembler_opt = '';
-my $treebuilder = 'fasttree';
+my $treebuilder = '';
 my $treebuilder_opt = '';
 my $recomb = '';
 my $recomb_opt = '';
+
+my $plugin = Nullarbor::Plugins->discover();
+#msg(Dumper($plugin));
 
 @ARGV or usage();
 
@@ -190,8 +193,6 @@ else {
   msg("Could not read config file: $conf_file");
 }
 
-my $plugin = Nullarbor::Plugins->discover();
-msg(Dumper($plugin));
 
 my $nsamp = $set->num or err("Data set appears to have no isolates?");
 msg("Optimizing use of $cpus cores for $nsamp isolates.");
@@ -303,7 +304,16 @@ for my $s ($set->isolates) {
     DEP => [ $clipped[0] ],
   };
   
-  if ($accurate) {
+  if ($assembler) {
+    $make{"$id/$CTG"} = {
+      DEP => [ @clipped ],
+      CMD => [ 
+        qq{read1="$clipped[0]" read2="$clipped[1]" cpus="$CPUS" outdir="$id" opts="$assembler_opt" }.$plugin->{assembler}{$assembler},
+      ],
+    };
+  
+  }
+  elsif ($accurate) {
     $make{"$id/$CTG"} = {
       DEP => [ @clipped ],
       CMD => [ 
@@ -585,10 +595,18 @@ sub write_makefile {
 }
 
 #-------------------------------------------------------------------
+
+sub default_string {
+  my($def, @list) = @_;
+  return join( ' ', sort @list )." ($def)";
+#  return join( ' ', map { $_ eq $def ? ">>$_<<" : $_ } sort @list );
+}
+
+#-------------------------------------------------------------------
 sub usage {
   my($ok) = @_;
   select STDERR if not $ok;
-
+  
   print "NAME\n  $EXE $VERSION\n";
   print "SYNOPSIS\n  Reads to reports for public health microbiology\n";
   print "AUTHOR\n  $AUTHOR\n";
@@ -618,12 +636,12 @@ sub usage {
   print "PLUGINS (CURRENTLY NOT WORKING)\n";
 #  print "    --trimmer NAME           Read trimmer to use ($trimmer)\n";
 #  print "    --trimmer-opt STR        Read trimmer options to pass ($trimmer_opt)\n";
-  print "    --assembler NAME         Assembler to use ($assembler)\n";
+  print "    --assembler NAME         Assembler to use: ", default_string( $assembler, keys(%{$plugin->{assembler}}) ), "\n";
   print "    --assembler-opt STR      Extra assembler options to pass ($assembler_opt)\n";
-  print "    --treebuilder NAME       Tree-builder to use ($treebuilder)\n";
+  print "    --treebuilder NAME       Tree-builder to use: ", default_string( $treebuilder, keys(%{$plugin->{treebuilder}}) ), "\n";
   print "    --treebuilder-opt STR    Extra tree-builder options to pass ($treebuilder_opt)\n";
-#  print "    --recomb NAME            Recombination masker ($recomb)\n";
-#  print "    --recomb-opt STR         Extra recombination marker options to pass ($recomb_opt)\n";
+  print "    --recomb NAME            Recombination masker to use: ", default_string( $recomb, keys(%{$plugin->{recomb}}) ), "\n";
+  print "    --recomb-opt STR         Extra recombination marker options to pass ($recomb_opt)\n";
   print "DOCUMENTATION\n";
   print "    $URL\n";
   
