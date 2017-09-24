@@ -23,13 +23,15 @@ use Nullarbor::Logger qw(msg err);
 use Nullarbor::Report;
 use Nullarbor::Requirements qw(require_exe require_perlmod require_version require_var require_file);
 use Nullarbor::Utils qw(num_cpus);
+use Nullarbor::Plugins;
 
 #-------------------------------------------------------------------
 # constants
 
 my $EXE = "$FindBin::RealScript";
-my $VERSION = '1.28';
+my $VERSION = '1.30-dev';
 my $AUTHOR = 'Torsten Seemann <torsten.seemann@gmail.com>';
+my $URL = "https://github.com/tseemann/nullarbor";
 my @CMDLINE = ($0, @ARGV);
 
 #-------------------------------------------------------------------
@@ -48,9 +50,20 @@ my $run = 0;
 my $indir = '';
 my $name = '';
 my $accurate = 0;
+my $trim = 0;
 my $conf_file = "$FindBin::RealBin/../conf/nullarbor.conf";
 my $check = 0;
 my $gcode = 0; # prokka genetic code (0=auto)
+
+#plugins
+my $trimmer = '';
+my $trimmer_opt = '';
+my $assembler = 'shovill';
+my $assembler_opt = '';
+my $treebuilder = 'fasttree';
+my $treebuilder_opt = '';
+my $recomb = '';
+my $recomb_opt = '';
 
 @ARGV or usage();
 
@@ -69,10 +82,19 @@ GetOptions(
   "outdir=s" => \$outdir,
   "force!"   => \$force,
   "run!"     => \$run,
-#  "report!"  => \$report,
   "accurate!"=> \$accurate,
+  "trim!"    => \$trim,
   "indir=s"  => \$indir,
   "name=s"   => \$name,
+  # plugins
+  "trimmer=s" => \$trimmer,
+  "trimmer-opt=s" => \$trimmer_opt,
+  "assembler=s" => \$assembler,
+  "assembler-opt=s" => \$assembler_opt,
+  "treebuilder=s" => \$treebuilder,
+  "treebuilder-opt=s" => \$treebuilder_opt,
+  "recomb=s" => \$recomb,
+  "recomb-opt=s" => \$recomb_opt,
 ) 
 or usage();
 
@@ -163,6 +185,9 @@ if (-r $conf_file) {
 else {
   msg("Could not read config file: $conf_file");
 }
+
+my $plugin = Nullarbor::Plugins->discover();
+msg(Dumper($plugin));
 
 my $nsamp = $set->num or err("Data set appears to have no isolates?");
 msg("Optimizing use of $cpus cores for $nsamp isolates.");
@@ -268,11 +293,10 @@ for my $s ($set->isolates) {
   };
   $make{$clipped[0]} = {
     DEP => [ @reads ],
-#    CMD => [ "skewer --quiet -t $CPUS -n -q 10 -z -o $id/clipped @reads ".($cfg->{skewer} || ''),
-#             "mv $id/clipped-trimmed-pair1.fastq.gz $id/$R1",
-#             "mv $id/clipped-trimmed-pair2.fastq.gz $id/$R2", ],
-    CMD => [ "trimmomatic PE -threads $CPUS -phred33 @reads $id/$R1 /dev/null $id/$R2 /dev/null ".($cfg->{trimmomatic} || '') ],
+    CMD => $trim ? [ "trimmomatic PE -threads $CPUS -phred33 @reads $id/$R1 /dev/null $id/$R2 /dev/null ".($cfg->{trimmomatic} || '') ]
+                 : [ "ln -f -s '$reads[0]' '$id/$R1'", "ln -f -s '$reads[1]' '$id/$R2'" ],
   };
+  
   # we need this special rule to handle the 'double dependency' problem
   # http://www.gnu.org/software/automake/manual/html_node/Multiple-Outputs.html#Multiple-Outputs
   $make{$clipped[1]} = { 
@@ -556,16 +580,37 @@ sub usage {
   print "SYNOPSIS\n  Reads to reports for public health microbiology\n";
   print "AUTHOR\n  $AUTHOR\n";
   print "USAGE\n";
-  print "  $EXE [options] --name NAME --mlst SCHEME --ref REF.FA/GBK --input INPUT.TAB --outdir DIR\n";
-  print "    --check     Check dependencies only\n";
-  print "    --accurate  Invest more effort in the de novo assembly\n";
-  print "    --gcode     Genetic code for prokka ($gcode)\n";
-  print "    --force     Overwrite --outdir (useful for adding samples to existing analysis)\n";
-  print "    --cpus      Maximum number of CPUs to use in total ($cpus)\n";
-  print "    --quiet     No output\n";
-  print "    --verbose   More output\n";
-  print "    --conf      Config file ($conf_file)\n";
-  print "    --version   Print version and exit\n";
+  print "  $EXE [options] --name NAME --ref REF.FA/GBK --input INPUT.TAB --outdir DIR\n";
+  print "REQUIRED\n";
+  print "    --name STR               Job name\n";
+  print "    --ref FILE               Reference file in FASTA or GBK format\n";
+  print "    --input FILE             Input TSV file: Isolate_ID,R1,R2\n";
+  print "    --outdir DIR             Folder to put results into\n";
+  print "OPTIONS\n";
+  print "    --quiet                  No output\n";
+  print "    --verbose                More output\n";
+  print "    --version                Print version and exit\n";
+  print "    --check                  Check dependencies only\n";
+  print "    --force                  Overwrite --outdir (useful for adding samples to existing analysis)\n";
+  print "    --cpus INT               Maximum number of CPUs to use in total ($cpus)\n";
+  print "    --run                    Immediately launch Makefile\n";
+  print "ADVANCED OPTIONS\n";
+  print "    --conf FILE              Config file ($conf_file)\n";
+  print "    --gcode INT              Genetic code for prokka ($gcode)\n";
+  print "    --trim                   Trim reads of adaptors ($trim)\n";
+  print "    --mlst SCHEME            Force this MLST scheme (AUTO)\n";
+  print "    --accurate               Invest more effort in the de novo assembly\n";
+  print "PLUGINS\n";
+#  print "    --trimmer NAME           Read trimmer to use ($trimmer)\n";
+#  print "    --trimmer-opt STR        Read trimmer options to pass ($trimmer_opt)\n";
+  print "    --assembler NAME         Assembler to use ($assembler)\n";
+  print "    --assembler-opt STR      Extra assembler options to pass ($assembler_opt)\n";
+  print "    --treebuilder NAME       Tree-builder to use ($treebuilder)\n";
+  print "    --treebuilder-opt STR    Extra tree-builder options to pass ($treebuilder_opt)\n";
+  print "    --recomb NAME            Recombination masker ($recomb)\n";
+  print "    --recomb-opt STR         Extra recombination marker options to pass ($recomb_opt)\n";
+  print "DOCUMENTATION\n";
+  print "    $URL\n";
   exit;
 }
 
@@ -580,11 +625,12 @@ sub check_deps {
   my($self) = @_;
 
   require_exe( qw'convert head cat install env nl' );
-  require_exe( qw'trimmomatic prokka roary kraken snippy mlst abricate megahit spades.py nw_order nw_display FastTree snp-dists seqret' );
+  require_exe( qw'trimmomatic prokka roary kraken snippy mlst abricate megahit spades.py shovill nw_order nw_display FastTree snp-dists seqret' );
   require_exe( qw'fq fa roary2svg.pl' );
 
   require_perlmod( qw'Data::Dumper Moo Bio::SeqIO File::Copy Time::Piece YAML::Tiny File::Slurp File::Copy SVG Text::CSV List::MoreUtils' );
 
+  require_version('shovill', 0.8);
   require_version('megahit', 1.1);
   require_version('snippy', 3.1);
   require_version('prokka', 1.12);
