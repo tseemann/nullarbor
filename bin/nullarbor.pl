@@ -474,8 +474,8 @@ $make{"denovo.tab"} = {
 };
 
 $make{'core.aln'} = {
-  DEP => [ map { ("$_/$_/snps.tab") } $set->ids ],
-  CMD => "snippy-core ".join(' ', map { "$_/$_" } $set->ids),
+  DEP => [ $REF, map { ("$_/$_/snps.tab") } $set->ids ],
+  CMD => "snippy-core --ref $REF ".join(' ', map { "$_/$_" } $set->ids),
 };
 
 #$make{'core.full.aln'} = {
