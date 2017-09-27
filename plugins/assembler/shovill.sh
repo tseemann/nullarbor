@@ -6,7 +6,7 @@ base="$( cd "$( dirname "$0" )" && pwd )"
 
 WORKDIR=$(mktemp -d)
 
-shovill --force --outdir "$WORKDIR" --R1 "$read1" --R2 "$read2" --cpus "$cpus" $opts
+shovill --force --outdir "$WORKDIR" --R1 "$read1" --R2 "$read2" --cpus "$cpus" --ram 16 $opts
 
 cp -v -f "$WORKDIR/"contigs.{fa,gfa} "$outdir"
 cat "$WORKDIR/"*.log > "$outdir/contigs.log"
