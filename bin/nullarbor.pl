@@ -237,7 +237,7 @@ $make{'again'} = {
 $make{'report'} = {
   DEP => [ 'report/index.html' ],
 };
-$make{'report'}{'CMD'} = "make space" unless $keepfiles;
+$make{'report'}{'CMD'} = '$(MAKE) space' unless $keepfiles;
 
 $make{'report/index.html'} = {
   DEP => [ $REF, qw(yields kraken abricate virulome mlst.tab denovo.tab core.aln tree.gif distances.tab roary) ],
