@@ -522,15 +522,15 @@ $make{'panic'} = {
 $make{'space'} = {
   CMD => [
     # overall
-    "$DELETE core.full.aln core.vcf",
+    ## "$DELETE core.full.aln core.vcf",
     # roary
     "$DELETE roary/*.{tab,embl,dot,Rtab}",
     # isolate :: denovo et al
-    (map { "$DELETE $_/*.ctx $_/megahit.log" } $set->ids),
+    (map { "$DELETE $_/*.ctx $_/megahit.log" } $set->ids),   # FIXME: contigs.log too?
     # isolate :: prokka
     (map { "$DELETE $_/prokka/*.{err,ffn,fsa,sqn,tbl,tsv}" } $set->ids),
     # isolate :: snippy
-    (map { "$DELETE $_/$_/*consensus*fa $_/$_/*.{gz,tbi,vcf,vcf.gz,bed,bam,bai,html,csv,gff,txt,log}" } $set->ids),
+    (map { "$DELETE $_/$_/*consensus*fa $_/$_/*.{gz,tbi,vcf,vcf.gz,bed,html,csv,gff,txt,log}" } $set->ids),
     # isolate :: snipppy :: reference (recursive)
     (map { "$DELETE -r $_/$_/reference/" } $set->ids),
   ],
