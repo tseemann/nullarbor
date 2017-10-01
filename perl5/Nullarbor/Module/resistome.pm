@@ -20,7 +20,9 @@ sub html {
 
   my %abr;
   for my $id (@id) {
-    $abr{$id} = Nullarbor::Tabular::load(-file=>"$indir/$id/abricate.tab", -sep=>"\t", -header=>1, -key=>4); # 4 = "GENE"
+    my $v2 = "$indir/$id/resistome.tab";
+    my $infile = -r $v2 ? $v2 : "$indir/$id/abricate.tab";
+    $abr{$id} = Nullarbor::Tabular::load(-file=>$infile, -sep=>"\t", -header=>1, -key=>4); # 4 = "GENE"
   }
 #  print STDERR Dumper(\%abr);
 

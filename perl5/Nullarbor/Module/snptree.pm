@@ -20,10 +20,13 @@ sub html {
 #  my $name = $self->name;
   my $html = '';
 
-  $html .= $self->download_links("core.aln", "tree.newick");
+  my $nwk = -r "core.newick" ? "core.newick" : "tree.newick";
+  my $svg = -r "core.svg" ? "core.svg" : "tree.svg";
+
+  $html .= $self->download_links("core.aln", $nwk);
   
-  my $svg = $self->load_svg("$indir/tree.svg");
-  $html .= "<p class='container-fluid'>\n$svg\n</p>\n";
+  my $svg_data = $self->load_svg("$indir/$svg");
+  $html .= "<p class='container-fluid'>\n$svg_data\n</p>\n";
 
   my $aln = Bio::SeqIO->new(-file=>"$indir/core.aln", -format=>'fasta');
   $aln = $aln->next_seq;

@@ -18,10 +18,14 @@ sub html {
   my $outdir = $self->outdir;
   
   my $pan_ss = "$roary/summary_statistics.txt";
-#  my $pan_png = "$roary/roary.png";
-  my $pan_svg = "$roary/roary.png.svg";
-#  my $acc_tree = "$roary/accessory_binary_genes.fa.newick";
-  my $acc_svg = "$roary/accessory_binary_genes.fa.newick.svg";
+
+  my $pan_svg = -r "$roary/pan.svg" 
+              ? "$roary/pan.svg" 
+              : "$roary/roary.png.svg";
+
+  my $acc_svg = -r "$roary/acc.svg" 
+              ? "$roary/acc.svg"
+              : "$roary/accessory_binary_genes.fa.newick.svg";
 
   for my $need ($pan_ss, $pan_svg, $acc_svg) {
     return unless -r $need;
