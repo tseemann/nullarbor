@@ -7,7 +7,7 @@ use File::Slurp;
 use Data::Dumper;
 use Nullarbor::Logger qw(msg err);
 
-my $RUNNER_DIR = "$FindBin::Bin/../plugins";
+my $RUNNER_DIR = "$FindBin::RealBin/../plugins";
 my $IGNORE = "common.inc";
 
 #----------------------------------------------------------------------
