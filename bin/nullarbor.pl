@@ -375,17 +375,6 @@ for my $s ($set->isolates) {
     DEP => [ @clipped ],
     CMD => "mash sketch -o $id/$id $make_deps",
   };
-  $make{"$id/cortex.fa"} = { 
-#    DEP => [ @clipped ],
-    DEP => [ @reads ],
-    CMD => [
-#      "mccortex31 build -m 4G -t $CPUS -s $id -k 31 -2 $clipped[0]:$clipped[1] $id/raw.ctx",
-      "mccortex31 build -m 4G -t $CPUS -s $id -k 31 -2 $reads[0]:$reads[1] $id/raw.ctx",
-      "mccortex31 clean -m 4G -t $CPUS -o $id/clean.ctx $id/raw.ctx",
-      "mccortex31 unitigs -m 4G -t $CPUS $id/clean.ctx > $make_target",
-      "$DELETE $id/{clean,raw}.ctx",
-    ],
-  };
 }
 close ISOLATES;
 #END per isolate
@@ -526,7 +515,7 @@ $make{'space'} = {
     # roary
     "$DELETE roary/*.{tab,embl,dot,Rtab}",
     # isolate :: denovo et al
-    (map { "$DELETE $_/*.ctx $_/megahit.log" } $set->ids),   # FIXME: contigs.log too?
+    (map { "$DELETE $_/megahit.log" } $set->ids),   # FIXME: contigs.log too?
     # isolate :: prokka
     (map { "$DELETE $_/prokka/*.{err,ffn,fsa,sqn,tbl,tsv}" } $set->ids),
     # isolate :: snippy
