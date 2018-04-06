@@ -363,7 +363,7 @@ for my $s ($set->isolates) {
   };  
   $make{"$id/$id/snps.tab"} = {
     DEP => [ $ref, @clipped ],
-    CMD => "$SNIPPY --cpus $CPUS --force --outdir $id/$id --ref $ref --R1 $clipped[0] --R2 $clipped[1]",
+    CMD => "$SNIPPY --ref $REF --cpus $CPUS --force --outdir $id/$id --R1 $clipped[0] --R2 $clipped[1]",
   };
   my $prokka_opt = "--centre X --compliant --force";
   $prokka_opt .= " --fast" unless $fullanno;
@@ -530,7 +530,7 @@ $make{'space'} = {
     # isolate :: prokka
     (map { "$DELETE $_/prokka/*.{err,ffn,fsa,sqn,tbl,tsv}" } $set->ids),
     # isolate :: snippy
-    (map { "$DELETE $_/$_/*consensus*fa $_/$_/*.{gz,tbi,vcf,vcf.gz,bed,html,csv,gff,txt,log}" } $set->ids),
+    (map { "$DELETE $_/$_/*consensus*fa $_/$_/*.{gz,tbi,vcf.gz,bed,html,csv,gff,txt,log}" } $set->ids),
     # isolate :: snipppy :: reference (recursive)
     (map { "$DELETE -r $_/$_/reference/" } $set->ids),
   ],
