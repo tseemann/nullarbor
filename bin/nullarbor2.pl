@@ -54,7 +54,7 @@ my $fullanno = 0;
 my $trim = 0;
 my $conf_file = "$FindBin::RealBin/../conf/nullarbor.conf";
 my $check = 0;
-my $gcode =11; # genetic code for prokka + roary
+my $gcode = 11; # genetic code for prokka + roary
 #plugins
 my $trimmer = '';
 my $trimmer_opt = '';
@@ -240,7 +240,7 @@ for my $s ($set->isolates) {
   make_path($dir);
 
   $make{$clipped[0]} = {
-    DEP => [ @reads ],
+    DEP => [ '|', @reads ],
     CMD => $trim ? [ "trimmomatic PE -threads $CPUS -phred33 @reads $id/$R1 /dev/null $id/$R2 /dev/null ".($cfg->{trimmomatic} || '') ]
                  : [ "ln -f -s '$reads[0]' '$id/$R1'", "ln -f -s '$reads[1]' '$id/$R2'" ],
   };
