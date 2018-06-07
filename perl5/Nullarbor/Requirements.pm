@@ -39,10 +39,11 @@ sub require_version {
   my($exe, $minver, $maxver, $switch) = @_;
   err("missing minver or maxver parameter") unless $minver || $maxver;
   $switch ||= '--version';
-  my($line) = qx"$exe $switch 2>&1";
+  my($line) = qx"$exe $switch 2>&1 | grep -P -v '(_JAVA|uninitial|^\$|-v)'";
   chomp $line;
   $line =~ m/(\d+(\.\d+)?)/;
   my $ver = $1 or err("Could not determine $exe version using '$switch': $line");
+  # $ver =~ s/\.(\d)$/\.0\1/;
   msg("Parsed version '$ver' from '$line'");
   err("Need $exe >= $minver (found $ver)") if defined $minver && $ver < $minver;
   err("Need $exe <= $maxver (found $ver)") if defined $maxver && $ver > $maxver;
