@@ -167,6 +167,64 @@ See what's available with this command:
 
     make help
 
+## Advanced usage
+
+### Prefilling data
+
+Often you want to perform multiple analyses where some of the isolates
+have been used in previous Nullarbor runs. It is wasteful to recompute
+results you already have.  The `--prefill` option allows you to "copy"
+existing result files into a new Nullarbor folder before commencing
+the run.
+
+To set it up, add a `prefill` section to `nullarbor.conf` as follows:
+```
+# nullarbor.conf
+prefill:
+        contigs.fa: /home/seq/MDU/QC/{ID}/contigs.fa
+```
+The `{ID}` will replaced for each isolate ID in your `--input` TAB file
+and the `contigs.fa` copied from the source path specified. This will
+prevent Nullarbor having to re-assemble the reads.
+
+### Using different components
+
+Nullarbor 2.x has a plugin system for _assembly_ and _tree building_.
+These can be changed using the `--assembler` and `--treebuilder` options.
+
+Read trimming is off by default, because most sequences are now
+provided pre-trimmed, and retrimming occupies much disk space.
+To trim Illumina adaptors, use the `--trim` option.
+
+### Removing isolates from an existing run
+
+After examining the report from your initial analysis, it is common
+to observe some outliers, or bad data. In this case, you want to 
+remove those isolates from the analysis, but want to minimize the
+amount of recomputation needed.
+
+Just go to the _original_ `--input TAB` file and either (1) remove
+the offending lines; or (2) just add a `#` symbol to "comment out"
+the line and it will be ignored by Nullarbor.
+
+Then go back into the Nullarbor folder and type `make again`
+and it should make a new report.  Assemblies and SNPs won't be
+redone, but the tree-builder and pan-genome components will
+need to run again.
+
+### Adding isolates to an existing run
+
+As per "Removing isolates" above, you can also add in more isolates
+to your original `--input TAB` file when you want to expand the analysis.
+Then just type `make again` and it should only recalculate
+things it needs to, saving a lot of computation.
+
+### Quick run
+
+If you don't want to cut and paste the `make ....` instructions to 
+start the analysis, just add the `--run` option to your `nullarbor.pl` command.
+
+
 ## Etymology
 
 The [Nullarbor](http://en.wikipedia.org/wiki/Nullarbor_Plain) 
