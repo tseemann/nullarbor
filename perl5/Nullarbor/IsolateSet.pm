@@ -36,8 +36,9 @@ sub print {
 
 sub _clean_id {
   my $s = shift;
-  $s =~ s/[^\w._-]/~/g;
-  #$s = quotemeta($s);
+  my $olds = $s;
+  $s =~ s/[^\w._-]/_/g;
+  $s ne $olds and msg("Renamed isolate: $olds => $s");
   return $s;
 }
 
@@ -47,13 +48,21 @@ sub load {
   my($self, $fname) = @_;
   %set = ();
   open ISOLATES, '<', $fname;
-  while (<ISOLATES>) {
-    next if m/^#/;
-    chomp;
-    my($id, @reads) = split m/\t/;
+  while (my $line = <ISOLATES>) {
+    # skip comments
+    next if $line =~ m/^#/;
+    chomp $line;
+
+    # warn if not in TSV format
+    my $ntabs = $line =~ tr/\t/\t/;
+    $ntabs < 2 and err("Input line isn't tab-separated?\n$line");
+
+    # parse the isolate line
+    my($id, @reads) = split m/\t/, $line;
     next unless $id and @reads >= 1;
     $id = _clean_id($id);
     exists $set{$id} and err("Duplicate ID '$id' in dataset '$fname'");
+
     for my $i (0 ..$#reads) {
 #      $reads[$i] or die "Sample '$id' read file #$i is null!";
 #      my $old = $reads[$i];
@@ -75,4 +84,3 @@ sub load {
 #.................................................................................
 
 1;
-
