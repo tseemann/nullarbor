@@ -1,10 +1,10 @@
 #!/bin/sh
 
-# INPUT  $1 = alignment file
-# OUTPUT $2 = newick file
+base="$( cd "$( dirname "$0" )" && pwd )"
+. "$base/../common.inc"
+. "$base/common.inc"
 
-PREFIX=iqtree.tmp
-
-iqtree -s "$1" -st DNA -m GTR -nt "${CPUS:-1}" -pre "$PREFIX"
-mv "$PREFIX.treefile" "$2"
-rm -f "$PREFIX".*
+#iqtree -s "$aln" -st DNA -m GTR -nt AUTO -ntmax "$cpus" -redo "$opts"
+#iqtree -redo -s "$aln" -ntmax "$cpus" -redo "$opts"
+iqtree -s "$aln" -redo -ntmax "$cpus" -st DNA
+mv "$aln.treefile" "$tree"

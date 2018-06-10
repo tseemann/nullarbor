@@ -1,7 +1,8 @@
 #!/bin/sh
 
-# INPUT  $1 = alignment file
-# OUTPUT $2 = newick file
+base="$( cd "$( dirname "$0" )" && pwd )"
+. "$base/../common.inc"
+. "$base/common.inc"
 
-#OMP_NUM_THREADS=${CPUS:-1}
-FastTree -nt -gtr "$1" > "$2"
+OMP_NUM_THREADS="$cpus"
+FastTree -gtr "$opts" -nt "$aln" | nw_order -c -n - > "$tree"

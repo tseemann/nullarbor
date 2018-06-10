@@ -53,14 +53,15 @@ my $keepfiles = 0;
 my $fullanno = 0;
 my $trim = 0;
 my $conf_file = "$FindBin::RealBin/../conf/nullarbor.conf";
+my $prefill = 0;
 my $check = 0;
 my $gcode = 11; # genetic code for prokka + roary
 #plugins
 my $trimmer = '';
 my $trimmer_opt = '';
-my $assembler = 'shovill';
-my $assembler_opt = '--nocorr';
-my $treebuilder = '';
+my $assembler = 'skesa';
+my $assembler_opt = '';
+my $treebuilder = 'iqtree';
 my $treebuilder_opt = '';
 my $recomb = '';
 my $recomb_opt = '';
@@ -84,6 +85,7 @@ GetOptions(
   "input=s"  => \$input,
   "outdir=s" => \$outdir,
   "force!"   => \$force,
+  "prefill!" => \$prefill,
   "run!"     => \$run,
   "accurate!"=> \$accurate,
   "trim!"    => \$trim,
@@ -226,8 +228,9 @@ $make{'again'} = {
 # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 # START per isolate
 open ISOLATES, '>', "$outdir/$IDFILE";
+msg("Preparing isolate rules and creating $IDFILE");
 for my $s ($set->isolates) {
-  msg("Preparing rules for isolate:", $s->id);
+  msg("Preparing rules for isolate:", $s->id) if $verbose;
   my $dir = File::Spec->rel2abs( File::Spec->catdir($outdir, $s->id) );
   $s->folder($dir);
   my $id = $s->id;
@@ -265,7 +268,33 @@ close ISOLATES;
 
 #.............................................................................
 
+if ($prefill) {
+  msg("Pre-filling $outdir");
+  my $src = $cfg->{prefill};
+  #msg(Dumper($src));
+  for my $file (sort keys %$src) {
+    my $copied=0;
+    msg("Pre-filling '$file' from", $src->{$file});
+    for my $s ($set->isolates) {
+      my $id = $s->id;
+      my $path = $src->{$file};
+      $path =~ s/{ID}/$id/g or err("Could not find {ID} placeholder in '$path'");
+      next unless -r $path;
+      my $dest = "$outdir/$id/$file";
+      my $opts = $verbose ? "-v" : "";
+      my $cmd = "install $opts -p -T '$path' '$dest'";
+      system($cmd)==0 or err("Could not run: $cmd");
+      $copied++;
+    }
+    my $missing = scalar($set->isolates) - $copied;
+    msg("Pre-filled $copied '$file' files ($missing missing)");
+  }
+}
+
+#.............................................................................
+
 #print Dumper(\%make);
+msg("Writing Makefile");
 my $makefile = "$outdir/Makefile";
 open my $make_fh, '>', $makefile or err("Could not write $makefile");
 write_makefile(\%make, $make_fh);
@@ -276,6 +305,7 @@ else {
   #msg("Run the pipeline with: nohup nice make -C $outdir 1> $outdir/log.out $outdir/log.err");
   msg("Run the pipeline with: nice make -j $jobs -C $outdir");
 }
+
 msg("Done");
 exit(0);
 
@@ -293,6 +323,7 @@ sub write_makefile {
   print $fh "NAME := $name\n";
   print $fh "PUBLISH_DIR := ", $cfg->{publish}, "\n";
   print $fh "ASSEMBLER := cpus=\$(CPUS) opts='$assembler_opt' ", $plugin->{assembler}{$assembler}, "\n";
+  print $fh "TREEBUILDER := cpus=\$(CPUS) opts='$treebuilder_opt' ", $plugin->{treebuilder}{$treebuilder}, "\n";
   print $fh "NW_DISPLAY := nw_display ".($cfg->{nw_display} || '')."\n";
   print $fh "GCODE := $gcode\n";
   print $fh "PROKKA := prokka --centre X --compliant --force".($fullanno ? " --fast" : "")."\n";
@@ -356,14 +387,15 @@ sub usage {
   print "    --mlst SCHEME            Force this MLST scheme (AUTO)\n";
 #  print "    --accurate               Run as slow as possible for the hope of improved accuracy\n";
   print "    --fullanno               Don't use --fast for Prokka\n";
+  print "    --prefill                Prefill precomputed data via [prefill] in $conf_file\n";
 #  print "    --keepfiles              Keep ALL ancillary files to annoy your sysadmin\n";
-  print "PLUGINS (CURRENTLY NOT WORKING)\n";
+  print "PLUGINS\n";
 #  print "    --trimmer NAME           Read trimmer to use ($trimmer)\n";
 #  print "    --trimmer-opt STR        Read trimmer options to pass ($trimmer_opt)\n";
   print "    --assembler NAME         Assembler to use: ", default_string( $assembler, keys(%{$plugin->{assembler}}) ), "\n";
   print "    --assembler-opt STR      Extra assembler options to pass ($assembler_opt)\n";
-#  print "    --treebuilder NAME       Tree-builder to use: ", default_string( $treebuilder, keys(%{$plugin->{treebuilder}}) ), "\n";
-#  print "    --treebuilder-opt STR    Extra tree-builder options to pass ($treebuilder_opt)\n";
+  print "    --treebuilder NAME       Tree-builder to use: ", default_string( $treebuilder, keys(%{$plugin->{treebuilder}}) ), "\n";
+  print "    --treebuilder-opt STR    Extra tree-builder options to pass ($treebuilder_opt)\n";
 #  print "    --recomb NAME            Recombination masker to use: ", default_string( $recomb, keys(%{$plugin->{recomb}}) ), "\n";
 #  print "    --recomb-opt STR         Extra recombination marker options to pass ($recomb_opt)\n";
   print "DOCUMENTATION\n";
@@ -383,20 +415,22 @@ sub check_deps {
   my($self) = @_;
 
   require_exe( qw'head cat install env nl' );
-  require_exe( qw'seqtk trimmomatic prokka roary kraken snippy mlst abricate megahit spades.py shovill nw_order nw_display FastTree snp-dists seqret' );
+  require_exe( qw'seqtk trimmomatic prokka roary kraken snippy mlst abricate skesa megahit spades.py shovill nw_order nw_display FastTree snp-dists seqret' );
   require_exe( qw'fq fa roary2svg.pl' );
 
   require_perlmod( qw'Data::Dumper Moo Bio::SeqIO File::Copy Time::Piece YAML::Tiny File::Slurp File::Copy SVG Text::CSV List::MoreUtils' );
 
-  require_version('shovill', 0.8);
+  require_version('shovill', 0.9);
   require_version('megahit', 1.1);
+  require_version('skesa', 2.0);
   require_version('snippy', 3.1);
   require_version('prokka', 1.12);
-  require_version('roary', 3.9, undef, '-w'); # uses -w
+  require_version('roary', 3.0, undef, '-w'); # uses -w
   require_version('mlst', 2.10);
-  require_version('snp-dists', 0.2, undef, '-v'); # supports -v not --version
+  require_version('abricate', 0.8);
+  require_version('snp-dists', 0.6, undef, '-v'); # supports -v not --version
   require_version('trimmomatic', 0.36, undef, '-version'); # supports -v not --version
-  #require_version('spades.py', 3.5); # does not have a --version flag
+  require_version('spades.py', 3.0); 
 
   my $value = require_var('KRAKEN_DEFAULT_DB', 'kraken');
   require_file("$value/database.idx", 'kraken');
@@ -521,7 +555,8 @@ roary/acc.svg : roary/accessory_binary_genes.fa.newick
   $(NW_DISPLAY) $< > $@
 
 %.newick : %.aln
-  env OMP_NUM_THREADS=$(CPUS) OMP_THREAD_LIMIT=$(CPUS) FastTree -gtr -nt $< | nw_order -c n - > $@
+  aln="$(<)" tree="$(@)" $(TREEBUILDER)
+  #env OMP_NUM_THREADS=$(CPUS) OMP_THREAD_LIMIT=$(CPUS) FastTree -gtr -nt $< | nw_order -c n - > $@
 
 %.fa.fai : %.fa
   samtools faidx $<
