@@ -657,7 +657,7 @@ sub check_deps {
   require_version('megahit', 1.1);
   require_version('snippy', 3.1);
   require_version('prokka', 1.12);
-  require_version('roary', 3.9, undef, '-w'); # uses -w
+  require_version('roary', 3.0, undef, '-w'); # uses -w
   require_version('mlst', 2.10);
   require_version('snp-dists', 0.2, undef, '-v'); # supports -v not --version
   require_version('trimmomatic', 0.36, undef, '-version'); # supports -v not --version
