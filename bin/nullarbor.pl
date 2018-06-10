@@ -23,13 +23,12 @@ use Nullarbor::Logger qw(msg err);
 use Nullarbor::Report;
 use Nullarbor::Requirements qw(require_exe require_perlmod require_version require_var require_file);
 use Nullarbor::Utils qw(num_cpus);
-use Nullarbor::Plugins;
 
 #-------------------------------------------------------------------
 # constants
 
 my $EXE = "$FindBin::RealScript";
-my $VERSION = '1.40';
+my $VERSION = '1.41';
 my $AUTHOR = 'Torsten Seemann <torsten.seemann@gmail.com>';
 my $URL = "https://github.com/tseemann/nullarbor";
 my @CMDLINE = ($0, @ARGV);
