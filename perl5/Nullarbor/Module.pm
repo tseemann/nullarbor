@@ -49,7 +49,7 @@ sub matrix_to_html {
   $html .= "</tbody>";
 
   my $csv_fn = $self->id.".csv";
-  write_file( $self->outdir."/$csv_fn", $self->matrix_to_csv($matrix) );
+  path($self->outdir."/$csv_fn")->spew( $self->matrix_to_csv($matrix) );
   $html .= "<caption>" . 
            $self->download_links($csv_fn) . 
 #           " | <button id='go-plain' type='button' class='btn btn-primary active' data-toggle='button' aria-pressed='true' autocomplete='off'>Fancy</button>" .
