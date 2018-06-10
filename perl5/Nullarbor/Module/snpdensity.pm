@@ -15,21 +15,28 @@ sub name {
 sub html {
   my($self) = @_;
   
-  my $matrix = Nullarbor::Tabular::load(-file=>$self->indir."/core.nway.tab", -sep=>"\t");
+  my $matrix = Nullarbor::Tabular::load(-file=>$self->indir."/core.tab", -sep=>"\t");
   my $fai = load_fai($self->indir."/ref.fa.fai");
+
+  my %offset;
+  my $pos=0;
+  for my $entry (@$fai) {
+    $offset{ $entry->[0] } = $pos;
+    $pos += $entry->[1];
+  }
 
   my @x;
   for my $row (@$matrix) {
     my($seqid,$pos) = ($row->[0], $row->[1]);
     next unless $pos =~ m/^\d+$/;
-    push @x, $pos; # FIXME + $fai->{$seqid};  
+    push @x, $pos + $offset{ $seqid };
   }
 #  @x = sort { $a <=> $b } @x;
   my $max = max(@x);
   my $num = scalar(@x);
 #  my $max = $x[-1];
   my $xs = join(',', @x);
-  my $len = sum( values %{$fai} );
+  my $len = sum( map { $_->[1] } @$fai );
   
   # produce Plotly.js javascript  
   my $html = "
@@ -63,7 +70,7 @@ sub load_fai {
   open FAI, '<', $fai;
   while (<FAI>) {
     my($seqid, $len) = split m/\t/;
-    $idx->{$seqid} = $len;
+    push @$idx, [ $seqid, $len ];
   }
   return $idx;
 }
