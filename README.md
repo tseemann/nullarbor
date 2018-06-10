@@ -41,11 +41,13 @@ distributing the work across a high performance cluster.
 4. Annotation
    * Add features to assembly [Prokka](https://github.com/tseemann/prokka))
 5. MLST
-   * From assembly w/ automatic scheme detection ([mlst](https://github.com/tseemann/mlst))
+   * From assembly w/ automatic scheme detection ([mlst](https://github.com/tseemann/mlst) + _PubMLST_)
 6. Resistome
+   * From assembly ([abricate](https://github.com/tseemann/abricate) + _Resfinder_)
+7. Virulome
    * From assembly ([abricate](https://github.com/tseemann/abricate))
-7. Variants
-   * From reads aligned to reference ([snippy](https://github.com/tseemann/snippy))
+8. Variants
+   * From reads aligned to reference ([snippy](https://github.com/tseemann/snippy) + _VFDB_)
 
 ### Per isolate set
 
