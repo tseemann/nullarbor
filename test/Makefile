@@ -3,13 +3,14 @@ ASSEMBLER=skesa
 REF=ref.gbk
 OUTDIR=nullarbor
 LEN=150
-NUMSAMPLES=5
-SAMPLES=$(shell seq -f "EF%03.0f" 1 $(NUMSAMPLES))
+NUMSAMPLES=4
+SAMN=EF
+SAMPLES=$(shell seq -f "$(SAMN)%03.0f" 1 $(NUMSAMPLES))
 
 .PHONY: clean
 
 all: clean $(OUTDIR)/report/index.html
-	
+
 $(OUTDIR)/report/index.html: $(REF) input.tab 
 	../bin/nullarbor.pl \
 		--ref $(word 1,$^) \
@@ -21,8 +22,9 @@ $(OUTDIR)/report/index.html: $(REF) input.tab
 
 %/R1.fq.gz : ref.fasta
 	mkdir -p $(@D)
-	wgsim -e 0.04 -h -N 30000 -1 $(LEN) -2 $(LEN) $< $@ $(@D)/R2.fq > $(@D)/wgsim.tab
-	gzip $(@D)/R?.fq
+	dwgsim $< $(@D)/read -C 30 -1 150 -2 150 -H -r 0.001 -P $(@D)
+	gzip -c $(@D)/read.bwa.read1.fastq > $@
+	gzip -c $(@D)/read.bwa.read2.fastq > $(@D)/R2.fq.gz
 	echo -e $(@D)"\t"$(PWD)/$(@D)/R1.fq.gz"\t"$(PWD)/$(@D)/R2.fq.gz > $(@D)/reads.tab
 
 input.tab: $(addsuffix /R1.fq.gz,$(SAMPLES))
@@ -32,4 +34,5 @@ input.tab: $(addsuffix /R1.fq.gz,$(SAMPLES))
 	seqret -auto -filter -osformat2 fasta < $< > $@
 
 clean:
-	rm -fr $(OUTDIR) $(SAMPLES) input.tab ref.fasta
+	rm -fr $(OUTDIR) $(SAMPLES) input.tab ref.fasta *~
+
