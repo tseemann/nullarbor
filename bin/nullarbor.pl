@@ -46,9 +46,7 @@ my $outdir = '';
 my $cpus = max( 2, num_cpus() );  # megahit needs 2
 my $force = 0;
 my $run = 0;
-my $indir = '';
 my $name = '';
-my $accurate = 0;
 my $keepfiles = 0;
 my $fullanno = 0;
 my $trim = 0;
@@ -57,14 +55,14 @@ my $prefill = 0;
 my $check = 0;
 my $gcode = 11; # genetic code for prokka + roary
 #plugins
-my $trimmer = '';
-my $trimmer_opt = '';
+#my $trimmer = '';
+#my $trimmer_opt = '';
 my $assembler = 'skesa';
 my $assembler_opt = '';
 my $treebuilder = 'iqtree';
 my $treebuilder_opt = '';
-my $recomb = '';
-my $recomb_opt = '';
+#my $recomb = '';
+#my $recomb_opt = '';
 
 my $plugin = Nullarbor::Plugins->discover();
 #msg(Dumper($plugin));
@@ -87,21 +85,19 @@ GetOptions(
   "force!"   => \$force,
   "prefill!" => \$prefill,
   "run!"     => \$run,
-  "accurate!"=> \$accurate,
   "trim!"    => \$trim,
-  "indir=s"  => \$indir,
   "name=s"   => \$name,
   "fullanno!"         => \$fullanno,
   "keepfiles!"        => \$keepfiles,
   # plugins
-  "trimmer=s"         => \$trimmer,
-  "trimmer-opt=s"     => \$trimmer_opt,
+#  "trimmer=s"         => \$trimmer,
+#  "trimmer-opt=s"     => \$trimmer_opt,
   "assembler=s"       => \$assembler,
   "assembler-opt=s"   => \$assembler_opt,
   "treebuilder=s"     => \$treebuilder,
   "treebuilder-opt=s" => \$treebuilder_opt,
-  "recomb=s"          => \$recomb,
-  "recomb-opt=s"      => \$recomb_opt,
+#  "recomb=s"          => \$recomb,
+#  "recomb-opt=s"      => \$recomb_opt,
 ) 
 or usage();
 
@@ -115,16 +111,6 @@ if ($check) {
   check_deps();
   exit(0);
 }
-
-#if ($report) {
-#  msg("Running in --report mode");
-#  $indir or err("Please set the --indir folder to a $EXE output folder");
-#  $outdir or err("Please set the --outdir output folder.");
-#  $name or err("Please specify a report --name");
-#  make_path($outdir) unless -f $outdir;
-#  Nullarbor::Report->generate($indir, $outdir, $name);
-#  exit;
-#}
 
 $name or err("Please provide a --name for the project.");
 $name =~ m{/|\s} and err("The --name is not allowed to have spaces or slashes in it.");
@@ -222,7 +208,7 @@ my $JOBRAM = $cfg->{jobram} || undef;
 
 my @CMDLINE_NO_FORCE = grep !m/^--?f\S*$/, @CMDLINE; # remove --force / -f etc
 $make{'again'} = {
-  CMD => "(rm -fr roary/ core.* *.tab tree.* && cd .. && @CMDLINE_NO_FORCE --force)",
+  CMD => "(rm -fr roary/ report/ core.* *.gff {denovo,mlst}.tab tree.* && cd .. && @CMDLINE_NO_FORCE --force)",
 };
 
 # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
@@ -254,15 +240,7 @@ for my $s ($set->isolates) {
     DEP => [ $clipped[0] ],
   };
   
-#  if ($assembler) {
-#    $make{"$id/$CTG"} = {
-#      DEP => [ @clipped ],
-#      CMD => [ 
-#        qq{read1="$clipped[0]" read2="$clipped[1]" cpus="$CPUS" outdir="$id" opts="$assembler_opt" }.$plugin->{assembler}{$assembler},
-#      ],
-#    };
-  
-  }
+}
 close ISOLATES;
 #END per isolate
 
@@ -303,7 +281,7 @@ if ($run) {
 }
 else {
   #msg("Run the pipeline with: nohup nice make -C $outdir 1> $outdir/log.out $outdir/log.err");
-  msg("Run the pipeline with: nice make -j $jobs -C $outdir");
+  msg("Run the pipeline with: nice make -j $jobs -l $cpus -C $outdir");
 }
 
 msg("Done");
@@ -385,7 +363,6 @@ sub usage {
   print "    --gcode INT              Genetic code for prokka ($gcode)\n";
   print "    --trim                   Trim reads of adaptors ($trim)\n";
   print "    --mlst SCHEME            Force this MLST scheme (AUTO)\n";
-#  print "    --accurate               Run as slow as possible for the hope of improved accuracy\n";
   print "    --fullanno               Don't use --fast for Prokka\n";
   print "    --prefill                Prefill precomputed data via [prefill] via --conf\n";
 #  print "    --keepfiles              Keep ALL ancillary files to annoy your sysadmin\n";
@@ -470,11 +447,11 @@ info :
   @echo CPUS: $(CPUS)
   @echo REF: $(REF)
   @echo TEMPDIR: $(TEMPDIR)
-  @echo Isolates: $(ISOLATES)
-  @echo Contigs: $(CONTIGS)
-  @echo SNPS: $(SNPS)
-  @echo GFFS: $(GFFS)
-  @echo NAMED_GFFS: $(NAMED_GFFS)
+#  @echo Isolates: $(ISOLATES)
+#  @echo Contigs: $(CONTIGS)
+#  @echo SNPS: $(SNPS)
+#  @echo GFFS: $(GFFS)
+#  @echo NAMED_GFFS: $(NAMED_GFFS)
 
 report/index.html : ref.fa.fai yield denovo.tab mlst.tab virulome resistome kraken core.svg distances.tab roary/pan.svg roary/acc.svg
   nullarbor-report.pl --name $(NAME) --indir . --outdir report
