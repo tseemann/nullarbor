@@ -92,7 +92,7 @@ push @html, "<h1>$name</h1>\n";
 
 my @section = qw(jobinfo seqdata identification mlst serotype resistome virulome
                  assembly reference core snptree snpdist snpdensity pan
-                 tools about);
+                 tools databases about);
 
 for my $section (@section) {
   msg("Generating: $section");
