@@ -4,8 +4,8 @@ use Moo;
 use Nullarbor::Logger qw(msg err);
 use Nullarbor::Tabular;
 use File::Copy;
-use File::Slurp;
 use Data::Dumper;
+use Path::Tiny;
 
 #.................................................................................
 
@@ -104,7 +104,7 @@ sub pass_fail {
 sub load_svg {
   my($self, $svg_fn) = @_;
 
-  my $xml = read_file( $svg_fn ) or err("Could not open SVG file: $svg_fn");
+  my $xml = path("$svg_fn")->slurp or err("Could not open SVG file: $svg_fn");
     
   $xml =~ m/\bwidth=['"]?(\d+)['"]?/;
   my $w = $1 || 1024;

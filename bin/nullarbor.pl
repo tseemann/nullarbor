@@ -387,7 +387,7 @@ sub usage {
   print "    --mlst SCHEME            Force this MLST scheme (AUTO)\n";
 #  print "    --accurate               Run as slow as possible for the hope of improved accuracy\n";
   print "    --fullanno               Don't use --fast for Prokka\n";
-  print "    --prefill                Prefill precomputed data via [prefill] in $conf_file\n";
+  print "    --prefill                Prefill precomputed data via [prefill] via --conf\n";
 #  print "    --keepfiles              Keep ALL ancillary files to annoy your sysadmin\n";
   print "PLUGINS\n";
 #  print "    --trimmer NAME           Read trimmer to use ($trimmer)\n";
@@ -414,23 +414,25 @@ sub version {
 sub check_deps { 
   my($self) = @_;
 
-  require_exe( qw'head cat install env nl' );
-  require_exe( qw'seqtk trimmomatic prokka roary kraken snippy mlst abricate skesa megahit spades.py shovill nw_order nw_display FastTree snp-dists seqret' );
-  require_exe( qw'fq fa roary2svg.pl' );
+  require_perlmod( qw'Bio::SeqIO Cwd Sys::Hostname Time::Piece List::Util YAML::Tiny' );
+  require_perlmod( qw'Moo Path::Tiny File::Copy File::Spec File::Path Exporter Data::Dumper' );
 
-  require_perlmod( qw'Data::Dumper Moo Bio::SeqIO File::Copy Time::Piece YAML::Tiny File::Slurp File::Copy SVG Text::CSV List::MoreUtils' );
+  require_exe( qw'head cat install env nl' );
+  require_exe( qw'seqtk trimmomatic prokka roary kraken snippy mlst abricate seqret' );
+  require_exe( qw'skesa megahit spades.py shovill nw_order nw_display iqtree FastTree snp-dists' );
+  require_exe( qw'fq fa roary2svg.pl' );
 
   require_version('shovill', 0.9);
   require_version('megahit', 1.1);
-  require_version('skesa', 2.0);
-  require_version('snippy', 3.1);
+  require_version('skesa', 2.1);
+  require_version('snippy', 4.0);
   require_version('prokka', 1.12);
   require_version('roary', 3.0, undef, '-w'); # uses -w
   require_version('mlst', 2.10);
   require_version('abricate', 0.8);
   require_version('snp-dists', 0.6, undef, '-v'); # supports -v not --version
   require_version('trimmomatic', 0.36, undef, '-version'); # supports -v not --version
-  require_version('spades.py', 3.0); 
+  require_version('spades.py', 3.12); 
 
   my $value = require_var('KRAKEN_DEFAULT_DB', 'kraken');
   require_file("$value/database.idx", 'kraken');

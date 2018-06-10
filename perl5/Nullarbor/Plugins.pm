@@ -3,7 +3,6 @@ package Nullarbor::Plugins;
 use base Exporter;
 @EXPORT_OK = qw();
 
-use File::Slurp;
 use Data::Dumper;
 use Nullarbor::Logger qw(msg err);
 
@@ -14,18 +13,15 @@ my $IGNORE = "common.inc";
 
 sub discover { 
   my($self,$dir) = @_;
-  $dir ||= $RUNNER_DIR;
-  
+  $dir ||= $RUNNER_DIR;  
+  msg("Checking plugins in $dir");
   my $p = {};
-  for my $class ( read_dir($dir) ) {
-    next unless -d "$dir/$class";
-    for my $script ( read_dir("$dir/$class") ) {
-      next unless $script =~ m/\.sh$/;
-      my $fp = "$dir/$class/$script";
-      next unless -x $fp;
-      $script =~ s/\.sh$//;
-      $p->{$class}{$script} = $fp;
-    }
+  while (my $script = <$dir/*/*.sh>) {
+    next unless -x $script;
+    $script =~ m{^.*?/(\w+)/(\w+).sh$} or err("Can't parse plugin from: $script");    
+    my($class,$name) = ($1,$2);
+    $p->{$class}{$name} = $script;
+    msg("Found plugin: $class/$name");
   }
   return $p;
 }
