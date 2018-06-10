@@ -5,6 +5,6 @@ OUTDIR=nullarbor
 
 rm -fr ./$OUTDIR
 
-nullarbor.pl --ref $REF --input input.tab --outdir $OUTDIR --name Nullarbor-Test --force \
+../bin/nullarbor.pl --ref $REF --input input.tab --outdir $OUTDIR --name NullarborTest --force \
 	  && nice make -j 4 -C $OUTDIR
 
