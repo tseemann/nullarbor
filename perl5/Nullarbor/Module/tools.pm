@@ -18,14 +18,18 @@ my %getver = (
   'FreeBayes' => 'freebayes --version',
   'MegaHit' => 'megahit --version',
   'Prokka', => 'prokka --version',
-  'Roary' => 'roary --version',
-  'Trimmomatic' => 'trimmomatic -version',
+  'IQtree', => 'iqtree --version',
+  'Shovill', => 'shovill --version',
+  'Roary' => 'roary -w 2>&1 | grep "^[1-9]"',
+  'Trimmomatic' => 'trimmomatic -version 2>&1 | grep -v _JAVA',
   'SPAdes' => 'spades.py --help',
   'BWA MEM' => 'bwa 2>&1 | grep ^Version',
   'FastTree' => 'FastTree',
-  'Newick-Utils' => 'echo',
+  'Newick-Utils' => 'echo 1.6',  # hasn't been updated in ages
+  'SKESA' => 'skesa --version 2>&1 | grep SKESA',
   'snp-dists' => 'snp-dists -v',
   'seqret' => 'seqret -h 2>&1 | grep ^Version',
+  'seqtk' => 'seqtk 2>&1 | grep ^Version',
 );
 
 #...........................................................................................

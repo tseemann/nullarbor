@@ -535,7 +535,6 @@ roary/acc.svg : roary/accessory_binary_genes.fa.newick
 
 %.newick : %.aln
   aln="$(<)" tree="$(@)" $(TREEBUILDER)
-  #env OMP_NUM_THREADS=$(CPUS) OMP_THREAD_LIMIT=$(CPUS) FastTree -gtr -nt $< | nw_order -c n - > $@
 
 %.fa.fai : %.fa
   samtools faidx $<

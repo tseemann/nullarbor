@@ -14,14 +14,14 @@ my $IGNORE = "common.inc";
 sub discover { 
   my($self,$dir) = @_;
   $dir ||= $RUNNER_DIR;  
-  msg("Checking plugins in $dir");
+#  msg("Checking plugins in $dir");
   my $p = {};
   while (my $script = <$dir/*/*.sh>) {
     next unless -x $script;
     $script =~ m{^.*?/(\w+)/(\w+).sh$} or err("Can't parse plugin from: $script");    
     my($class,$name) = ($1,$2);
     $p->{$class}{$name} = $script;
-    msg("Found plugin: $class/$name");
+#    msg("Found plugin: $class/$name");
   }
   return $p;
 }
