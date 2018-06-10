@@ -29,7 +29,7 @@ use Nullarbor::Plugins;
 # constants
 
 my $EXE = "$FindBin::RealScript";
-my $VERSION = '1.40';
+my $VERSION = '2.0.0-dev';
 my $AUTHOR = 'Torsten Seemann <torsten.seemann@gmail.com>';
 my $URL = "https://github.com/tseemann/nullarbor";
 my @CMDLINE = ($0, @ARGV);
@@ -53,8 +53,21 @@ my $keepfiles = 0;
 my $fullanno = 0;
 my $trim = 0;
 my $conf_file = "$FindBin::RealBin/../conf/nullarbor.conf";
+my $prefill = 0;
 my $check = 0;
-my $gcode = 0; # prokka genetic code (0=auto)
+my $gcode = 11; # genetic code for prokka + roary
+#plugins
+my $trimmer = '';
+my $trimmer_opt = '';
+my $assembler = 'skesa';
+my $assembler_opt = '';
+my $treebuilder = 'iqtree';
+my $treebuilder_opt = '';
+my $recomb = '';
+my $recomb_opt = '';
+
+my $plugin = Nullarbor::Plugins->discover();
+#msg(Dumper($plugin));
 
 @ARGV or usage();
 
@@ -72,6 +85,7 @@ GetOptions(
   "input=s"  => \$input,
   "outdir=s" => \$outdir,
   "force!"   => \$force,
+  "prefill!" => \$prefill,
   "run!"     => \$run,
   "accurate!"=> \$accurate,
   "trim!"    => \$trim,
@@ -79,6 +93,15 @@ GetOptions(
   "name=s"   => \$name,
   "fullanno!"         => \$fullanno,
   "keepfiles!"        => \$keepfiles,
+  # plugins
+  "trimmer=s"         => \$trimmer,
+  "trimmer-opt=s"     => \$trimmer_opt,
+  "assembler=s"       => \$assembler,
+  "assembler-opt=s"   => \$assembler_opt,
+  "treebuilder=s"     => \$treebuilder,
+  "treebuilder-opt=s" => \$treebuilder_opt,
+  "recomb=s"          => \$recomb,
+  "recomb-opt=s"      => \$recomb_opt,
 ) 
 or usage();
 
@@ -189,63 +212,25 @@ my $IDFILE = 'isolates.txt';
 my $REF = 'ref.fa';
 my $R1 = "R1.fq.gz";
 my $R2 = "R2.fq.gz";
-my $CTG = "contigs.fa";
-my $zcat = 'gzip -f -c -d';
 my $CPUS = '$(CPUS)';
 my $NW_DISPLAY = "nw_display ".($cfg->{nw_display} || '');
-my $SNIPPY = '$(SNIPPY)';
 my $DELETE = "rm -f";
 
 my $TEMPDIR = $cfg->{tempdir} || $ENV{TMPDIR} || '/tmp';
 msg("Will use temp folder: $TEMPDIR");
 my $JOBRAM = $cfg->{jobram} || undef;
 
-$make{'.DEFAULT'} = { DEP => 'all' };
-
-$make{'all'} = { 
-  DEP => [ 'folders', 'report' ],
-};
-
 my @CMDLINE_NO_FORCE = grep !m/^--?f\S*$/, @CMDLINE; # remove --force / -f etc
 $make{'again'} = {
   CMD => "(rm -fr roary/ core.* *.tab tree.* && cd .. && @CMDLINE_NO_FORCE --force)",
 };
 
-$make{'report'} = {
-  DEP => [ 'report/index.html' ],
-};
-$make{'report'}{'CMD'} = '$(MAKE) space' unless $keepfiles;
-
-$make{'report/index.html'} = {
-  DEP => [ $REF, qw(yields kraken abricate virulome mlst.tab denovo.tab core.aln tree.gif distances.tab roary) ],
-  CMD => "$FindBin::RealBin/nullarbor-report.pl --name $name --indir $outdir --outdir $outdir/report",
-};
-
-if (my $dir = $cfg->{publish}) {
-  $make{'publish'} = {
-    DEP => 'report/index.html',
-    CMD => [
-      "mkdir -p \Q$dir/$name\E",
-      "install -p -D -t \Q$dir/$name\E report/*",
-    ],
-    PHONY => 1,
-  };
-}
-  
-$make{$REF} = { 
-  DEP => $ref, 
-  CMD => [
-#    "any2fasta.pl $make_dep > $make_target",
-    "seqret -auto -filter -osformat2 fasta < $make_dep > $make_target",
-    "samtools faidx $make_target",
-  ],
-};
-
 # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 # START per isolate
 open ISOLATES, '>', "$outdir/$IDFILE";
+msg("Preparing isolate rules and creating $IDFILE");
 for my $s ($set->isolates) {
-  msg("Preparing rules for isolate:", $s->id);
+  msg("Preparing rules for isolate:", $s->id) if $verbose;
   my $dir = File::Spec->rel2abs( File::Spec->catdir($outdir, $s->id) );
   $s->folder($dir);
   my $id = $s->id;
@@ -257,20 +242,8 @@ for my $s ($set->isolates) {
   # Solve a lot of issues by just making the paths here instead of the makefile!
   make_path($dir);
 
-  $make{"$id"} = {
-#    CMD => [ "if [ ! -d '$make_target' ]; then mkdir -p $make_target ; fi" ],
-    CMD => [ "mkdir -p $make_target" ],
-  };
-  $make{"$id/yield.dirty.tab"} = {
-    DEP => [ @reads, $REF ],
-    CMD => "fq --quiet --ref $REF @reads > $make_target",
-  };
-  $make{"$id/yield.clean.tab"} = {
-    DEP => [ @clipped ],
-    CMD => "fq --quiet --ref $REF $make_deps > $make_target",
-  };
   $make{$clipped[0]} = {
-    DEP => [ @reads ],
+    DEP => [ '|', @reads ],
     CMD => $trim ? [ "trimmomatic PE -threads $CPUS -phred33 @reads $id/$R1 /dev/null $id/$R2 /dev/null ".($cfg->{trimmomatic} || '') ]
                  : [ "ln -f -s '$reads[0]' '$id/$R1'", "ln -f -s '$reads[1]' '$id/$R2'" ],
   };
@@ -281,261 +254,86 @@ for my $s ($set->isolates) {
     DEP => [ $clipped[0] ],
   };
   
-  if ($accurate) {
-    $make{"$id/$CTG"} = {
-      DEP => [ @clipped ],
-      CMD => [ 
-        "rm -f -r $id/spades",
-#        "spades.py -t $CPUS -1 $clipped[0] -2 $clipped[1] -o $id/spades --only-assembler --careful",
-        "spades.py --tmp-dir '$TEMPDIR' -t $CPUS -1 $clipped[0] -2 $clipped[1] -o $id/spades --careful",
-        "mv $id/spades/scaffolds.fasta $make_target",
-        "mv $id/spades/spades.log $id/spades.log",
-        "rm -f -v -r $id/spades",
-      ],
-    };
+#  if ($assembler) {
+#    $make{"$id/$CTG"} = {
+#      DEP => [ @clipped ],
+#      CMD => [ 
+#        qq{read1="$clipped[0]" read2="$clipped[1]" cpus="$CPUS" outdir="$id" opts="$assembler_opt" }.$plugin->{assembler}{$assembler},
+#      ],
+#    };
+  
   }
-  else {
-    $make{"$id/$CTG"} = {
-      DEP => [ @clipped ],
-      CMD => [ 
-        "rm -f -r $id/megahit",
-        "mkdir -p $id",
-        "megahit --min-count 3 --k-list 21,31,41,53,75,97,111,127 -t $CPUS --memory 0.5 -1 $clipped[0] -2 $clipped[1] --out-dir $id/megahit --min-contig-len 500",
-#        "megahit -t $CPUS --memory 0.5 -1 $clipped[0] -2 $clipped[1] --out-dir $id/megahit --presets bulk --min-contig-len 500",
-#        "megahit -t $CPUS --memory 0.5 -1 $clipped[0] -2 $clipped[1] --out-dir $id/megahit --presets bulk",
-        "mv $id/megahit/final.contigs.fa $make_target",
-        "mv $id/megahit/log $id/megahit.log",
-        "rm -f -v -r $id/megahit",
-      ],
-    };
-  }
-  $make{"$id/kraken.tab"} = {
-    DEP => [ @clipped ],
-    CMD => "kraken --threads $CPUS --preload --paired @clipped | kraken-report > $make_target",
-  };
-  $make{"$id/abricate.tab"} = {
-    DEP => "$id/$CTG",
-    CMD => "abricate $make_deps > $make_target",
-  };
-  $make{"$id/virulome.tab"} = {
-    DEP => "$id/$CTG",
-    CMD => "abricate --db vfdb $make_deps > $make_target",
-  };
-  $make{"$id/mlst.tab"} = {
-    DEP => "$id/$CTG",
-    CMD => "mlst ".($mlst ? "--scheme $mlst" : "")." $make_deps > $make_target",
-  };
-  $make{"$id/denovo.tab"} = {
-    DEP => "$id/$CTG",
-    CMD => "fa -e -t $make_deps > $make_target",
-  };  
-  $make{"$id/$id/snps.tab"} = {
-    DEP => [ $ref, @clipped ],
-    CMD => "$SNIPPY --ref $REF --cpus $CPUS --force --outdir $id/$id --R1 $clipped[0] --R2 $clipped[1]",
-  };
-  my $prokka_opt = "--centre X --compliant --force";
-  $prokka_opt .= " --fast" unless $fullanno;
-  $make{"$id/prokka/$id.gff"} = {
-    DEP => "$id/$CTG",
-    CMD => "prokka $prokka_opt --gcode $gcode --locustag $id --prefix $id --outdir $id/prokka --cpus $CPUS $make_deps",
-  };
-  $make{"$id/$id.msh"} = { 
-    DEP => [ @clipped ],
-    CMD => "mash sketch -o $id/$id $make_deps",
-  };
-}
 close ISOLATES;
 #END per isolate
-#^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-$make{"folders"} = { 
-  DEP => [ $set->ids ],
-};
+#.............................................................................
 
-$make{"yields"} = { 
-  DEP => [ map { ("$_/yield.dirty.tab", "$_/yield.clean.tab") } $set->ids ],
-};
-
-$make{"abricate"} = { 
-  DEP => [ map { "$_/abricate.tab" } $set->ids ],
-};
-
-$make{"virulome"} = { 
-  DEP => [ map { "$_/virulome.tab" } $set->ids ],
-};
-
-$make{"kraken"} = { 
-  DEP => [ map { "$_/kraken.tab" } $set->ids ],
-};
-
-$make{"prokka"} = { 
-  DEP => [ map { "$_/prokka/$_.gff" } $set->ids ],
-};
-
-$make{"mash"} = { 
-  DEP => [ map { "$_/$_.msh" } $set->ids ],
-};
-
-$make{"cortex"} = { 
-  DEP => [ map { "$_/cortex.fa" } $set->ids ],
-};
-
-$make{"clip"} = { 
-  DEP => [ map { "$_/yield.clean.tab" } $set->ids ],
-};
-
-$make{"roary"} = { 
-  DEP => [ "roary/roary.png", "roary/accessory_tree.png" ],   
-};
-
-$make{'roary/accessory_binary_genes.fa.newick'} = {
-  DEP => 'roary/gene_presence_absence.csv',
-};
-
-$make{'roary/accessory_tree.png'} = {
-  DEP => 'roary/accessory_binary_genes.fa.newick',
-  CMD => [
-    "nw_order -c n $make_dep | $NW_DISPLAY - > $make_dep.svg",
-    "convert $make_dep.svg $make_target",
-  ],
-};
-
-$make{"roary/roary.png"} = { 
-  DEP => "roary/gene_presence_absence.csv",
-  CMD => [
-    "roary2svg.pl $make_dep > $make_target.svg",
-    "convert $make_target.svg $make_target",
-  ],
-};
-
-$make{"roary/gene_presence_absence.csv"} = { 
-  DEP => [ map { "$_/prokka/$_.gff" } $set->ids ],
-  CMD => [
-    "rm -fr roary",
-    "roary -f roary -v -p $CPUS $make_deps",
-  ],
-};
-
-$make{"mlst.tab"} = {
-  DEP => [ map { "$_/mlst.tab" } $set->ids ],
-  CMD => "cat $make_deps > $make_target",
-};
-  
-$make{"denovo"} = {
-  DEP => "denovo.tab",
-};
-  
-$make{"denovo.tab"} = {
-  DEP => [ map { "$_/denovo.tab" } $set->ids ],
-  CMD => "(head -n 1 $make_dep && tail -q -n +2 $make_deps) > $make_target",
-};
-
-$make{'core.aln'} = {
-  DEP => [ $REF, map { ("$_/$_/snps.tab") } $set->ids ],
-  CMD => "snippy-core --ref $REF ".join(' ', map { "$_/$_" } $set->ids),
-};
-
-#$make{'core.full.aln'} = {
-#  DEP => 'core.aln',
-#};
-
-$make{'tree.newick'} = {
-  DEP => 'core.aln',
-  CMD => "env OMP_NUM_THREADS=$CPUS OMP_THREAD_LIMIT=$CPUS FastTree -gtr -nt $make_dep | nw_order -c n - > $make_target",
-};
-
-$make{'tree.svg'} = {
-  DEP => 'tree.newick',
-  CMD => "$NW_DISPLAY $make_dep > $make_target",
-};
-
-$make{'tree.gif'} = {
-  DEP => 'tree.svg',
-  CMD => "convert $make_dep $make_target",
-};
-
-$make{'distances.tab'} = {
-  DEP => 'core.aln',
-  CMD => "snp-dists -b $make_dep > $make_target",
-};
-
-my $help_file = "$FindBin::RealBin/../conf/make_help.txt";
-$make{"help"} = {
-  DEP => $help_file,
-  CMD => "\@cat $make_dep",
-};
-
-$make{"list"} = {
-  DEP => $IDFILE,
-  CMD => "\@nl $make_dep",
-};
-
-my $panic_file = "$FindBin::RealBin/../conf/motd.txt";
-$make{'panic'} = {
-  DEP => $panic_file,
-  CMD => "\@cat $make_dep",
-};
-
-$make{'space'} = {
-  CMD => [
-    # overall
-    ## "$DELETE core.full.aln core.vcf",
-    # roary
-    "$DELETE roary/*.{tab,embl,dot,Rtab}",
-    # isolate :: denovo et al
-    (map { "$DELETE $_/megahit.log" } $set->ids),   # FIXME: contigs.log too?
-    # isolate :: prokka
-    (map { "$DELETE $_/prokka/*.{err,ffn,fsa,sqn,tbl,tsv}" } $set->ids),
-    # isolate :: snippy
-    (map { "$DELETE $_/$_/*consensus*fa $_/$_/*.{gz,tbi,vcf.gz,bed,html,csv,gff,txt,log}" } $set->ids),
-    # isolate :: snipppy :: reference (recursive)
-    (map { "$DELETE -r $_/$_/reference/" } $set->ids),
-  ],
-};
+if ($prefill) {
+  msg("Pre-filling $outdir");
+  my $src = $cfg->{prefill};
+  #msg(Dumper($src));
+  for my $file (sort keys %$src) {
+    my $copied=0;
+    msg("Pre-filling '$file' from", $src->{$file});
+    for my $s ($set->isolates) {
+      my $id = $s->id;
+      my $path = $src->{$file};
+      $path =~ s/{ID}/$id/g or err("Could not find {ID} placeholder in '$path'");
+      next unless -r $path;
+      my $dest = "$outdir/$id/$file";
+      my $opts = $verbose ? "-v" : "";
+      my $cmd = "install $opts -p -T '$path' '$dest'";
+      system($cmd)==0 or err("Could not run: $cmd");
+      $copied++;
+    }
+    my $missing = scalar($set->isolates) - $copied;
+    msg("Pre-filled $copied '$file' files ($missing missing)");
+  }
+}
 
 #.............................................................................
 
 #print Dumper(\%make);
+msg("Writing Makefile");
 my $makefile = "$outdir/Makefile";
 open my $make_fh, '>', $makefile or err("Could not write $makefile");
 write_makefile(\%make, $make_fh);
 if ($run) {
-  exec("nice make -j $jobs -C $outdir") or err("Could not run pipeline's Makefile");
+  exec("nice make -j $jobs -C $outdir 2>&1 | tee $outdir/nullarbor.log") or err("Could not run pipeline's Makefile");
 }
 else {
   #msg("Run the pipeline with: nohup nice make -C $outdir 1> $outdir/log.out $outdir/log.err");
   msg("Run the pipeline with: nice make -j $jobs -C $outdir");
 }
+
 msg("Done");
+exit(0);
 
 #----------------------------------------------------------------------
 sub write_makefile {
   my($make, $fh) = @_;
   $fh = \*STDOUT if not defined $fh;
 
+  print $fh "# Command line:\n# cd ".getcwd()."\n# @CMDLINE\n\n";
+
+  print $fh "BINDIR := $FindBin::RealBin\n";
+  print $fh "CPUS := $threads\n";
+  print $fh "REF := $ref\n";
+  print $fh "#TEMPDIR := \$(shell mktemp -d)\n";
+  print $fh "NAME := $name\n";
+  print $fh "PUBLISH_DIR := ", $cfg->{publish}, "\n";
+  print $fh "ASSEMBLER := cpus=\$(CPUS) opts='$assembler_opt' ", $plugin->{assembler}{$assembler}, "\n";
+  print $fh "TREEBUILDER := cpus=\$(CPUS) opts='$treebuilder_opt' ", $plugin->{treebuilder}{$treebuilder}, "\n";
+  print $fh "NW_DISPLAY := nw_display ".($cfg->{nw_display} || '')."\n";
+  print $fh "GCODE := $gcode\n";
+  print $fh "PROKKA := prokka --centre X --compliant --force".($fullanno ? " --fast" : "")."\n";
+
   # copy any header stuff from the __DATA__ block at the end of this script
   while (<DATA>) {
+    s/^[ ]+/\t/;  # indents to tabs
     print $fh $_;
   }
   
-  print $fh "# Command line:\n# cd ".getcwd()."\n# @CMDLINE\n\n";
-
-  print $fh "SHELL := /bin/bash\n";
-  print $fh "MAKEFLAGS += --no-builtin-rules\n";
-  print $fh "MAKEFLAGS += --no-builtin-variables\n";
-  print $fh "CPUS=$threads\n";
-  print $fh "SNIPPY=snippy\n";
-  print $fh ".SUFFIXES:\n";
-#  print $fh ".SUFFIXES: .newick .tree .aln .png .svg\n";
-  print $fh ".DELETE_ON_ERROR:\n\n";
-  
-  print $fh "%.png : %.svg\n",
-            "\tconvert $make_dep $make_target\n";
-  print $fh "%.svg : %.newick\n",
-            "\t$NW_DISPLAY $make_dep > $make_target\n"; 
-  print $fh "%.newick : %.aln\n",
-            "\tenv OMP_NUM_THREADS=$CPUS OMP_THREAD_LIMIT=$CPUS FastTree -gtr -nt $< | nw_order -c n - > $@";
-
   for my $target ('all', sort grep { $_ ne 'all' } keys %$make) {
     print $fh "\n";
     my $rule = $make->{$target}; # short-hand
@@ -543,7 +341,7 @@ sub write_makefile {
     $dep = ref($dep) eq 'ARRAY' ? (join ' ', @$dep) : $dep;
     $dep ||= '';
     print $fh ".PHONY: $target\n" if $rule->{PHONY} or ! $rule->{DEP};
-    print $fh "$target: $dep\n";
+    print $fh "$target : $dep\n";
     if (my $cmd = $rule->{CMD}) {
       my @cmd = ref $cmd eq 'ARRAY' ? @$cmd : ($cmd);
       print $fh map { "\t$_\n" } @cmd;
@@ -587,9 +385,19 @@ sub usage {
   print "    --gcode INT              Genetic code for prokka ($gcode)\n";
   print "    --trim                   Trim reads of adaptors ($trim)\n";
   print "    --mlst SCHEME            Force this MLST scheme (AUTO)\n";
-  print "    --accurate               Run as slow as possible for the hope of improved accuracy\n";
+#  print "    --accurate               Run as slow as possible for the hope of improved accuracy\n";
   print "    --fullanno               Don't use --fast for Prokka\n";
-  print "    --keepfiles              Keep ALL ancillary files to annoy your sysadmin\n";
+  print "    --prefill                Prefill precomputed data via [prefill] in $conf_file\n";
+#  print "    --keepfiles              Keep ALL ancillary files to annoy your sysadmin\n";
+  print "PLUGINS\n";
+#  print "    --trimmer NAME           Read trimmer to use ($trimmer)\n";
+#  print "    --trimmer-opt STR        Read trimmer options to pass ($trimmer_opt)\n";
+  print "    --assembler NAME         Assembler to use: ", default_string( $assembler, keys(%{$plugin->{assembler}}) ), "\n";
+  print "    --assembler-opt STR      Extra assembler options to pass ($assembler_opt)\n";
+  print "    --treebuilder NAME       Tree-builder to use: ", default_string( $treebuilder, keys(%{$plugin->{treebuilder}}) ), "\n";
+  print "    --treebuilder-opt STR    Extra tree-builder options to pass ($treebuilder_opt)\n";
+#  print "    --recomb NAME            Recombination masker to use: ", default_string( $recomb, keys(%{$plugin->{recomb}}) ), "\n";
+#  print "    --recomb-opt STR         Extra recombination marker options to pass ($recomb_opt)\n";
   print "DOCUMENTATION\n";
   print "    $URL\n";
   
@@ -606,30 +414,158 @@ sub version {
 sub check_deps { 
   my($self) = @_;
 
-  require_exe( qw'convert head cat install env nl' );
-  require_exe( qw'trimmomatic prokka roary kraken snippy mlst abricate megahit spades.py nw_order nw_display FastTree snp-dists seqret' );
+  require_exe( qw'head cat install env nl' );
+  require_exe( qw'seqtk trimmomatic prokka roary kraken snippy mlst abricate skesa megahit spades.py shovill nw_order nw_display FastTree snp-dists seqret' );
   require_exe( qw'fq fa roary2svg.pl' );
 
   require_perlmod( qw'Data::Dumper Moo Bio::SeqIO File::Copy Time::Piece YAML::Tiny File::Slurp File::Copy SVG Text::CSV List::MoreUtils' );
 
+  require_version('shovill', 0.9);
   require_version('megahit', 1.1);
+  require_version('skesa', 2.0);
   require_version('snippy', 3.1);
   require_version('prokka', 1.12);
   require_version('roary', 3.0, undef, '-w'); # uses -w
   require_version('mlst', 2.10);
-  require_version('snp-dists', 0.2, undef, '-v'); # supports -v not --version
+  require_version('abricate', 0.8);
+  require_version('snp-dists', 0.6, undef, '-v'); # supports -v not --version
   require_version('trimmomatic', 0.36, undef, '-version'); # supports -v not --version
-  #require_version('spades.py', 3.5); # does not have a --version flag
+  require_version('spades.py', 3.0); 
 
   my $value = require_var('KRAKEN_DEFAULT_DB', 'kraken');
   require_file("$value/database.idx", 'kraken');
   require_file("$value/database.kdb", 'kraken');
 
-  msg("All $EXE $VERSION dependencies seem to be installed correctly :-)")
+  msg("All $EXE $VERSION dependencies are installed. You deserve a medal!")
 }
 
 #-------------------------------------------------------------------
 
 __DATA__
-# This file was automatically generated by the Nullarbor software
 
+SHELL := /bin/bash
+MAKEFLAGS += --no-builtin-rules
+MAKEFLAGS += --no-builtin-variables
+
+.SUFFIXES:
+.DELETE_ON_ERROR:
+.SECONDARY:
+.ONESHELL:
+.DEFAULT: all
+.PHONY: all info clean publish
+
+ISOLATES := $(shell cat isolates.txt)
+CONTIGS := $(addsuffix /contigs.fa,$(ISOLATES))
+GFFS := $(addsuffix /contigs.gff,$(ISOLATES))
+NAMED_GFFS := $(addsuffix .gff,$(ISOLATES))
+SNPS := $(addsuffix /snps.tab,$(ISOLATES))
+
+ref := ref.fa
+
+all : info isolates.txt report/index.html
+
+info :
+  @echo CPUS: $(CPUS)
+  @echo REF: $(REF)
+  @echo TEMPDIR: $(TEMPDIR)
+  @echo Isolates: $(ISOLATES)
+  @echo Contigs: $(CONTIGS)
+  @echo SNPS: $(SNPS)
+  @echo GFFS: $(GFFS)
+  @echo NAMED_GFFS: $(NAMED_GFFS)
+
+report/index.html : ref.fa.fai yield denovo.tab mlst.tab virulome resistome kraken core.svg distances.tab roary/pan.svg roary/acc.svg
+  nullarbor-report.pl --name $(NAME) --indir . --outdir report
+
+publish : report/index.html
+  mkdir -p $(PUBLISH_DIR)/$(NAME)
+  install -p -D -t $(PUBLISH_DIR)/$(NAME) report/*
+  
+$(ref) : $(REF)
+  seqret -auto -filter -osformat2 fasta < $< > $@
+
+virulome : $(addsuffix /virulome.tab,$(ISOLATES))
+
+resistome : $(addsuffix /resistome.tab,$(ISOLATES)) 
+
+kraken : $(addsuffix /kraken.tab,$(ISOLATES)) 
+
+yield : $(addsuffix /yield.tab,$(ISOLATES)) 
+
+mlst.tab : $(CONTIGS)
+  mlst $^ > $@
+
+denovo.tab : $(CONTIGS)
+  fa -e -t $^ > $@  
+
+distances.tab : core.aln
+  snp-dists -b $< > $@
+
+%/snps.tab : $(ref) %/R1.fq.gz %/R2.fq.gz
+  snippy --cpus $(CPUS) --force --outdir $(@D)/snippy --ref $(word 1,$^) --R1 $(word 2,$^) --R2 $(word 3,$^)
+  cp -vf $(@D)/snippy/snps.{tab,aligned.fa,vcf,bam,bam.bai,log} $(@D)/
+  rm -fr $(@D)/snippy
+
+%/snps.aligned.fa : %/snps.tab
+
+core.aln : $(SNPS)
+  snippy-core --ref $(ref) $(ISOLATES)
+
+%.gff : %/contigs.gff
+  ln -f $< $@
+
+roary/gene_presence_absence.csv roary/accessory_binary_genes.fa.newick : $(NAMED_GFFS)
+  roary -f roary -v -p $(CPUS) -t $(GCODE) $^
+  rm -f $(NAMED_GFFS)
+
+roary/pan.svg : roary/gene_presence_absence.csv
+  roary2svg.pl $< > $@
+
+roary/acc.svg : roary/accessory_binary_genes.fa.newick
+  $(NW_DISPLAY) $< > $@
+
+%/kraken.tab : %/R1.fq.gz %/R2.fq.gz
+  kraken --threads $(CPUS) --paired $^ | kraken-report > $@
+
+%/contigs.gff: %/contigs.fa
+  $(PROKKA) --locustag $(@D) --prefix contigs --outdir $(@D)/prokka --cpus $(CPUS) --gcode $(GCODE) $<
+  cp -vf $(@D)/prokka/contigs.gff $@
+  cp -vf $(@D)/prokka/contigs.gbk $(@D)
+  rm -fr $(@D)/prokka
+
+%/contigs.fa : %/R1.fq.gz %/R2.fq.gz
+  read1="$(word 1,$^)" read2="$(word 2,$^)" outdir="$(@D)" $(ASSEMBLER)
+
+%/yield.tab : %/R1.fq.gz %/R2.fq.gz
+  fq --quiet --ref $(ref) $^ > $@
+
+%/resistome.tab : %/contigs.fa
+  abricate --db resfinder $^ > $@
+
+%/mlst.tab : %/contigs.fa
+  mlst $^ > $@
+
+%/virulome.tab : %/contigs.fa
+  abricate --db vfdb $^ > $@
+
+%/sketch.msh : %/R1.fq.gz %/R2.fq.gz
+  mash sketch -o $@ $^
+
+%.svg : %.newick
+  $(NW_DISPLAY) $< > $@
+
+%.newick : %.aln
+  aln="$(<)" tree="$(@)" $(TREEBUILDER)
+  #env OMP_NUM_THREADS=$(CPUS) OMP_THREAD_LIMIT=$(CPUS) FastTree -gtr -nt $< | nw_order -c n - > $@
+
+%.fa.fai : %.fa
+  samtools faidx $<
+
+panic : $(BINDIR)/../conf/motd.txt
+  @cat $<
+
+help : $(BINDIR)/../conf/make_help.txt
+  @cat $<
+
+list : isolates.txt
+  @nl $<
