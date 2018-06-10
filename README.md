@@ -50,10 +50,10 @@ distributing the work across a high performance cluster.
 ### Per isolate set
 
 1. Core genome SNPs
-   * From reads (Snippy-core)
+   * From reads ([snippy-core](https://github.com/tseemann/snippy))
 2. Infer core SNP phylogeny 
    * Maximum likelihood (IQTree, FastTree)
-   * SNP distance matrix ([afa-pairwise](https://github.com/tseemann/snp-dists))
+   * SNP distance matrix ([snp-dists](https://github.com/tseemann/snp-dists))
 3. Pan genome
    * From annotated contigs (Roary)
 4. Report
@@ -62,26 +62,37 @@ distributing the work across a high performance cluster.
 
 ## Installation
 
-### Warning
+### Software
 
-Installing Nullarbor is not easy. It is a complex pipeline, and depends on lots of external
-tools and databases. If you have access to cloud or virtual machines you may wish to consider
-using the [Genomics Virtual Lab image](http://genome.edu.au/) or the 
-[Ubuntu 14.04 installer](https://gist.github.com/stephenturner/005d4e4e322b8cf5b991d1d357527859)
-by @stephenturner.
+#### Github
+This is the hardest way to instal Nullarbor, but is currently the only way for version 2:
 
-### Local installation
+    cd $HOME
+    git clone https://github.com/tseemann/nullarbor.git
+    
+    # keep running this command and installing stuff until it says everything is correct
+    ./nullarbor/bin/nullarbor.pl --check
+    
+    # For Perl modules (eg. YAML::Tiny), use one of the following methods
+    apt-get install yaml-tiny-perl  # ubuntu/debian
+    yum install perl-YAML-Tiny      # centos/redhat
+    cpan YAML::Tiny
+    cpanm YAML::Tiny
 
 #### Homebrew
 Install [Homebrew](http://brew.sh/) (macOS) or [LinuxBrew](http://linuxbrew.sh/) (Linux).
 
     brew untap homebrew/science
-    brew install brewsci/bio/nullarbor  # COMING SOON!
+    brew untap tseemann/bioinformatics-linux
+    brew install brewsci/bio/nullarbor # COMING SOON!
 
 #### Conda
 Install [Conda](https://conda.io/docs/) or [Miniconda](https://conda.io/miniconda.html):
 
     conda install -c bioconda -c conda-forge nullarbor  # COMING SOON!
+
+#### Containers
+Once the `bioconda` package is working, Docker and Singularity containers will follow.
 
 ### Databases
 
