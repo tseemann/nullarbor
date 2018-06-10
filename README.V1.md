@@ -2,18 +2,18 @@
 
 Pipeline to generate complete public health microbiology reports from sequenced isolates
 
-:warning: This documents the current Nullarbor 2.x version; previous 1.x is [here](README.V1.md)
+:warning: This documents the previous Nullarbor 1.x version. Version 2.x is [here](README.md)
 
 ## Motivation
 
 Public health microbiology labs receive batches of bacterial isolates
-whenever there is a suspected outbreak.In modernised labs, each of these
+whenever there is a suspected outbreak.  In modernised labs, each of these
 isolates will be whole genome sequenced, typically on an Illumina or Ion
-Torrent instrument. Each of these WGS samples needs to quality checked for
-coverage, contamination and correct species. Genotyping (eg. MLST) and
-resistome characterisation is also required. Finally a phylogenetic tree
+Torrent instrument.  Each of these WGS samples needs to quality checked for
+coverage, contamination and correct species.  Genotyping (eg.  MLST) and
+resistome characterisation is also required.  Finally a phylogenetic tree
 needs to be generated to show the relationship and genomic distance between
-the strains. All this information is then combined with epidemiological
+the strains.  All this information is then combined with epidemiological
 information (metadata for each sample) to assess the situation and inform
 further action.
 
@@ -33,32 +33,32 @@ distributing the work across a high performance cluster.
 ### Per isolate
 
 1. Clean reads
-   * remove adaptors, low quality bases and reads (trimmomatic)
+   * remove adaptors, low quality bases and reads (Trimmomatic)
 2. Species identification
-   * k-mer analysis against known genome database (kraken)
+   * k-mer analysis against known genome database (Kraken)
 3. _De novo_ assembly
-   * User can select (SKESA, SPAdes, Megahit, [shovill](https://github.com/tseemann/shovill))
+   * Fast mostly-good-enough assembly (MEGA-HIT)
+   * More accurate, but slower assembly (SPAdes) using `--accurate`
 4. Annotation
-   * Add features to assembly [Prokka](https://github.com/tseemann/prokka))
+   * Genome annotation (Prokka)
 5. MLST
-   * From assembly w/ automatic scheme detection ([mlst](https://github.com/tseemann/mlst))
+   * From assembly w/ automatic scheme detection (mlst)
 6. Resistome
-   * From assembly ([abricate](https://github.com/tseemann/abricate))
+   * From assembly (abricate)
 7. Variants
-   * From reads aligned to reference ([snippy](https://github.com/tseemann/snippy))
+   * From reads relative to reference (Snippy)
 
 ### Per isolate set
 
 1. Core genome SNPs
    * From reads (Snippy-core)
 2. Infer core SNP phylogeny 
-   * Maximum likelihood (IQTree, FastTree)
-   * SNP distance matrix ([afa-pairwise](https://github.com/tseemann/snp-dists))
+   * Maximum likelihood (FastTree)
+   * SNP distance matrix (afa-pairwise)
 3. Pan genome
    * From annotated contigs (Roary)
 4. Report
-   * Summary isolate information (HTML + Plotly.JS + DataTables)
-   * More detailed per isolate pages
+   * Table of isolates, yield, coverage, species, MLST (HTML + Plotly.JS + DataTables)
 
 ## Installation
 
@@ -72,22 +72,15 @@ by @stephenturner.
 
 ### Local installation
 
-#### Homebrew
-Install [Homebrew](http://brew.sh/) (macOS) or [LinuxBrew](http://linuxbrew.sh/) (Linux).
+Please first install the [Linuxbrew](https://github.com/Homebrew/linuxbrew) package manner, then:
 
-    brew untap homebrew/science
-    brew install brewsci/bio/nullarbor  # COMING SOON!
-
-#### Conda
-Install [Conda](https://conda.io/docs/) or [Miniconda](https://conda.io/miniconda.html):
-
-    conda install -c bioconda -c conda-forge nullarbor  # COMING SOON!
-
-### Databases
+    brew tap homebrew/science
+    brew tap tseemann/bioinformatics-linux
+    brew install nullarbor --HEAD
 
 You need to install a [Kraken](https://ccb.jhu.edu/software/kraken/) database.
 
-    wget https://ccb.jhu.edu/software/kraken/dl/minikraken_20171019_4GB.tgz
+    wget https://ccb.jhu.edu/software/kraken/dl/minikraken.tgz
     
 Choose a folder (say `$HOME`) to put it in, you need ~4 GB free:
 
@@ -95,18 +88,12 @@ Choose a folder (say `$HOME`) to put it in, you need ~4 GB free:
 
 Then add the following to your `$HOME/.bashrc` so Nullarbor can use it:
 
-    export KRAKEN_DB_PATH=$HOME/minikraken_20171019_4GB
+    export KRAKEN_DB_PATH=$HOME/minikraken_20141208
 
 You should be good to go now. When you first run Nullarbor it will let you
 know of any missing dependencies or databases.
 
 ## Usage
-
-### Check dependencies
-
-Nullarbor does a self-check of all binaries, Perl modules and databases:
-
-    nullarbor.pl --check
 
 ### Create a 'samples' file (TAB)
 
@@ -160,8 +147,8 @@ See what's available with this command:
 
 The [Nullarbor](http://en.wikipedia.org/wiki/Nullarbor_Plain) 
 is a huge treeless plain that spans the area between south-west and
-south-east Australia. It comes from the Latin "nullus" (no) and "arbor"
-(tree), or "no trees". As this software will generate a tree, there is an
+south-east Australia.  It comes from the Latin "nullus" (no) and "arbor"
+(tree), or "no trees".  As this software will generate a tree, there is an
 element of Australian irony in the name.
 
 ## Issues
