@@ -29,7 +29,7 @@ use Nullarbor::Plugins;
 # constants
 
 my $EXE = "$FindBin::RealScript";
-my $VERSION = '1.30-dev';
+my $VERSION = '1.40';
 my $AUTHOR = 'Torsten Seemann <torsten.seemann@gmail.com>';
 my $URL = "https://github.com/tseemann/nullarbor";
 my @CMDLINE = ($0, @ARGV);
@@ -46,7 +46,6 @@ my $outdir = '';
 my $cpus = max( 2, num_cpus() );  # megahit needs 2
 my $force = 0;
 my $run = 0;
-#my $report = 0;
 my $indir = '';
 my $name = '';
 my $accurate = 0;
@@ -56,19 +55,6 @@ my $trim = 0;
 my $conf_file = "$FindBin::RealBin/../conf/nullarbor.conf";
 my $check = 0;
 my $gcode = 0; # prokka genetic code (0=auto)
-
-#plugins
-my $trimmer = '';
-my $trimmer_opt = '';
-my $assembler = '';
-my $assembler_opt = '';
-my $treebuilder = '';
-my $treebuilder_opt = '';
-my $recomb = '';
-my $recomb_opt = '';
-
-my $plugin = Nullarbor::Plugins->discover();
-#msg(Dumper($plugin));
 
 @ARGV or usage();
 
@@ -93,15 +79,6 @@ GetOptions(
   "name=s"   => \$name,
   "fullanno!"         => \$fullanno,
   "keepfiles!"        => \$keepfiles,
-  # plugins
-  "trimmer=s"         => \$trimmer,
-  "trimmer-opt=s"     => \$trimmer_opt,
-  "assembler=s"       => \$assembler,
-  "assembler-opt=s"   => \$assembler_opt,
-  "treebuilder=s"     => \$treebuilder,
-  "treebuilder-opt=s" => \$treebuilder_opt,
-  "recomb=s"          => \$recomb,
-  "recomb-opt=s"      => \$recomb_opt,
 ) 
 or usage();
 
@@ -304,22 +281,13 @@ for my $s ($set->isolates) {
     DEP => [ $clipped[0] ],
   };
   
-  if ($assembler) {
-    $make{"$id/$CTG"} = {
-      DEP => [ @clipped ],
-      CMD => [ 
-        qq{read1="$clipped[0]" read2="$clipped[1]" cpus="$CPUS" outdir="$id" opts="$assembler_opt" }.$plugin->{assembler}{$assembler},
-      ],
-    };
-  
-  }
-  elsif ($accurate) {
+  if ($accurate) {
     $make{"$id/$CTG"} = {
       DEP => [ @clipped ],
       CMD => [ 
         "rm -f -r $id/spades",
 #        "spades.py -t $CPUS -1 $clipped[0] -2 $clipped[1] -o $id/spades --only-assembler --careful",
-        "spades.py --tmp-dir '$TEMPDIR' -t $CPUS -1 $clipped[0] -2 $clipped[1] -o $id/spades --only-assembler --careful",
+        "spades.py --tmp-dir '$TEMPDIR' -t $CPUS -1 $clipped[0] -2 $clipped[1] -o $id/spades --careful",
         "mv $id/spades/scaffolds.fasta $make_target",
         "mv $id/spades/spades.log $id/spades.log",
         "rm -f -v -r $id/spades",
@@ -622,15 +590,6 @@ sub usage {
   print "    --accurate               Run as slow as possible for the hope of improved accuracy\n";
   print "    --fullanno               Don't use --fast for Prokka\n";
   print "    --keepfiles              Keep ALL ancillary files to annoy your sysadmin\n";
-  print "PLUGINS (CURRENTLY NOT WORKING)\n";
-#  print "    --trimmer NAME           Read trimmer to use ($trimmer)\n";
-#  print "    --trimmer-opt STR        Read trimmer options to pass ($trimmer_opt)\n";
-  print "    --assembler NAME         Assembler to use: ", default_string( $assembler, keys(%{$plugin->{assembler}}) ), "\n";
-  print "    --assembler-opt STR      Extra assembler options to pass ($assembler_opt)\n";
-  print "    --treebuilder NAME       Tree-builder to use: ", default_string( $treebuilder, keys(%{$plugin->{treebuilder}}) ), "\n";
-  print "    --treebuilder-opt STR    Extra tree-builder options to pass ($treebuilder_opt)\n";
-  print "    --recomb NAME            Recombination masker to use: ", default_string( $recomb, keys(%{$plugin->{recomb}}) ), "\n";
-  print "    --recomb-opt STR         Extra recombination marker options to pass ($recomb_opt)\n";
   print "DOCUMENTATION\n";
   print "    $URL\n";
   
@@ -648,12 +607,11 @@ sub check_deps {
   my($self) = @_;
 
   require_exe( qw'convert head cat install env nl' );
-  require_exe( qw'trimmomatic prokka roary kraken snippy mlst abricate megahit spades.py shovill nw_order nw_display FastTree snp-dists seqret' );
+  require_exe( qw'trimmomatic prokka roary kraken snippy mlst abricate megahit spades.py nw_order nw_display FastTree snp-dists seqret' );
   require_exe( qw'fq fa roary2svg.pl' );
 
   require_perlmod( qw'Data::Dumper Moo Bio::SeqIO File::Copy Time::Piece YAML::Tiny File::Slurp File::Copy SVG Text::CSV List::MoreUtils' );
 
-  require_version('shovill', 0.8);
   require_version('megahit', 1.1);
   require_version('snippy', 3.1);
   require_version('prokka', 1.12);
