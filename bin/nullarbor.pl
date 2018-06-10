@@ -30,7 +30,7 @@ use Nullarbor::Plugins;
 
 my $EXE = "$FindBin::RealScript";
 my $VERSION = '2.0.0-dev';
-my $AUTHOR = 'Torsten Seemann <torsten.seemann@gmail.com>';
+my $AUTHOR = 'Torsten Seemann';
 my $URL = "https://github.com/tseemann/nullarbor";
 my @CMDLINE = ($0, @ARGV);
 
