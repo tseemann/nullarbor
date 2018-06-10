@@ -11,7 +11,7 @@ use File::Path qw(make_path remove_tree);
 use File::Spec qw(catfile);
 use List::Util qw(min max);
 use YAML::Tiny;
-use Cwd;
+use Cwd 'realpath';
 
 #-------------------------------------------------------------------
 # local modules 
@@ -33,6 +33,7 @@ my $VERSION = '2.0.0-dev';
 my $AUTHOR = 'Torsten Seemann';
 my $URL = "https://github.com/tseemann/nullarbor";
 my @CMDLINE = ($0, @ARGV);
+my $APPDIR = realpath("$FindBin::RealBin/../conf");
 
 #-------------------------------------------------------------------
 # parameters
@@ -170,8 +171,8 @@ if (-r $conf_file) {
   msg("Loaded YAML config: $conf_file");
 #  msg("Options set:", keys %$cfg);
   for my $opt (keys %$cfg) {
-    $cfg->{$opt} =~ s/\$HOME/$ENV{HOME}/g;
-    $cfg->{$opt} =~ s{\$NULLARBOR}{$FindBin::RealBin/..}g;
+    $cfg->{$opt} =~ s/{HOME}/$ENV{HOME}/g;
+    $cfg->{$opt} =~ s/{NULLARBOR}/$APPDIR/g;
     msg("- $opt = $cfg->{$opt}");
   }
 }
