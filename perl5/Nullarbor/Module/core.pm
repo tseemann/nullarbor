@@ -19,21 +19,18 @@ sub html {
   
   my $core = Nullarbor::Tabular::load(-file=>$self->indir."/core.txt", -sep=>"\t");
   $core->[0][0] = 'Isolate';
-  push @{$core->[0]}, 'Quality';
-  
-  # add bottom average row
-  my $AC = Nullarbor::Tabular::column_average($core, 3, "%.2f");
-  push @{$core}, [
-    "AVERAGE",
-    Nullarbor::Tabular::column_average($core, 1, "%d"),
-    $core->[-1][2], # refsize
-    $AC,
-  ];
+  push @{$core->[0]}, '%Used', 'Quality';
 
-  # add QC
-  for my $row (1 .. $#$core) {
-    my $C = $core->[$row][3];
-    push @{$core->[$row]}, $self->pass_fail( $C < 0.5*$AC ? -1 : $C < 0.9*$AC ? 0 : +1 );
+  # snippy 4.x now has
+  # 0           1       2       3         4 		5	6	7	8
+  # Isolate	LENGTH	ALIGNED	UNALIGNED VARIANT	MASKED	LOWCOV	%used	quality
+   
+  # add QC traffic light 
+  for my $j (1 .. $#$core) {
+    my $row = $core->[$j];
+    my $used = sprintf "%.2f", 100 * $row->[2] / $row->[1];
+    push @$row, $used;
+    push @$row, $self->pass_fail( $used < 70 ? -1 : $used < 90 ? 0 : +1 );
   }
 
   return $self->matrix_to_html($core);
