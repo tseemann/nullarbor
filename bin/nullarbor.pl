@@ -62,6 +62,7 @@ my $assembler = 'skesa';
 my $assembler_opt = '';
 my $treebuilder = 'iqtree';
 my $treebuilder_opt = '';
+my $mask = '';
 #my $recomb = '';
 #my $recomb_opt = '';
 
@@ -85,6 +86,7 @@ GetOptions(
   "outdir=s" => \$outdir,
   "force!"   => \$force,
   "prefill!" => \$prefill,
+  "mask=s"   => \$mask,
   "run!"     => \$run,
   "trim!"    => \$trim,
   "name=s"   => \$name,
@@ -128,6 +130,12 @@ $set->load($input);
 msg("Loaded", $set->num, "isolates:", $set->ids);
 $set->num >= 4 or err("$EXE requires a mininum of 4 isolates to run (due to Roary)");
 $input = File::Spec->rel2abs($input);
+
+if ($mask and $mask ne 'auto') {
+  -r $mask or err("Can not read --mask file '$mask'");
+  $mask = realpath($mask);
+  msg("Using mask: $mask");
+}
 
 if ($mlst) {
   require_exe('mlst');
@@ -305,6 +313,13 @@ sub write_makefile {
   print $fh "NW_DISPLAY := nw_display ".($cfg->{nw_display} || '')."\n";
   print $fh "GCODE := $gcode\n";
   print $fh "PROKKA := prokka --centre X --compliant --force".($fullanno ? " --fast" : "")."\n";
+  print $fh "SNIPPY := snippy --force\n";
+  print $fh "SNIPPYCORE := snippy-core".($mask ? " --mask $mask\n" : "\n");
+  print $fh "ROARY := roary -v\n";
+  print $fh "KRAKEN := kraken\n";
+  print $fh "ABRICATE := abricate -q\n";
+  print $fh "MLST := mlst -q\n";
+  print $fh "MASH := mash\n";
 
   # copy any header stuff from the __DATA__ block at the end of this script
   while (<DATA>) {
@@ -365,16 +380,16 @@ sub usage {
   print "    --mlst SCHEME            Force this MLST scheme (AUTO)\n";
   print "    --fullanno               Don't use --fast for Prokka\n";
   print "    --prefill                Prefill precomputed data via [prefill] via --conf\n";
+  print "    --mask BED | auto        Mask core SNPS in these regions or 'auto' ($mask)\n";
 #  print "    --keepfiles              Keep ALL ancillary files to annoy your sysadmin\n";
+#  print "COMPONENTS [NOT WORKING]\n";
+#  print "    --disable-pangenome      Don't generate pan-genome with Roary\n"
+#  print "    --enable-cfml            Mask recombination with ClonalFrameML\n"
   print "PLUGINS\n";
-#  print "    --trimmer NAME           Read trimmer to use ($trimmer)\n";
-#  print "    --trimmer-opt STR        Read trimmer options to pass ($trimmer_opt)\n";
   print "    --assembler NAME         Assembler to use: ", default_string( $assembler, keys(%{$plugin->{assembler}}) ), "\n";
   print "    --assembler-opt STR      Extra assembler options to pass ($assembler_opt)\n";
   print "    --treebuilder NAME       Tree-builder to use: ", default_string( $treebuilder, keys(%{$plugin->{treebuilder}}) ), "\n";
   print "    --treebuilder-opt STR    Extra tree-builder options to pass ($treebuilder_opt)\n";
-#  print "    --recomb NAME            Recombination masker to use: ", default_string( $recomb, keys(%{$plugin->{recomb}}) ), "\n";
-#  print "    --recomb-opt STR         Extra recombination marker options to pass ($recomb_opt)\n";
   print "DOCUMENTATION\n";
   print "    $URL\n";
   
@@ -436,10 +451,12 @@ MAKEFLAGS += --no-builtin-variables
 ISOLATES := $(shell cat isolates.txt)
 CONTIGS := $(addsuffix /contigs.fa,$(ISOLATES))
 GFFS := $(addsuffix /contigs.gff,$(ISOLATES))
+SNIPPY_VCFS := $(addsuffix /snps.vcf,$(ISOLATES))
 NAMED_GFFS := $(addsuffix .gff,$(ISOLATES))
-SNPS := $(addsuffix /snps.tab,$(ISOLATES))
 
 FASTAREF := ref.fa
+VIRULOME_DB := vfdb
+RESISTOME_DB := ncbi
 
 all : isolates.txt report/index.html
 
@@ -480,21 +497,19 @@ denovo.tab : $(CONTIGS)
 distances.tab : core.aln
   snp-dists -b $< > $@
 
-%/snps.tab : $(REF) %/R1.fq.gz %/R2.fq.gz
-  snippy --cpus $(CPUS) --force --outdir $(@D)/snippy --ref $(word 1,$^) --R1 $(word 2,$^) --R2 $(word 3,$^)
+%/snps.vcf : $(REF) %/R1.fq.gz %/R2.fq.gz
+  $(SNIPPY) --cpus $(CPUS) --outdir $(@D)/snippy --ref $(word 1,$^) --R1 $(word 2,$^) --R2 $(word 3,$^)
   cp -vf $(@D)/snippy/snps.{tab,aligned.fa,vcf,bam,bam.bai,log} $(@D)/
   rm -fr $(@D)/snippy
 
-%/snps.aligned.fa : %/snps.tab
-
-core.aln : $(SNPS)
-  snippy-core --ref $(FASTAREF) $(ISOLATES)
+core.aln : $(FASTAREF) $(SNIPPY_VCFS)
+  $(SNIPPYCORE) --ref $< $(ISOLATES)
 
 %.gff : %/contigs.gff
   ln -f $< $@
 
 roary/gene_presence_absence.csv roary/accessory_binary_genes.fa.newick : $(NAMED_GFFS)
-  roary -f roary -v -p $(CPUS) -t $(GCODE) $^
+  $(ROARY) -f roary -p $(CPUS) -t $(GCODE) $^
   rm -f $(NAMED_GFFS)
 
 roary/pan.svg : roary/gene_presence_absence.csv
@@ -504,7 +519,7 @@ roary/acc.svg : roary/accessory_binary_genes.fa.newick
   $(NW_DISPLAY) $< > $@
 
 %/kraken.tab : %/R1.fq.gz %/R2.fq.gz
-  kraken --threads $(CPUS) --paired $^ | kraken-report > $@
+  $(KRAKEN) --threads $(CPUS) --paired $^ | kraken-report > $@
 
 %/contigs.gff: %/contigs.fa
   $(PROKKA) --locustag $(@D) --prefix contigs --outdir $(@D)/prokka --cpus $(CPUS) --gcode $(GCODE) $<
@@ -515,20 +530,20 @@ roary/acc.svg : roary/accessory_binary_genes.fa.newick
 %/contigs.fa : %/R1.fq.gz %/R2.fq.gz
   read1="$(word 1,$^)" read2="$(word 2,$^)" outdir="$(@D)" $(ASSEMBLER)
 
-%/yield.tab : $(FASTAREF) %/R1.fq.gz %/R2.fq.gz
-  fq --quiet --ref $^ > $@
+%/yield.tab : %/R1.fq.gz %/R2.fq.gz
+  fq --quiet --ref $(FASTAREF) $^ > $@
 
 %/resistome.tab : %/contigs.fa
-  abricate --db resfinder $^ > $@
+  $(ABRICATE) --db $(RESISTOME_DB) $^ > $@
 
 %/mlst.tab : %/contigs.fa
-  mlst $^ > $@
+  $(MLST) $^ > $@
 
 %/virulome.tab : %/contigs.fa
-  abricate --db vfdb $^ > $@
+  $(ABRICATE) --db $(VIRULOME_DB) $^ > $@
 
 %/sketch.msh : %/R1.fq.gz %/R2.fq.gz
-  mash sketch -o $@ $^
+  $(MASH) sketch -r -o $@ $^
 
 %.svg : %.newick
   $(NW_DISPLAY) $< > $@
