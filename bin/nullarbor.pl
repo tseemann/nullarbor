@@ -196,7 +196,6 @@ my $make_dep = '$<';
 my $make_deps = '$^';
 
 my $IDFILE = 'isolates.txt';
-my $REF = 'ref.fa';
 my $R1 = "R1.fq.gz";
 my $R2 = "R2.fq.gz";
 my $CPUS = '$(CPUS)';
@@ -440,9 +439,9 @@ GFFS := $(addsuffix /contigs.gff,$(ISOLATES))
 NAMED_GFFS := $(addsuffix .gff,$(ISOLATES))
 SNPS := $(addsuffix /snps.tab,$(ISOLATES))
 
-ref := ref.fa
+FASTAREF := ref.fa
 
-all : info isolates.txt report/index.html
+all : isolates.txt report/index.html
 
 info :
   @echo CPUS: $(CPUS)
@@ -461,7 +460,7 @@ publish : report/index.html
   mkdir -p $(PUBLISH_DIR)/$(NAME)
   install -p -D -t $(PUBLISH_DIR)/$(NAME) report/*
   
-$(ref) : $(REF)
+$(FASTAREF) : $(REF)
   seqret -auto -filter -osformat2 fasta < $< > $@
 
 virulome : $(addsuffix /virulome.tab,$(ISOLATES))
@@ -481,7 +480,7 @@ denovo.tab : $(CONTIGS)
 distances.tab : core.aln
   snp-dists -b $< > $@
 
-%/snps.tab : $(ref) %/R1.fq.gz %/R2.fq.gz
+%/snps.tab : $(REF) %/R1.fq.gz %/R2.fq.gz
   snippy --cpus $(CPUS) --force --outdir $(@D)/snippy --ref $(word 1,$^) --R1 $(word 2,$^) --R2 $(word 3,$^)
   cp -vf $(@D)/snippy/snps.{tab,aligned.fa,vcf,bam,bam.bai,log} $(@D)/
   rm -fr $(@D)/snippy
@@ -489,7 +488,7 @@ distances.tab : core.aln
 %/snps.aligned.fa : %/snps.tab
 
 core.aln : $(SNPS)
-  snippy-core --ref $(ref) $(ISOLATES)
+  snippy-core --ref $(FASTAREF) $(ISOLATES)
 
 %.gff : %/contigs.gff
   ln -f $< $@
@@ -516,8 +515,8 @@ roary/acc.svg : roary/accessory_binary_genes.fa.newick
 %/contigs.fa : %/R1.fq.gz %/R2.fq.gz
   read1="$(word 1,$^)" read2="$(word 2,$^)" outdir="$(@D)" $(ASSEMBLER)
 
-%/yield.tab : %/R1.fq.gz %/R2.fq.gz
-  fq --quiet --ref $(ref) $^ > $@
+%/yield.tab : $(FASTAREF) %/R1.fq.gz %/R2.fq.gz
+  fq --quiet --ref $^ > $@
 
 %/resistome.tab : %/contigs.fa
   abricate --db resfinder $^ > $@
