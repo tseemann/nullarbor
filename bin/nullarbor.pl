@@ -11,7 +11,7 @@ use File::Path qw(make_path remove_tree);
 use File::Spec qw(catfile);
 use List::Util qw(min max);
 use YAML::Tiny;
-use Cwd 'realpath';
+use Cwd qw(realpath getcwd);
 
 #-------------------------------------------------------------------
 # local modules 
