@@ -12,6 +12,8 @@ use File::Spec qw(catfile);
 use List::Util qw(min max);
 use YAML::Tiny;
 use Cwd qw(realpath getcwd);
+use Path::Tiny;
+use Term::ANSIColor;
 
 #-------------------------------------------------------------------
 # local modules 
@@ -55,16 +57,12 @@ my $conf_file = "$FindBin::RealBin/../conf/nullarbor.conf";
 my $prefill = 0;
 my $check = 0;
 my $gcode = 11; # genetic code for prokka + roary
-#plugins
-#my $trimmer = '';
-#my $trimmer_opt = '';
+
 my $assembler = 'skesa';
 my $assembler_opt = '';
 my $treebuilder = 'iqtree';
 my $treebuilder_opt = '';
 my $mask = '';
-#my $recomb = '';
-#my $recomb_opt = '';
 
 my $plugin = Nullarbor::Plugins->discover();
 #msg(Dumper($plugin));
@@ -92,15 +90,10 @@ GetOptions(
   "name=s"   => \$name,
   "fullanno!"         => \$fullanno,
   "keepfiles!"        => \$keepfiles,
-  # plugins
-#  "trimmer=s"         => \$trimmer,
-#  "trimmer-opt=s"     => \$trimmer_opt,
   "assembler=s"       => \$assembler,
   "assembler-opt=s"   => \$assembler_opt,
   "treebuilder=s"     => \$treebuilder,
   "treebuilder-opt=s" => \$treebuilder_opt,
-#  "recomb=s"          => \$recomb,
-#  "recomb-opt=s"      => \$recomb_opt,
 ) 
 or usage();
 
@@ -199,20 +192,10 @@ msg("Will run concurrent $jobs jobs with $threads threads each.");
 # Makefile logic
 
 my %make;
-my $make_target = '$@';
-my $make_dep = '$<';
-my $make_deps = '$^';
 
 my $IDFILE = 'isolates.txt';
 my $R1 = "R1.fq.gz";
 my $R2 = "R2.fq.gz";
-my $CPUS = '$(CPUS)';
-my $NW_DISPLAY = "nw_display ".($cfg->{nw_display} || '');
-my $DELETE = "rm -f";
-
-my $TEMPDIR = $cfg->{tempdir} || $ENV{TMPDIR} || '/tmp';
-msg("Will use temp folder: $TEMPDIR");
-my $JOBRAM = $cfg->{jobram} || undef;
 
 my @CMDLINE_NO_FORCE = grep !m/^--?f\S*$/, @CMDLINE; # remove --force / -f etc
 $make{'again'} = {
@@ -237,8 +220,8 @@ for my $s ($set->isolates) {
   make_path($dir);
 
   $make{$clipped[0]} = {
-    DEP => [ '|', @reads ],
-    CMD => $trim ? [ "trimmomatic PE -threads $CPUS -phred33 @reads $id/$R1 /dev/null $id/$R2 /dev/null ".($cfg->{trimmomatic} || '') ]
+    DEP => [ '|', @reads ],  # FIXME: should this be '|' ?
+    CMD => $trim ? [ "trimmomatic PE -threads \$(CPUS) -phred33 @reads $id/$R1 /dev/null $id/$R2 /dev/null ".($cfg->{trimmomatic} || '') ]
                  : [ "ln -f -s '$reads[0]' '$id/$R1'", "ln -f -s '$reads[1]' '$id/$R2'" ],
   };
   
@@ -268,7 +251,7 @@ if ($prefill) {
       next unless -r $path;
       my $dest = "$outdir/$id/$file";
       my $opts = $verbose ? "-v" : "";
-      my $cmd = "install $opts -p -T '$path' '$dest'";
+      my $cmd = "install $opts -p -T '$path' '$dest'"; # -p preserve timestamp
       system($cmd)==0 or err("Could not run: $cmd");
       $copied++;
     }
@@ -284,15 +267,17 @@ msg("Writing Makefile");
 my $makefile = "$outdir/Makefile";
 open my $make_fh, '>', $makefile or err("Could not write $makefile");
 write_makefile(\%make, $make_fh);
+my $relout = path($outdir)->relative(getcwd())->canonpath;
+my $run_cmd = "nice make -j $jobs -l $cpus -C $relout 2>&1 | tee $relout/nullarbor.log";
 if ($run) {
-  exec("nice make -j $jobs -C $outdir 2>&1 | tee $outdir/nullarbor.log") or err("Could not run pipeline's Makefile");
+  exec($run_cmd) or err("Could not run pipeline's Makefile");
 }
 else {
-  #msg("Run the pipeline with: nohup nice make -C $outdir 1> $outdir/log.out $outdir/log.err");
-  msg("Run the pipeline with: nice make -j $jobs -l $cpus -C $outdir");
+  msg("Run the pipeline with:");
+  msg( colored("nohup $run_cmd", "bold") );
 }
 
-msg("Done");
+msg("Done.");
 exit(0);
 
 #----------------------------------------------------------------------
@@ -305,7 +290,6 @@ sub write_makefile {
   print $fh "BINDIR := $FindBin::RealBin\n";
   print $fh "CPUS := $threads\n";
   print $fh "REF := $ref\n";
-  print $fh "#TEMPDIR := \$(shell mktemp -d)\n";
   print $fh "NAME := $name\n";
   print $fh "PUBLISH_DIR := ", $cfg->{publish}, "\n";
   print $fh "ASSEMBLER := cpus=\$(CPUS) opts='$assembler_opt' ", $plugin->{assembler}{$assembler}, "\n";
@@ -317,8 +301,8 @@ sub write_makefile {
   print $fh "SNIPPYCORE := snippy-core".($mask ? " --mask $mask\n" : "\n");
   print $fh "ROARY := roary -v\n";
   print $fh "KRAKEN := kraken\n";
-  print $fh "ABRICATE := abricate -q\n";
-  print $fh "MLST := mlst -q\n";
+  print $fh "ABRICATE := abricate\n";
+  print $fh "MLST := mlst\n";
   print $fh "MASH := mash\n";
 
   # copy any header stuff from the __DATA__ block at the end of this script
@@ -406,10 +390,10 @@ sub version {
 sub check_deps { 
   my($self) = @_;
 
-  require_perlmod( qw'Bio::SeqIO Cwd Sys::Hostname Time::Piece List::Util YAML::Tiny' );
-  require_perlmod( qw'Moo Path::Tiny File::Copy File::Spec File::Path Exporter Data::Dumper' );
+  require_perlmod( qw'Bio::SeqIO Cwd Sys::Hostname Time::Piece List::Util Path::Tiny YAML::Tiny' );
+  require_perlmod( qw'Moo Term::ANSIColor Path::Tiny File::Copy File::Spec File::Path Data::Dumper' );
 
-  require_exe( qw'head cat install env nl' );
+  require_exe( qw'head cat install env nl grep touch' );
   require_exe( qw'seqtk trimmomatic prokka roary kraken snippy mlst abricate seqret' );
   require_exe( qw'skesa megahit spades.py shovill nw_order nw_display iqtree FastTree snp-dists' );
   require_exe( qw'fq fa roary2svg.pl' );
@@ -463,12 +447,6 @@ all : isolates.txt report/index.html
 info :
   @echo CPUS: $(CPUS)
   @echo REF: $(REF)
-  @echo TEMPDIR: $(TEMPDIR)
-#  @echo Isolates: $(ISOLATES)
-#  @echo Contigs: $(CONTIGS)
-#  @echo SNPS: $(SNPS)
-#  @echo GFFS: $(GFFS)
-#  @echo NAMED_GFFS: $(NAMED_GFFS)
 
 report/index.html : ref.fa.fai yield denovo.tab mlst.tab virulome resistome kraken core.svg distances.tab roary/pan.svg roary/acc.svg
   nullarbor-report.pl --name $(NAME) --indir . --outdir report
@@ -479,6 +457,7 @@ publish : report/index.html
   
 $(FASTAREF) : $(REF)
   seqret -auto -filter -osformat2 fasta < $< > $@
+  touch --reference=$< $@
 
 virulome : $(addsuffix /virulome.tab,$(ISOLATES))
 
@@ -536,14 +515,11 @@ roary/acc.svg : roary/accessory_binary_genes.fa.newick
 %/resistome.tab : %/contigs.fa
   $(ABRICATE) --db $(RESISTOME_DB) $^ > $@
 
-%/mlst.tab : %/contigs.fa
-  $(MLST) $^ > $@
-
 %/virulome.tab : %/contigs.fa
   $(ABRICATE) --db $(VIRULOME_DB) $^ > $@
 
 %/sketch.msh : %/R1.fq.gz %/R2.fq.gz
-  $(MASH) sketch -r -o $@ $^
+  $(MASH) sketch -p $(CPUS) -o $(basename $@) -m 3 -r $<
 
 %.svg : %.newick
   $(NW_DISPLAY) $< > $@
