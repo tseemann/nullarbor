@@ -36,6 +36,7 @@ my $AUTHOR = 'Torsten Seemann';
 my $URL = "https://github.com/tseemann/nullarbor";
 my @CMDLINE = ($0, @ARGV);
 my $APPDIR = realpath("$FindBin::RealBin/../conf");
+my $LOGFILE = "nullarbor.log";
 
 #-------------------------------------------------------------------
 # parameters
@@ -181,7 +182,6 @@ else {
   msg("Could not read config file: $conf_file");
 }
 
-
 my $nsamp = $set->num or err("Data set appears to have no isolates?");
 msg("Optimizing use of $cpus cores for $nsamp isolates.");
 my $threads = max( min(4, $cpus), int($cpus/$nsamp) );  # try and use 4 cpus per job if possible
@@ -261,6 +261,11 @@ if ($prefill) {
 }
 
 #.............................................................................
+# start the log file
+msg("Saving $outdir/$LOGFILE");
+Nullarbor::Logger->save_log(">>$outdir/$LOGFILE");
+
+#.............................................................................
 
 #print Dumper(\%make);
 msg("Writing Makefile");
@@ -268,13 +273,13 @@ my $makefile = "$outdir/Makefile";
 open my $make_fh, '>', $makefile or err("Could not write $makefile");
 write_makefile(\%make, $make_fh);
 my $relout = path($outdir)->relative(getcwd())->canonpath;
-my $run_cmd = "nice make -j $jobs -l $cpus -C $relout 2>&1 | tee $relout/nullarbor.log";
+my $run_cmd = "nice make -j $jobs -l $cpus -C $relout 2>&1 | tee -a $relout/$LOGFILE";
 if ($run) {
   exec($run_cmd) or err("Could not run pipeline's Makefile");
 }
 else {
   msg("Run the pipeline with:");
-  msg( colored("nohup $run_cmd", "bold") );
+  msg( colored("$run_cmd", "bold") );
 }
 
 msg("Done.");

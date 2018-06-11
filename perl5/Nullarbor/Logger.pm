@@ -1,34 +1,62 @@
 package Nullarbor::Logger;
 
 use base Exporter;
-@EXPORT_OK = qw(msg err);
+@EXPORT_OK = qw(msg err wrn);
 
 use Time::Piece;
+use Term::ANSIColor;
 
 our $quiet = 0;
+our @log;
+
+#----------------------------------------------------------------------
+
+sub get_log {
+  return @log;
+}
+
+#----------------------------------------------------------------------
+
+sub reset_log {
+  @log = ();
+}
+
+#----------------------------------------------------------------------
+
+sub save_log {
+  my($self, $fopen) = @_;
+  open OUT, $fopen or err("Could not save log file to '$fopen'");
+  print OUT @log;
+  close OUT;
+}
 
 #----------------------------------------------------------------------
 
 sub quiet {
   my($self, $value) = @_;
-  $quiet = $value if defined $value;
+  $quiet = $value if $value;
   return $quiet;
 }
 
 #----------------------------------------------------------------------
 
 sub msg {
-#  my $self = shift;
-  return if $quiet;
   my $t = localtime;
-  print STDERR "[".$t->hms."] @_\n";
+  my $line = "[".$t->hms."] @_\n";
+  push @log, $line;
+  print STDERR $line unless $quiet;
 }
       
 #----------------------------------------------------------------------
 
+sub wrn {
+  msg("WARNING:", @_);
+}
+
+#----------------------------------------------------------------------
+
 sub err {
-#  my $self = shift;
-  msg(@_);
+  msg("ERROR:", @_);
   exit(1);
 }
 
