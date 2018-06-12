@@ -7,9 +7,9 @@ use warnings;
 
 use Data::Dumper;
 use Getopt::Long;
-use File::Path qw(make_path);
-use File::Slurp;
 use Module::Load;
+use Cwd qw(realpath getcwd);
+use Path::Tiny;
 use File::Copy;
 
 #-------------------------------------------------------------------
@@ -65,29 +65,28 @@ $name =~ m{/|\s} and err("The --name is not allowed to have spaces or slashes in
 $indir or err("Please set the --indir Nullarbor folder");
 $outdir or err("Please set the --outdir output folder.");
 
-$indir = File::Spec->rel2abs($indir);
-$outdir = File::Spec->rel2abs($outdir);
+$indir = realpath($indir);
+$outdir = realpath($outdir);
 
 if (-d $outdir) {
   msg("Folder --outdir $outdir already exists.");
 }
 else {
   msg("Making folder --outdir $outdir");
-  make_path($outdir);
+  path($outdir)->mkpath or err("Could not create folder: $outdir");
 }
 
 #-------------------------------------------------------------------
 # main() 
 
-my @ids = read_file("$indir/isolates.txt");
-chomp @ids;
+my @ids = path("$indir/isolates.txt")->lines({chomp=>1});
 msg("Identified", scalar(@ids), "isolates.");
 
 my $MAGIC = '~~~MENU~~~';
 my @menu;
 
 my @html;
-push @html, scalar read_file("${TEMPLATE_DIR}/report.header.html");
+push @html, path("${TEMPLATE_DIR}/report.header.html")->slurp;
 push @html, "<h1>$name</h1>\n";
 
 my @section = qw(jobinfo seqdata identification mlst serotype resistome virulome
@@ -112,7 +111,7 @@ for my $section (@section) {
   push @menu, "<a href='#$section'>".$module->name."</a>";
 }
 
-push @html, scalar read_file("${TEMPLATE_DIR}/report.footer.html");
+push @html, path("${TEMPLATE_DIR}/report.footer.html")->slurp;
 
 my $menu = dropdown_menu(@menu);
 foreach (@html) {
@@ -120,7 +119,7 @@ foreach (@html) {
 }
 
 my $out_fn = "$outdir/index.html";
-write_file($out_fn, @html);
+path($out_fn)->spew(@html);
 
 copy("${TEMPLATE_DIR}/nullarbor.css", $outdir);
 

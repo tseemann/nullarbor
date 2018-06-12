@@ -7,8 +7,7 @@ use warnings;
 
 use Data::Dumper;
 use Getopt::Long;
-use File::Path qw(make_path remove_tree);
-use File::Spec qw(catfile);
+use File::Path qw(make_path);
 use List::Util qw(min max);
 use YAML::Tiny;
 use Cwd qw(realpath getcwd);
@@ -114,7 +113,7 @@ $name =~ m{/|\s} and err("The --name is not allowed to have spaces or slashes in
 
 $ref or err("Please provide a --ref reference genome");
 -r $ref or err("Can not read reference '$ref'");
-$ref = File::Spec->rel2abs($ref);
+$ref = realpath($ref);
 msg("Using reference genome: $ref");
 
 $input or err("Please specify an dataset with --input <dataset.tab>");
@@ -123,7 +122,7 @@ my $set = Nullarbor::IsolateSet->new();
 $set->load($input);
 msg("Loaded", $set->num, "isolates:", $set->ids);
 $set->num >= 4 or err("$EXE requires a mininum of 4 isolates to run (due to Roary)");
-$input = File::Spec->rel2abs($input);
+$input = realpath($input);
 
 if ($mask and $mask ne 'auto') {
   -r $mask or err("Can not read --mask file '$mask'");
@@ -146,18 +145,12 @@ $outdir or err("Please provide an --outdir folder.");
 if (-d $outdir) {
   if ($force) {
     msg("Re-using existing folder: $outdir");
-#    for my $file (<$outdir/*.tab>, <$outdir/*.aln>) {
-#      msg("Removing previous run file: $file");
-#      unlink $file;
-#    }
-#    msg("Forced removal of existing --outdir $outdir");
-#    remove_tree($outdir);
   }
   else {
     err("The --outdir '$outdir' already exists. Try using --force");
   }
 }
-$outdir = File::Spec->rel2abs($outdir);
+$outdir = realpath($outdir);
 msg("Making output folder: $outdir");
 make_path($outdir); 
 
@@ -208,7 +201,7 @@ open ISOLATES, '>', "$outdir/$IDFILE";
 msg("Preparing isolate rules and creating $IDFILE");
 for my $s ($set->isolates) {
   msg("Preparing rules for isolate:", $s->id) if $verbose;
-  my $dir = File::Spec->rel2abs( File::Spec->catdir($outdir, $s->id) );
+  my $dir = realpath("$outdir/".$s->id);
   $s->folder($dir);
   my $id = $s->id;
   my @reads = @{$s->reads};
