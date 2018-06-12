@@ -266,7 +266,8 @@ my $makefile = "$outdir/Makefile";
 open my $make_fh, '>', $makefile or err("Could not write $makefile");
 write_makefile(\%make, $make_fh);
 my $relout = path($outdir)->relative(getcwd())->canonpath;
-my $run_cmd = "nice make -j $jobs -l $cpus -C $relout 2>&1 | tee -a $relout/$LOGFILE";
+my $CPUS = num_cpus();
+my $run_cmd = "nice make -j $jobs -l $CPUS -C $relout 2>&1 | tee -a $relout/$LOGFILE";
 if ($run) {
   exec($run_cmd) or err("Could not run pipeline's Makefile");
 }
