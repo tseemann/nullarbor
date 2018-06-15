@@ -213,7 +213,7 @@ for my $s ($set->isolates) {
   make_path($dir);
 
   $make{$clipped[0]} = {
-    DEP => [ '|', @reads ],  # FIXME: should this be '|' ?
+    DEP => [ @reads ],  # FIXME: should this be '|' ?
     CMD => $trim ? [ "trimmomatic PE -threads \$(CPUS) -phred33 @reads $id/$R1 /dev/null $id/$R2 /dev/null ".($cfg->{trimmomatic} || '') ]
                  : [ "ln -f -s '$reads[0]' '$id/$R1'", "ln -f -s '$reads[1]' '$id/$R2'" ],
   };
