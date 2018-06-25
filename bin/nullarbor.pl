@@ -62,6 +62,8 @@ my $assembler = 'skesa';
 my $assembler_opt = '';
 my $treebuilder = 'iqtree';
 my $treebuilder_opt = '';
+my $taxoner = 'kraken';
+my $taxoner_opt = '';
 my $mask = '';
 
 my $plugin = Nullarbor::Plugins->discover();
@@ -94,6 +96,8 @@ GetOptions(
   "assembler-opt=s"   => \$assembler_opt,
   "treebuilder=s"     => \$treebuilder,
   "treebuilder-opt=s" => \$treebuilder_opt,
+  "taxoner=s"     => \$taxoner,
+  "taxoner-opt=s" => \$taxoner_opt,
 ) 
 or usage();
 
@@ -291,15 +295,15 @@ sub write_makefile {
   print $fh "REF := $ref\n";
   print $fh "NAME := $name\n";
   print $fh "PUBLISH_DIR := ", $cfg->{publish}, "\n";
-  print $fh "ASSEMBLER := cpus=\$(CPUS) opts='$assembler_opt' ", $plugin->{assembler}{$assembler}, "\n";
-  print $fh "TREEBUILDER := cpus=\$(CPUS) opts='$treebuilder_opt' ", $plugin->{treebuilder}{$treebuilder}, "\n";
+  print $fh "ASSEMBLER := cpus=\$(CPUS) opts=\"$assembler_opt\" ", $plugin->{assembler}{$assembler}, "\n";
+  print $fh "TREEBUILDER := cpus=\$(CPUS) opts=\"$treebuilder_opt\" ", $plugin->{treebuilder}{$treebuilder}, "\n";
+  print $fh "TAXONER := cpus=\$(CPUS) opts=\"$taxoner_opt\" ", $plugin->{taxoner}{$taxoner}, "\n";
   print $fh "NW_DISPLAY := nw_display ".($cfg->{nw_display} || '')."\n";
   print $fh "GCODE := $gcode\n";
   print $fh "PROKKA := prokka --centre X --compliant --force".($fullanno ? " --fast" : "")."\n";
   print $fh "SNIPPY := snippy --force\n";
   print $fh "SNIPPYCORE := snippy-core".($mask ? " --mask $mask\n" : "\n");
   print $fh "ROARY := roary -v\n";
-  print $fh "KRAKEN := kraken\n";
   print $fh "ABRICATE := abricate\n";
   print $fh "MLST := mlst\n";
   print $fh "MASH := mash\n";
@@ -373,6 +377,8 @@ sub usage {
   print "    --assembler-opt STR      Extra assembler options to pass ($assembler_opt)\n";
   print "    --treebuilder NAME       Tree-builder to use: ", default_string( $treebuilder, keys(%{$plugin->{treebuilder}}) ), "\n";
   print "    --treebuilder-opt STR    Extra tree-builder options to pass ($treebuilder_opt)\n";
+  print "    --taxoner NAME           Species ID tool to use: ", default_string( $taxoner, keys(%{$plugin->{taxoner}}) ), "\n";
+  print "    --taxoner-opt STR        Extra species ID builder options to pass ($taxoner_opt)\n";
   print "DOCUMENTATION\n";
   print "    $URL\n";
   
@@ -393,8 +399,9 @@ sub check_deps {
   require_perlmod( qw'Moo Term::ANSIColor Path::Tiny File::Copy File::Spec File::Path Data::Dumper' );
 
   require_exe( qw'head cat install env nl grep touch' );
-  require_exe( qw'seqtk trimmomatic prokka roary kraken snippy mlst abricate seqret' );
+  require_exe( qw'seqtk trimmomatic prokka roary snippy mlst abricate seqret' );
   require_exe( qw'skesa megahit spades.py shovill nw_order nw_display iqtree FastTree snp-dists' );
+  require_exe( qw'kraken kraken-report centrifuge centrifuge-kreport' );
   require_exe( qw'fq fa roary2svg.pl' );
 
   require_version('shovill', 0.9);
@@ -406,14 +413,20 @@ sub check_deps {
   require_version('mlst', 2.10);
   require_version('abricate', 0.8);
   require_version('snp-dists', 0.6, undef, '-v'); # supports -v not --version
-  require_version('trimmomatic', 0.36, undef, '-version'); # supports -v not --version
+  require_version('trimmomatic', 0.36, undef, '-version'); # supports -version not --version
   require_version('spades.py', 3.12); 
+  require_version('kraken', 1.0);
+  require_version('centrifuge', 1.0);
 
   my $value = require_var('KRAKEN_DEFAULT_DB', 'kraken');
   require_file("$value/database.idx", 'kraken');
   require_file("$value/database.kdb", 'kraken');
+  
+  my $cdb = require_var('CENTRIFUGE_DEFAULT_DB', 'centrifuge');
+  require_file("$cdb.$_.cf", 'centrifuge') for (1..3);
 
-  msg("All $EXE $VERSION dependencies are installed. You deserve a medal!")
+  msg( colored("All $EXE $VERSION dependencies are installed.", "bold") );
+  msg("You deserve a medal!");
 }
 
 #-------------------------------------------------------------------
@@ -497,7 +510,7 @@ roary/acc.svg : roary/accessory_binary_genes.fa.newick
   $(NW_DISPLAY) $< > $@
 
 %/kraken.tab : %/R1.fq.gz %/R2.fq.gz
-  $(KRAKEN) --threads $(CPUS) --paired $^ | kraken-report > $@
+  read1="$(word 1,$^)" read2="$(word 2,$^)" outfile="$@" $(TAXONER)
 
 %/contigs.gff: %/contigs.fa
   $(PROKKA) --locustag $(@D) --prefix contigs --outdir $(@D)/prokka --cpus $(CPUS) --gcode $(GCODE) $<

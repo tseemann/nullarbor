@@ -30,6 +30,7 @@ my %getver = (
   'snp-dists' => 'snp-dists -v',
   'seqret' => 'seqret -h 2>&1 | grep ^Version',
   'seqtk' => 'seqtk 2>&1 | grep ^Version',
+  'centrifuge' => 'centrifuge --version 2>&1 | sed "s/^.*version //"',
 );
 
 #...........................................................................................

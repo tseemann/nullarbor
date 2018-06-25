@@ -13,7 +13,7 @@ sub require_var {
   $reason ||= 'nullarbor';
   my $value = $ENV{$var};
   if ($value) {
-    msg("Found $reason environmental variable $var=$value");
+    msg("Found $reason env-var $var=$value");
   }
   else {
     err("Please set $var appropriately.");
