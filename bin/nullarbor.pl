@@ -62,7 +62,7 @@ my $assembler = 'skesa';
 my $assembler_opt = '';
 my $treebuilder = 'iqtree';
 my $treebuilder_opt = '';
-my $taxoner = 'kraken';
+my $taxoner = 'centrifuge';
 my $taxoner_opt = '';
 my $mask = '';
 
