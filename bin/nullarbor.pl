@@ -53,16 +53,16 @@ my $name = '';
 my $keepfiles = 0;
 my $fullanno = 0;
 my $trim = 0;
-my $conf_file = "$FindBin::RealBin/../conf/nullarbor.conf";
-my $prefill = 0;
+my $conf_file = $ENV{'NULLARBOR_CONF'} || "$FindBin::RealBin/../conf/nullarbor.conf";
+my $prefill = defined($ENV{'NULLARBOR_PREFILL'}) ? 1 : 0;
 my $check = 0;
 my $gcode = 11; # genetic code for prokka + roary
 
-my $assembler = 'skesa';
+my $assembler = $ENV{'NULLARBOR_ASSEMBLER'} || 'skesa';
 my $assembler_opt = '';
-my $treebuilder = 'iqtree';
+my $treebuilder = $ENV{'NULLARBOR_TREEBUILDER'} || 'iqtree';
 my $treebuilder_opt = '';
-my $taxoner = 'centrifuge';
+my $taxoner = $ENV{'NULLARBOR_TAXONER'} || 'kraken';
 my $taxoner_opt = '';
 my $mask = '';
 
@@ -330,12 +330,15 @@ sub write_makefile {
 }
 
 #-------------------------------------------------------------------
-
 sub default_string {
   my($def, @list) = @_;
   return join( ' ', sort @list )." ($def)";
 #  return join( ' ', map { $_ eq $def ? ">>$_<<" : $_ } sort @list );
 }
+
+#-------------------------------------------------------------------
+sub yesno { return $_[0] ? 'YES' : 'NO'; }
+sub onoff { return $_[0] ? 'ON' : 'OFF'; }
 
 #-------------------------------------------------------------------
 sub usage {
@@ -363,10 +366,10 @@ sub usage {
   print "ADVANCED OPTIONS\n";
   print "    --conf FILE              Config file ($conf_file)\n";
   print "    --gcode INT              Genetic code for prokka ($gcode)\n";
-  print "    --trim                   Trim reads of adaptors ($trim)\n";
+  print "    --trim                   Trim reads of adaptors (",onoff($trim),")\n";
   print "    --mlst SCHEME            Force this MLST scheme (AUTO)\n";
   print "    --fullanno               Don't use --fast for Prokka\n";
-  print "    --prefill                Prefill precomputed data via [prefill] via --conf\n";
+  print "    --prefill                Prefill precomputed data via [prefill] in --conf file (",onoff($prefill),")\n";
   print "    --mask BED | auto        Mask core SNPS in these regions or 'auto' ($mask)\n";
 #  print "    --keepfiles              Keep ALL ancillary files to annoy your sysadmin\n";
 #  print "COMPONENTS [NOT WORKING]\n";

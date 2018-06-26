@@ -59,7 +59,7 @@ distributing the work across a high performance cluster.
 3. Pan genome
    * From annotated contigs (Roary)
 4. Report
-   * Summary isolate information (HTML + Plotly.JS + DataTables)
+   * Summary isolate information (HTML + Plotly.JS + DataTables + PhyloCanvas)
    * More detailed per isolate pages
 
 ## Installation
@@ -98,17 +98,27 @@ Once the `bioconda` package is working, Docker and Singularity containers will f
 
 ### Databases
 
-You need to install a [Kraken](https://ccb.jhu.edu/software/kraken/) database.
+#### Kraken
+
+You need to install a [Kraken](https://ccb.jhu.edu/software/kraken/) database (~4 GB).
 
     wget https://ccb.jhu.edu/software/kraken/dl/minikraken_20171019_4GB.tgz
+    tar -C $HOME -zxvf minikraken_20171019_4GB.tgz
+
+#### Centrifuge
     
-Choose a folder (say `$HOME`) to put it in, you need ~4 GB free:
+Install a [Centrifuge](http://www.ccb.jhu.edu/software/centrifuge/) database (~8 GB):
 
-    tar -C $HOME -zxvf minikraken.tgz
+    wget ftp://ftp.ccb.jhu.edu/pub/infphilo/centrifuge/data/p_compressed+h+v.tar.gz
+    mkdir $HOME/centrifuge-db
+    tar -C $HOME/centrifuge-db -zxvf p_compressed+h+v.tar.gz
 
-Then add the following to your `$HOME/.bashrc` so Nullarbor can use it:
+#### Set global database locations
 
-    export KRAKEN_DB_PATH=$HOME/minikraken_20171019_4GB
+Then add the following to your `$HOME/.bashrc` so Nullarbor can find the databases:
+
+    export KRAKEN_DEFAULT_DB=$HOME/minikraken_20171019_4GB
+    export CENTRIFUGE_DEFAULT_DB=$HOME/centrifuge-db/p_compressed+h+v
 
 You should be good to go now. When you first run Nullarbor it will let you
 know of any missing dependencies or databases.
@@ -226,6 +236,12 @@ things it needs to, saving a lot of computation.
 If you don't want to cut and paste the `make ....` instructions to 
 start the analysis, just add the `--run` option to your `nullarbor.pl` command.
 
+## Influential environmental variables
+
+* `NULLARBOR_CONF` - default `--conf`, the path to `nullarbor.conf`
+* `NULLARBOR_ASSEMBLER` - default `--assembler` tool
+* `NULLARBOR_TREEBUILDER` - default `--treebuilder` tool
+* `NULLARBOR_TAXONER` - default `--taxoner` tool
 
 ## Etymology
 
