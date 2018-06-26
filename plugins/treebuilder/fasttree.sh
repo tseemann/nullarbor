@@ -5,4 +5,4 @@ base="$( cd "$( dirname "$0" )" && pwd )"
 . "$base/common.inc"
 
 OMP_NUM_THREADS="$cpus"
-FastTree -gtr "$opts" -nt "$aln" | nw_order -c -n - > "$tree"
+FastTree -gtr -nt "$aln" $opts | nw_order -c -n - > "$tree"
