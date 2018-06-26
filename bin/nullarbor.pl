@@ -40,6 +40,7 @@ my $LOGFILE = "nullarbor.log";
 #-------------------------------------------------------------------
 # parameters
 
+my $auto = 0;
 my $verbose = 0;
 my $quiet   = 0;
 my $ref = '';
@@ -74,6 +75,7 @@ my $plugin = Nullarbor::Plugins->discover();
 GetOptions(
   "help"     => \&usage,
   "version"  => \&version, 
+  "auto"     => \$auto,
   "check"    => \$check, 
   "verbose"  => \$verbose,
   "quiet"    => \$quiet,
@@ -110,6 +112,25 @@ msg("Send complaints to $AUTHOR");
 if ($check) {
   check_deps();
   exit(0);
+}
+
+# Lazy mode - just make best guesses at mandatory parameters
+sub first_file {
+  my($pattern) = @_;
+  my @f = glob($pattern);
+  return @f ? $f[0] : '';
+}
+
+if ($auto) {
+  msg("Auto-detecting parameters:");
+  $ref ||= first_file("*.gbk") || first_file("*.gb") || first_file("*.fna") || first_file("*.fa");
+  $input ||= first_file("*.tab") || first_file("*.tsv");
+  $outdir ||= 'nullarbor';
+  $name ||= path(getcwd)->basename;
+  msg("* --ref    $ref") if $ref;
+  msg("* --name   $name") if $name;
+  msg("* --input  $input") if $input;
+  msg("* --outdir $outdir") if $outdir;
 }
 
 $name or err("Please provide a --name for the project.");
@@ -371,6 +392,7 @@ sub usage {
   print "    --fullanno               Don't use --fast for Prokka\n";
   print "    --prefill                Prefill precomputed data via [prefill] in --conf file (",onoff($prefill),")\n";
   print "    --mask BED | auto        Mask core SNPS in these regions or 'auto' ($mask)\n";
+  print "    --auto                   Try and guess --name,--ref,--input,--outdir\n";
 #  print "    --keepfiles              Keep ALL ancillary files to annoy your sysadmin\n";
 #  print "COMPONENTS [NOT WORKING]\n";
 #  print "    --disable-pangenome      Don't generate pan-genome with Roary\n"
