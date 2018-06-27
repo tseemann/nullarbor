@@ -49,14 +49,16 @@ sub html {
   my $nwk = path($tree_fn)->slurp();
   chomp $nwk;
 
+  my $taxa = scalar(@{$self->isolates});
   my $aln = Bio::SeqIO->new(-file=>"$indir/core.aln", -format=>'fasta');
   $aln = $aln->next_seq;
-  my $stats = sprintf "%d taxa, %d SNPs", scalar(@{$self->isolates}), $aln->length;
+  my $stats = sprintf "%d taxa, %d SNPs", $taxa, $aln->length;
+  my $fontsize = 14;
+  my $height = int( $fontsize * $taxa );
 
 my $html=<<"HTML_TOP";
 <div style="text-align: center;">$stats</div>
-<div id="phylocanvas">  
-
+<div id="phylocanvas" style="width: 100%; height: ${height}pt;">
 <script type="application/javascript" src="https://cdn.rawgit.com/phylocanvas/phylocanvas-quickstart/v2.8.1/phylocanvas-quickstart.js"></script>
 <script type="application/javascript">
 var tree = Phylocanvas.createTree('phylocanvas', {
@@ -91,7 +93,7 @@ $html.=<<"HTML_BOTTOM";
 });
 tree.load('$nwk');
 tree.setTreeType('rectangular');
-tree.setTextSize(16);
+tree.setTextSize($fontsize);
 tree.setNodeSize(4);
 tree.draw();
 
