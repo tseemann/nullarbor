@@ -223,7 +223,7 @@ my $R2 = "R2.fq.gz";
 
 my @CMDLINE_NO_FORCE = grep !m/^--?f\S*$/, @CMDLINE; # remove --force / -f etc
 $make{'again'} = {
-  CMD => "(rm -fr roary/ report/ core.* *.gff {denovo,mlst}.tab tree.* && cd .. && @CMDLINE_NO_FORCE --force)",
+  CMD => "(rm -fr roary/ roary_*/ report/ core.* *.gff {denovo,mlst}.tab tree.* && cd .. && @CMDLINE_NO_FORCE --force)",
 };
 
 # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
@@ -533,9 +533,11 @@ core.aln : $(FASTAREF) $(SNIPPY_VCFS)
 %.gff : %/contigs.gff
   ln -f $< $@
 
-roary/gene_presence_absence.csv roary/accessory_binary_genes.fa.newick : $(NAMED_GFFS)
+roary/gene_presence_absence.csv : $(NAMED_GFFS)
   $(ROARY) -f roary -p $(CPUS) -t $(GCODE) $^
   rm -f $(NAMED_GFFS)
+
+roary/accessory_binary_genes.fa.newick : roary/gene_presence_absence.csv
 
 roary/pan.svg : roary/gene_presence_absence.csv
   roary2svg.pl $< > $@
