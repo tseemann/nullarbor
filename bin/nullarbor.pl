@@ -53,9 +53,10 @@ my $run = 0;
 my $name = '';
 my $keepfiles = 0;
 my $fullanno = 0;
+my $minctg = 500;
 my $trim = 0;
 my $conf_file = $ENV{'NULLARBOR_CONF'} || "$FindBin::RealBin/../conf/nullarbor.conf";
-my $prefill = defined($ENV{'NULLARBOR_PREFILL'}) ? 1 : 0;
+my $prefill = $ENV{'NULLARBOR_PREFILL'} || 0;
 my $check = 0;
 my $gcode = 11; # genetic code for prokka + roary
 
@@ -92,8 +93,10 @@ GetOptions(
   "run!"     => \$run,
   "trim!"    => \$trim,
   "name=s"   => \$name,
+  "minctg=i" => \$minctg,
   "fullanno!"         => \$fullanno,
   "keepfiles!"        => \$keepfiles,
+  # plugins
   "assembler=s"       => \$assembler,
   "assembler-opt=s"   => \$assembler_opt,
   "treebuilder=s"     => \$treebuilder,
@@ -132,6 +135,9 @@ if ($auto) {
   msg("* --input  $input") if $input;
   msg("* --outdir $outdir") if $outdir;
 }
+
+$minctg >= 1 or err("Minimum contig size --minctg must be >= 1");
+$gcode >= 1 or err("Genetic code --gcode must be >= 1");
 
 $name or err("Please provide a --name for the project.");
 $name =~ m{/|\s} and err("The --name is not allowed to have spaces or slashes in it.");
@@ -315,19 +321,21 @@ sub write_makefile {
   print $fh "CPUS := $threads\n";
   print $fh "REF := $ref\n";
   print $fh "NAME := $name\n";
+  print $fh "GCODE := $gcode\n";
+  print $fh "MIN_CTG_LEN := $minctg\n";
   print $fh "PUBLISH_DIR := ", $cfg->{publish}, "\n";
   print $fh "ASSEMBLER := cpus=\$(CPUS) opts=\"$assembler_opt\" ", $plugin->{assembler}{$assembler}, "\n";
   print $fh "TREEBUILDER := cpus=\$(CPUS) opts=\"$treebuilder_opt\" ", $plugin->{treebuilder}{$treebuilder}, "\n";
   print $fh "TAXONER := cpus=\$(CPUS) opts=\"$taxoner_opt\" ", $plugin->{taxoner}{$taxoner}, "\n";
   print $fh "NW_DISPLAY := nw_display ".($cfg->{nw_display} || '')."\n";
-  print $fh "GCODE := $gcode\n";
-  print $fh "PROKKA := prokka --centre X --compliant --force".($fullanno ? " --fast" : "")."\n";
+  print $fh "PROKKA := prokka --cpus \$(CPUS) --gcode \$(GCODE)".
+            " --mincontiglen \$(MIN_CTG_LEN) --force".($fullanno ? "" : " --fast")."\n";
   print $fh "SNIPPY := snippy --force\n";
   print $fh "SNIPPYCORE := snippy-core".($mask ? " --mask $mask\n" : "\n");
   print $fh "ROARY := roary -v\n";
   print $fh "ABRICATE := abricate\n";
   print $fh "MLST := mlst\n";
-  print $fh "MASH := mash\n";
+  print $fh "MASH := mash sketch -p \$(CPUS) -m 3 -r\n";
 
   # copy any header stuff from the __DATA__ block at the end of this script
   while (<DATA>) {
@@ -390,9 +398,10 @@ sub usage {
   print "    --trim                   Trim reads of adaptors (",onoff($trim),")\n";
   print "    --mlst SCHEME            Force this MLST scheme (AUTO)\n";
   print "    --fullanno               Don't use --fast for Prokka\n";
+  print "    --minctg LEN_BP          Minimum contig length for Prokka and Roary\n";
   print "    --prefill                Prefill precomputed data via [prefill] in --conf file (",onoff($prefill),")\n";
   print "    --mask BED | auto        Mask core SNPS in these regions or 'auto' ($mask)\n";
-  print "    --auto                   Try and guess --name,--ref,--input,--outdir\n";
+  print "    --auto                   Be lazy and guess --name,--ref,--input,--outdir\n";
 #  print "    --keepfiles              Keep ALL ancillary files to annoy your sysadmin\n";
 #  print "COMPONENTS [NOT WORKING]\n";
 #  print "    --disable-pangenome      Don't generate pan-genome with Roary\n"
@@ -407,7 +416,7 @@ sub usage {
   print "DOCUMENTATION\n";
   print "    $URL\n";
   
-  exit( $ok ? 0 : 1);
+  exit( $ok ? 0 : 1 );
 }
 
 #-------------------------------------------------------------------
@@ -508,7 +517,7 @@ mlst.tab : $(CONTIGS)
   mlst $^ > $@
 
 denovo.tab : $(CONTIGS)
-  fa -e -t $^ > $@  
+  fa --minsize $(MIN_CTG_LEN) -e -t $^ > $@
 
 distances.tab : core.aln
   snp-dists -b $< > $@
@@ -538,7 +547,7 @@ roary/acc.svg : roary/accessory_binary_genes.fa.newick
   read1="$(word 1,$^)" read2="$(word 2,$^)" outfile="$@" $(TAXONER)
 
 %/contigs.gff: %/contigs.fa
-  $(PROKKA) --locustag $(@D) --prefix contigs --outdir $(@D)/prokka --cpus $(CPUS) --gcode $(GCODE) $<
+  $(PROKKA) --locustag $(@D) --prefix contigs --outdir $(@D)/prokka $<
   cp -vf $(@D)/prokka/contigs.gff $@
   cp -vf $(@D)/prokka/contigs.gbk $(@D)
   rm -fr $(@D)/prokka
@@ -556,7 +565,7 @@ roary/acc.svg : roary/accessory_binary_genes.fa.newick
   $(ABRICATE) --db $(VIRULOME_DB) $^ > $@
 
 %/sketch.msh : %/R1.fq.gz %/R2.fq.gz
-  $(MASH) sketch -p $(CPUS) -o $(basename $@) -m 3 -r $<
+  $(MASH) -o $(basename $@) $<
 
 %.svg : %.newick
   $(NW_DISPLAY) $< > $@
