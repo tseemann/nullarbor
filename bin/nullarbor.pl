@@ -59,10 +59,11 @@ my $conf_file = $ENV{'NULLARBOR_CONF'} || "$FindBin::RealBin/../conf/nullarbor.c
 my $prefill = $ENV{'NULLARBOR_PREFILL'} || 0;
 my $check = 0;
 my $gcode = 11; # genetic code for prokka + roary
-
+#my $include = "mlst";
+my $exclude = "serotype";
 my $assembler = $ENV{'NULLARBOR_ASSEMBLER'} || 'skesa';
 my $assembler_opt = '';
-my $treebuilder = $ENV{'NULLARBOR_TREEBUILDER'} || 'iqtree';
+my $treebuilder = $ENV{'NULLARBOR_TREEBUILDER'} || 'iqtree_fast';
 my $treebuilder_opt = '';
 my $taxoner = $ENV{'NULLARBOR_TAXONER'} || 'kraken';
 my $taxoner_opt = '';
@@ -96,6 +97,9 @@ GetOptions(
   "minctg=i" => \$minctg,
   "fullanno!"         => \$fullanno,
   "keepfiles!"        => \$keepfiles,
+  # panels/modules
+#  "include=s" => \$include,
+#  "exclude=s" => \$exclude,
   # plugins
   "assembler=s"       => \$assembler,
   "assembler-opt=s"   => \$assembler_opt,
@@ -403,8 +407,8 @@ sub usage {
   print "    --mask BED | auto        Mask core SNPS in these regions or 'auto' ($mask)\n";
   print "    --auto                   Be lazy and guess --name,--ref,--input,--outdir\n";
 #  print "    --keepfiles              Keep ALL ancillary files to annoy your sysadmin\n";
-#  print "COMPONENTS [NOT WORKING]\n";
-#  print "    --disable-pangenome      Don't generate pan-genome with Roary\n"
+#  print "COMPONENTS\n";
+#  print "    --include               Don't generate pan-genome with Roary\n"
 #  print "    --enable-cfml            Mask recombination with ClonalFrameML\n"
   print "PLUGINS\n";
   print "    --assembler NAME         Assembler to use: ", default_string( $assembler, keys(%{$plugin->{assembler}}) ), "\n";
@@ -524,7 +528,7 @@ distances.tab : core.aln
 
 %/snps.vcf : $(REF) %/R1.fq.gz %/R2.fq.gz
   $(SNIPPY) --cpus $(CPUS) --outdir $(@D)/snippy --ref $(word 1,$^) --R1 $(word 2,$^) --R2 $(word 3,$^)
-  cp -vf $(@D)/snippy/snps.{tab,aligned.fa,vcf,bam,bam.bai,log} $(@D)/
+  cp -vf $(@D)/snippy/snps.{tab,aligned.fa,raw.vcf,vcf,bam,bam.bai,log} $(@D)/
   rm -fr $(@D)/snippy
 
 core.aln : $(FASTAREF) $(SNIPPY_VCFS)
