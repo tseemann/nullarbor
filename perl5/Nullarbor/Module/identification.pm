@@ -36,6 +36,7 @@ sub html {
   for my $id (@{$self->isolates}) {
     my $t = Nullarbor::Tabular::load(-file=>$self->indir."/$id/kraken.tab", -sep=>"\t");
     # sort by proportion
+    map { $_->[0] =~ s/%$// } @$t; # remove % sign kraken1 = 'xx.xx', kraken2 = 'xx.xx%'
     my @s = sort { $b->[0] <=> $a->[0] } (grep { $_->[3] =~ m/^[US]$/ } @$t);
     push @spec, [ 
       $id, 
