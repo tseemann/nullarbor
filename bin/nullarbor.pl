@@ -132,12 +132,14 @@ if ($auto) {
   msg("Auto-detecting parameters:");
   $ref ||= first_file("*.gbk") || first_file("*.gb") || first_file("*.fna") || first_file("*.fa");
   $input ||= first_file("*.tab") || first_file("*.tsv");
+  $mask ||= first_file("*.bed");
   $outdir ||= 'nullarbor';
   $name ||= path(getcwd)->basename;
   msg("* --ref    $ref") if $ref;
   msg("* --name   $name") if $name;
   msg("* --input  $input") if $input;
   msg("* --outdir $outdir") if $outdir;
+  msg("* --mask   $mask") if $mask;
 }
 
 $minctg >= 1 or err("Minimum contig size --minctg must be >= 1");
