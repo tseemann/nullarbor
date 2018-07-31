@@ -285,7 +285,7 @@ if ($prefill) {
       next unless -r $path;
       my $dest = "$outdir/$id/$file";
       my $opts = $verbose ? "-v" : "";
-      my $cmd = "install $opts -p -T '$path' '$dest'"; # -p preserve timestamp
+      my $cmd = "install $opts -p -m 0644 -T '$path' '$dest'"; # -p preserve timestamp
       system($cmd)==0 or err("Could not run: $cmd");
       $copied++;
     }
