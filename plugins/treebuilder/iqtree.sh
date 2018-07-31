@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 base="$( cd "$( dirname "$0" )" && pwd )"
 . "$base/../common.inc"
