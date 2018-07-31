@@ -456,7 +456,7 @@ sub check_deps {
   require_version('trimmomatic', 0.36, undef, '-version'); # supports -version not --version
   require_version('spades.py', 3.12); 
   require_version('kraken', 1.0);
-  require_version('centrifuge', 1.0);
+  require_version('centrifuge', 1.0, undef, '--help');
 
   my $value = require_var('KRAKEN_DEFAULT_DB', 'kraken');
   require_file("$value/database.idx", 'kraken');
