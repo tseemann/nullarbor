@@ -89,7 +89,10 @@ for my $fname (sort keys %inputs)
 		printf  "%-${width}.${width}s no=%d bp=%d ok=%d Ns=%d gaps=%d min=%d avg=%d max=%d N50=%d", 
 			$fname2, $numseq, $avglen, $avglen-$nn-$xx, $nn, $xx, $minlen, $avglen/$numseq, $maxlen, $n50;
 	}
-    print " (minsize=$minsize, skipped $toosmall)" if $minsize > 0;
+#    if ($minsize > 0) {
+#      print "", $tabbed ? "\t" : " ";
+#      print "(minsize=$minsize, skipped $toosmall)";
+#    }
     print "\n";
   }
 }
