@@ -52,7 +52,7 @@ my $force = 0;
 my $run = 0;
 my $name = '';
 my $keepfiles = 0;
-my $fullanno = 0;
+#my $fullanno = 0;
 my $minctg = 500;
 my $trim = 0;
 my $conf_file = $ENV{'NULLARBOR_CONF'} || "$FindBin::RealBin/../conf/nullarbor.conf";
@@ -67,6 +67,8 @@ my $treebuilder = $ENV{'NULLARBOR_TREEBUILDER'} || 'iqtree_fast';
 my $treebuilder_opt = '';
 my $taxoner = $ENV{'NULLARBOR_TAXONER'} || 'kraken';
 my $taxoner_opt = '';
+my $annotator = $ENV{'NULLARBOR_ANNOTATOR'} || 'prokka_fast';
+my $annotator_opt = '';
 my $mask = '';
 
 my $plugin = Nullarbor::Plugins->discover();
@@ -95,7 +97,7 @@ GetOptions(
   "trim!"    => \$trim,
   "name=s"   => \$name,
   "minctg=i" => \$minctg,
-  "fullanno!"         => \$fullanno,
+#  "fullanno!"         => \$fullanno,
   "keepfiles!"        => \$keepfiles,
   # panels/modules
 #  "include=s" => \$include,
@@ -103,6 +105,8 @@ GetOptions(
   # plugins
   "assembler=s"       => \$assembler,
   "assembler-opt=s"   => \$assembler_opt,
+  "annotator=s"       => \$annotator,
+  "annotator-opt=s"   => \$annotator_opt,
   "treebuilder=s"     => \$treebuilder,
   "treebuilder-opt=s" => \$treebuilder_opt,
   "taxoner=s"     => \$taxoner,
@@ -333,9 +337,8 @@ sub write_makefile {
   print $fh "ASSEMBLER := cpus=\$(CPUS) opts=\"$assembler_opt\" ", $plugin->{assembler}{$assembler}, "\n";
   print $fh "TREEBUILDER := cpus=\$(CPUS) opts=\"$treebuilder_opt\" ", $plugin->{treebuilder}{$treebuilder}, "\n";
   print $fh "TAXONER := cpus=\$(CPUS) opts=\"$taxoner_opt\" ", $plugin->{taxoner}{$taxoner}, "\n";
+  print $fh "ANNOTATOR := cpus=\$(CPUS) opts=\"$annotator_opt\" ", $plugin->{annotator}{$annotator}, "\n";
   print $fh "NW_DISPLAY := nw_display ".($cfg->{nw_display} || '')."\n";
-  print $fh "PROKKA := prokka --cpus \$(CPUS) --gcode \$(GCODE)".
-            " --mincontiglen \$(MIN_CTG_LEN) --force".($fullanno ? "" : " --fast")."\n";
   print $fh "SNIPPY := snippy --force\n";
   print $fh "SNIPPYCORE := snippy-core".($mask ? " --mask $mask\n" : "\n");
   print $fh "ROARY := roary -v\n";
@@ -403,7 +406,7 @@ sub usage {
   print "    --gcode INT              Genetic code for prokka ($gcode)\n";
   print "    --trim                   Trim reads of adaptors (",onoff($trim),")\n";
   print "    --mlst SCHEME            Force this MLST scheme (AUTO)\n";
-  print "    --fullanno               Don't use --fast for Prokka\n";
+#  print "    --fullanno               Don't use --fast for Prokka\n";
   print "    --minctg LEN_BP          Minimum contig length for Prokka and Roary\n";
   print "    --prefill                Prefill precomputed data via [prefill] in --conf file (",onoff($prefill),")\n";
   print "    --mask BED | auto        Mask core SNPS in these regions or 'auto' ($mask)\n";
@@ -419,6 +422,8 @@ sub usage {
   print "    --treebuilder-opt STR    Extra tree-builder options to pass ($treebuilder_opt)\n";
   print "    --taxoner NAME           Species ID tool to use: ", default_string( $taxoner, keys(%{$plugin->{taxoner}}) ), "\n";
   print "    --taxoner-opt STR        Extra species ID builder options to pass ($taxoner_opt)\n";
+  print "    --annotator NAME         Genome annotator to use: ", default_string( $annotator, keys(%{$plugin->{annotator}}) ), "\n";
+  print "    --annotator-opt STR      Extra annotator options to pass ($annotator_opt)\n";
   print "DOCUMENTATION\n";
   print "    $URL\n";
   
@@ -555,10 +560,7 @@ roary/acc.svg : roary/accessory_binary_genes.fa.newick
   read1="$(word 1,$^)" read2="$(word 2,$^)" outfile="$@" $(TAXONER)
 
 %/contigs.gff: %/contigs.fa
-  $(PROKKA) --locustag $(@D) --prefix contigs --outdir $(@D)/prokka $<
-  cp -vf $(@D)/prokka/contigs.gff $@
-  cp -vf $(@D)/prokka/contigs.gbk $(@D)
-  rm -fr $(@D)/prokka
+  gffout="$(@)" gbkout="$(@D)/contigs.gbk" contigs="$(<)" locustag="$(@D)" gcode="$(GCODE)" minlen="$(MIN_CTG_LEN)" $(ANNOTATOR)
 
 %/contigs.fa : %/R1.fq.gz %/R2.fq.gz
   read1="$(word 1,$^)" read2="$(word 2,$^)" outdir="$(@D)" $(ASSEMBLER)
