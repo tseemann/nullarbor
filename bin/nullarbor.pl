@@ -34,7 +34,7 @@ my $VERSION = '2.0.20180731';
 my $AUTHOR = 'Torsten Seemann';
 my $URL = "https://github.com/tseemann/nullarbor";
 my @CMDLINE = ($0, @ARGV);
-my $APPDIR = realpath("$FindBin::RealBin/../conf");
+my $APPDIR = realpath("$FindBin::RealBin/../.");
 my $LOGFILE = "nullarbor.log";
 
 #-------------------------------------------------------------------
