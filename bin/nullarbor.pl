@@ -407,7 +407,7 @@ sub usage {
   print "    --minctg LEN_BP          Minimum contig length for Prokka and Roary\n";
   print "    --prefill                Prefill precomputed data via [prefill] in --conf file (",onoff($prefill),")\n";
   print "    --mask BED | auto        Mask core SNPS in these regions or 'auto' ($mask)\n";
-  print "    --auto                   Be lazy and guess --name,--ref,--input,--outdir\n";
+  print "    --auto                   Be lazy and guess --name,--ref,--input,--outdir,--mask\n";
 #  print "    --keepfiles              Keep ALL ancillary files to annoy your sysadmin\n";
 #  print "COMPONENTS\n";
 #  print "    --include               Don't generate pan-genome with Roary\n"
