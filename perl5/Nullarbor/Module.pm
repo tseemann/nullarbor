@@ -36,7 +36,9 @@ sub matrix_to_html {
   my $class = $plain ? "table table-bordered table-condensed" : "display compact table-sortable";
   my $html = "<table id='$id' class='$class'>\n<thead>\n";
   my $row_no=0;
-  for my $row (@$matrix) {   
+  my $nuke_last_col = $matrix->[0][-1] eq 'Quality';  # remove the Quality column from CSV
+  for my $row (@$matrix) {
+    pop(@$row) if $nuke_last_col;
     $html .= "<tr>\n";
     my $td = $row_no==0 ? "<th>" : "<td>";
     for my $col (@$row) {
