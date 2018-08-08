@@ -60,6 +60,7 @@ my $prefill = $ENV{'NULLARBOR_PREFILL'} || 0;
 my $check = 0;
 my $gcode = 11; # genetic code for prokka + roary
 my $snippy_opt = '';
+my $roary_opt = '';
 #my $include = "mlst";
 my $exclude = "serotype";
 my $assembler = $ENV{'NULLARBOR_ASSEMBLER'} || 'skesa';
@@ -88,6 +89,7 @@ GetOptions(
   "mlst=s"   => \$mlst,
   "gcode=i"  => \$gcode,
   "snippy_opt=s" => \$snippy_opt,
+  "roary_opt=s"  => \$roary_opt,
   "ref=s"    => \$ref,
   "cpus=i"   => \$cpus,
   "input=s"  => \$input,
@@ -343,7 +345,7 @@ sub write_makefile {
   print $fh "NW_DISPLAY := nw_display ".($cfg->{nw_display} || '')."\n";
   print $fh "SNIPPY := snippy --force $snippy_opt\n";
   print $fh "SNIPPYCORE := snippy-core".($mask ? " --mask $mask\n" : "\n");
-  print $fh "ROARY := roary -v\n";
+  print $fh "ROARY := roary -v $roary_opt\n";
   print $fh "ABRICATE := abricate\n";
   print $fh "MLST := mlst\n";
   print $fh "MASH := mash sketch -p \$(CPUS) -m 3 -r\n";
@@ -411,7 +413,8 @@ sub usage {
 #  print "    --fullanno               Don't use --fast for Prokka\n";
   print "    --minctg LEN_BP          Minimum contig length for Prokka and Roary\n";
   print "    --prefill                Prefill precomputed data via [prefill] in --conf file (",onoff($prefill),")\n";
-  print "    --snippy_opt STR         Options to pass to snippy eg. '--mincov 10' ($snippy_opt)\n";
+  print "    --snippy_opt STR         Options to pass to snippy eg. '--mincov 10 --ram 32' ($snippy_opt)\n";
+  print "    --roary_opt STR          Options to pass to roary eg. '-iv 1.75 -s -cd 97' ($snippy_opt)\n";
   print "    --mask BED | auto        Mask core SNPS in these regions or 'auto' ($mask)\n";
   print "    --auto                   Be lazy and guess --name,--ref,--input,--outdir,--mask\n";
 #  print "    --keepfiles              Keep ALL ancillary files to annoy your sysadmin\n";
