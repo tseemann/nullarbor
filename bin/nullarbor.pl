@@ -551,6 +551,7 @@ core.aln : $(FASTAREF) $(SNIPPY_VCFS)
   ln -f $< $@
 
 roary/gene_presence_absence.csv : $(NAMED_GFFS)
+  rm -fr $(@D)
   $(ROARY) -f roary -p $(CPUS) -t $(GCODE) $^
   rm -f $(NAMED_GFFS)
 
