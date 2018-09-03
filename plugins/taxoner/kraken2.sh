@@ -8,4 +8,5 @@ base="$( cd "$( dirname "$0" )" && pwd )"
 
 kraken2 --threads "$cpus" --paired "$read1" "$read2" \
 	--memory-mapping --minimum-base-quality 13 \
-	--report - --output "$outfile"
+	--output - --report "$outfile"
+
