@@ -4,6 +4,11 @@ extends 'Nullarbor::Module';
 
 #...........................................................................................
 
+my $PASS_THRESH = 80;
+my $OK_THRESH = 65;
+
+#...........................................................................................
+
 sub name {
   return "Species identification";
 }
@@ -44,11 +49,13 @@ sub html {
         font_prop( "<span class='binomial'>".trim($s[$_][5] || 'None')."</span>", ($s[$_][0] || 0)/100.0 ),
         font_prop( trim($s[$_][0] || '-'), ($s[$_][0] || 0)/100.0 )
        } (0 .. $NM-1)),
-      $self->pass_fail( $s[0][3] eq 'U' || $s[0][0] < 65 ? -1 : $s[0][0] < 80 ? 0 : +1 ),
+      $self->pass_fail( $s[0][3] eq 'U' || $s[0][0] < $OK_THRESH ? -1 : $s[0][0] < $PASS_THRESH ? 0 : +1 ),
     ];  # _italics_ taxa names
   }
 #  print Dumper(\@spec);
-  return $self->matrix_to_html(\@spec);
+
+  return $self->table_legend("&ge;${PASS_THRESH}%", "&ge;${OK_THRESH}%", "<${OK_THRESH}%")
+        .$self->matrix_to_html(\@spec);
 }
 
 #...........................................................................................
