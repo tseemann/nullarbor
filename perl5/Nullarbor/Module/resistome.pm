@@ -7,6 +7,11 @@ use Bio::SeqIO;
 
 #...........................................................................................
 
+my $MIN_COV = 95;
+my $MIN_ID  = 0;
+
+#...........................................................................................
+
 sub name {
   return "Resistome";
 }
@@ -41,7 +46,7 @@ sub html {
       my $hit2 = $ABSENT;
       if ($abr{$id}{$g}) {
         my @hits = @{ $abr{$id}{$g} };
-        $hit = @hits == 1 && int($hits[0]->{'%COVERAGE'}) >= 95
+        $hit = @hits == 1 && int($hits[0]->{'%COVERAGE'}) >= $MIN_COV && int($hits[0]->{'%IDENTITY'}) >= $MIN_ID
              ? $self->pass_fail( +1 ) 
              : $self->pass_fail( 0, join(' + ', map { int($_->{'%COVERAGE'}).'%' } @hits) );
 #          $hit = join("+", 
