@@ -69,7 +69,7 @@ sub html {
     $grid[0][$i] = "<DIV CLASS='vertical'>$grid[0][$i]</DIV>";
   }
   
-  return $self->table_legend("&#8805;95% coverage", "<95% coverage", "absent") 
+  return $self->table_legend("&#8805;${MIN_COV}% coverage", "<${MIN_COV}% coverage", "absent") 
         .$self->matrix_to_html(\@grid);
 }
 
