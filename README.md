@@ -35,11 +35,11 @@ distributing the work across a high performance cluster.
 ### Per isolate
 
 1. Clean reads
-   * remove adaptors, low quality bases and reads (trimmomatic)
+   * remove adaptors, low quality bases and reads (Trimmomatic)
 2. Species identification
-   * k-mer analysis against known genome database (kraken)
+   * k-mer analysis against known genome database (Kraken, Kraken2, Centrifuge)
 3. _De novo_ assembly
-   * User can select (SKESA, SPAdes, Megahit, [shovill](https://github.com/tseemann/shovill))
+   * User can select (SKESA, SPAdes, Megahit, [shovill](https://github.com/tseemann/shovill), Velvet)
 4. Annotation
    * Add features to assembly [Prokka](https://github.com/tseemann/prokka))
 5. MLST
@@ -47,22 +47,22 @@ distributing the work across a high performance cluster.
 6. Resistome
    * From assembly ([abricate](https://github.com/tseemann/abricate) + _Resfinder_)
 7. Virulome
-   * From assembly ([abricate](https://github.com/tseemann/abricate))
+   * From assembly ([abricate](https://github.com/tseemann/abricate) + _VFDB_)
 8. Variants
-   * From reads aligned to reference ([snippy](https://github.com/tseemann/snippy) + _VFDB_)
+   * From reads aligned to reference ([snippy](https://github.com/tseemann/snippy))
 
 ### Per isolate set
 
 1. Core genome SNPs
    * From reads ([snippy-core](https://github.com/tseemann/snippy))
 2. Infer core SNP phylogeny 
-   * Maximum likelihood (IQTree, FastTree)
+   * Maximum-likelihood GTR+G4 model ([IQTree](https://www.iqtree.org), [FastTree](http://www.microbesonline.org/fasttree/))
    * SNP distance matrix ([snp-dists](https://github.com/tseemann/snp-dists))
 3. Pan genome
-   * From annotated contigs (Roary)
+   * From annotated contigs ([Roary](https://sanger-pathogens.github.io/Roary/))
 4. Report
    * Summary isolate information (HTML + Plotly.JS + DataTables + PhyloCanvas)
-   * More detailed per isolate pages
+   * More detailed per isolate pages (COMING SOON)
 
 ## Installation
 
