@@ -56,21 +56,28 @@ sub html {
   my $fontsize = 14;
   my $height = int( $fontsize * $taxa );
 
+
+# https://github.com/phylocanvas/phylocanvas/issues/212
+# tree.branches['Reference'].setDisplay(...)
+
+
 my $html=<<"HTML_TOP";
 <div style="text-align: center;">$stats</div>
 <div id="phylocanvas" style="width: 100%; height: ${height}pt;">
 <script type="application/javascript" src="https://cdn.rawgit.com/phylocanvas/phylocanvas-quickstart/v2.8.1/phylocanvas-quickstart.js"></script>
 <script type="application/javascript">
 var tree = Phylocanvas.createTree('phylocanvas', {
+  showInternalNodeLabels: true,
   alignLabels: true,
   lineWidth: 2,
   scalebar: { active: true, position: { bottom: 10, centre: 10 } },
 });  
+tree.internalLabelStyle.colour = 'green';
 tree.on('error', function (event) { throw event.error; });
 tree.on('loaded', function () { console.log('loaded phylocanvas'); });
 tree.on('beforeFirstDraw', function () {
   tree.metadata.headerAngle = 60;
-  tree.metadata.columns = [ 'ST', 'AMR', 'Order' ];
+  tree.metadata.columns = [ 'ST', 'AMR' ];
 HTML_TOP
 
 for my $label (sort keys %idx_of) {
@@ -79,7 +86,6 @@ for my $label (sort keys %idx_of) {
   my $AMR = $AMR_of{$label} || '-';
   $html .=<<"EOLEAF";
   tree.leaves[$idx].data = { 
-    Order: { label: '$idx', colour: 'white' },
     ST: { label: '$ST', colour: 'white' },
     AMR: { label: '$AMR', colour: 'white' },
   };
@@ -100,7 +106,9 @@ tree.draw();
 </script>
 </div>
 HTML_BOTTOM
-  
+
+  # https://github.com/tseemann/nullarbor/issues/182
+  $html .= $self->download_links("core.newick");
 
   return $html;
 }
