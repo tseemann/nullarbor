@@ -37,7 +37,7 @@ sub matrix_to_html {
   my $row_no=0;
   my $nuke_last_col = $matrix->[0][-1] eq 'Quality';  # remove the Quality column from CSV
   for my $row (@$matrix) {
-    pop(@$row) if $nuke_last_col;
+    #pop(@$row) if $nuke_last_col;
     $html .= "<tr>\n";
     my $td = $row_no==0 ? "<th>" : "<td>";
     for my $col (@$row) {
