@@ -7,6 +7,10 @@ use Bio::SeqIO;
 
 #...........................................................................................
 
+my $MIN_COV = 95;
+
+#...........................................................................................
+
 sub name {
   return "Virulome";
 }
@@ -40,7 +44,7 @@ sub html {
       my $hit2 = $ABSENT;
       if ($abr{$id}{$g}) {
         my @hits = @{ $abr{$id}{$g} };
-        $hit = @hits == 1 && int($hits[0]->{'%COVERAGE'}) >= 95
+        $hit = @hits == 1 && int($hits[0]->{'%COVERAGE'}) >= $MIN_COV
              ? $self->pass_fail( +1 ) 
              : $self->pass_fail( 0, join(' + ', map { int($_->{'%COVERAGE'}).'%' } @hits) );
 #          $hit = join("+", 
@@ -63,9 +67,8 @@ sub html {
     $grid[0][$i] = "<DIV CLASS='vertical'>$grid[0][$i]</DIV>";
   }
   
-  return $self->matrix_to_html(\@grid);
-
-#  save_tabular("$outdir/$csv_fn", \@grid2, ",");
+  return $self->table_legend("&ge;${MIN_COV}% coverage", "<${MIN_COV}% coverage", "$ABSENT absent") 
+        .$self->matrix_to_html(\@grid);
 }
 
 #...........................................................................................
