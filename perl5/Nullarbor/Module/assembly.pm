@@ -4,6 +4,11 @@ extends 'Nullarbor::Module';
 
 #...........................................................................................
 
+my $CONTIG_MULT = 1.5;
+my $BP_DEV = 0.2;
+
+#...........................................................................................
+
 sub name {
   return "Assembly and annotation";
 }
@@ -80,11 +85,14 @@ sub html {
     }
     # final traffic light
     my($ctgs, $bp) = @{$ass->[$row]}[1,2];
-    my $bad = ($ctgs > 999) || ($ctgs > 1.5*$mean_ctgs) || ($bp < 0.8*$mean_bp) || ($bp > 1.2*$mean_bp);
+    my $bad = ($ctgs > 999) || ($ctgs > ${CONTIG_MULT}*$mean_ctgs) || ($bp < (1.0-$BP_DEV)*$mean_bp) || ($bp > (1.0+$BP_DEV)*$mean_bp);
     push @{$ass->[$row] }, $self->pass_fail( $bad ? -1 : +1 );
   }
   
-  return $self->matrix_to_html($ass); 
+  return $self->table_legend("Typical", 
+                             "&mu;<SUB>Contigs</SUB>=$mean_ctgs &and; &mu;<SUB>bp</SUB>=$mean_bp", 
+                             "Contigs &gt; ${CONTIG_MULT}&mu; &or; bp &plusmn; ${BP_DEV}&mu;")
+        .$self->matrix_to_html($ass);
 }
   
 
