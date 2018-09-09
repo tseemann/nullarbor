@@ -6,6 +6,11 @@ use Data::Dumper;
 
 #...........................................................................................
 
+my $PASS_DEPTH = 50;
+my $OK_DEPTH = 25;
+
+#...........................................................................................
+
 sub name {
   return "Sequence data";
 }
@@ -36,9 +41,11 @@ sub html {
     my $depth = $wgs[-1][-1];
     $depth =~ s/\D+$//; # remove 'x' suffix
     $wgs[-1][-1] = $depth;
-    push @{$wgs[-1]}, $self->pass_fail( $depth < 25 ? -1 : $depth < 50 ? 0 : +1 );
+    push @{$wgs[-1]}, $self->pass_fail( $depth < $OK_DEPTH ? -1 : $depth < $PASS_DEPTH ? 0 : +1 );
   }
-  return $self->matrix_to_html(\@wgs);
+
+  return $self->table_legend("&ge;${PASS_DEPTH}x ", "&ge;${OK_DEPTH}x", "<${OK_DEPTH}x")
+        .$self->matrix_to_html(\@wgs);
 }
 
 #...........................................................................................
