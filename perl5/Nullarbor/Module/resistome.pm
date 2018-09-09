@@ -69,9 +69,8 @@ sub html {
     $grid[0][$i] = "<DIV CLASS='vertical'>$grid[0][$i]</DIV>";
   }
   
-  return $self->matrix_to_html(\@grid);
-
-#  save_tabular("$outdir/$csv_fn", \@grid2, ",");
+  return $self->table_legend("&#8805;95% coverage", "<95% coverage", "absent") 
+        .$self->matrix_to_html(\@grid);
 }
 
 #...........................................................................................

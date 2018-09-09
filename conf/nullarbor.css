@@ -112,3 +112,14 @@ DIV.vertical {
   
 }
 
+SPAN.legend {
+  font-size: larger;
+  border: 1px dotted black;
+  padding: 1ex;
+}
+
+SPAN.legend-item {
+  padding-left: 3ex;
+}
+
+

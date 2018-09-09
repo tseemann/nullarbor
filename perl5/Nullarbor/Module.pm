@@ -14,7 +14,6 @@ has outdir   => ( is => 'ro' );
 has report   => ( is => 'ro' );
 has isolates => ( is => 'ro' );
 has id       => ( is => 'ro' );
-
 #.................................................................................
 
 sub download_links {
@@ -92,6 +91,23 @@ sub pass_fail {
     }
     my $alt = defined($alt_text) ? " title='$alt_text'" : "";
     return "<span class='traffic-light $class'$alt>$sym</span>";
+}
+
+
+#.................................................................................
+
+sub table_legend {
+  my($self, $pass,$ok,$fail) = @_;  # labels
+  $pass ||= 'Pass';
+  $ok ||= 'OK';
+  $fail ||= 'Fail';
+  my $SPAN = "<SPAN CLASS='legend-item'>";
+  my $html = "<B>Legend:</B>\n"
+           . $SPAN.$self->pass_fail(+1, $pass). " $pass</SPAN>\n"
+           . $SPAN.$self->pass_fail(0,    $ok). " $ok</SPAN>\n"
+           . $SPAN.$self->pass_fail(-1, $fail). " $fail</SPAN>\n"
+           ;
+  return "<SPAN CLASS='legend'>\n$html\n</SPAN>\n";           
 }
 
 #.................................................................................
