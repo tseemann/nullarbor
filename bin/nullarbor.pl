@@ -30,7 +30,7 @@ use Nullarbor::Plugins;
 # constants
 
 my $EXE = "$FindBin::RealScript";
-my $VERSION = '2.0.20180903';
+my $VERSION = '2.0.20180909';
 my $AUTHOR = 'Torsten Seemann';
 my $URL = "https://github.com/tseemann/nullarbor";
 my @CMDLINE = ($0, @ARGV);
@@ -158,8 +158,17 @@ $name =~ m{/|\s} and err("The --name is not allowed to have spaces or slashes in
 
 $ref or err("Please provide a --ref reference genome");
 -r $ref or err("Can not read reference '$ref'");
+
+# https://github.com/tseemann/nullarbor/issues/178
+msg("Scanning --ref for problematic sequence IDs...");
+open my $REF, '<', $ref;
+while (<$REF>) {
+  m/^>.*?[|]/ and err("Please remove any pipe '|' characters from $ref, or use a Genbank file:\n$_");
+}
+
 $ref = realpath($ref);
 msg("Using reference genome: $ref");
+
 
 $input or err("Please specify an dataset with --input <dataset.tab>");
 -r $input or err("Can not read dataset file '$input'");
