@@ -1,0 +1,24 @@
+Isolate,#1 Match,%,#2 Match,%,#3 Match,%,#4 Match,%,Quality
+CFSAN000952,Salmonella enterica,89.68,unclassified,5.65,Staphylococcus aureus,0.08,Salmonella bongori,0.01,&#10004;
+CFSAN000211,Salmonella enterica,95.48,unclassified,1.55,Salmonella bongori,0.01,Escherichia coli,0.01,&#10004;
+CFSAN000968,Salmonella enterica,91.09,unclassified,2.63,Escherichia coli,0.41,Klebsiella pneumoniae,0.01,&#10004;
+CFSAN001112,Salmonella enterica,88.15,unclassified,7.89,Escherichia coli,0.01,Klebsiella pneumoniae,0.01,&#10004;
+CFSAN000752,Salmonella enterica,92.62,unclassified,1.53,Escherichia coli,0.71,Klebsiella pneumoniae,0.01,&#10004;
+CFSAN000963,Salmonella enterica,93.88,unclassified,2.41,Escherichia coli,0.01,Klebsiella pneumoniae,0.01,&#10004;
+CFSAN001115,Salmonella enterica,87.55,unclassified,8.12,Escherichia coli,0.01,Klebsiella pneumoniae,0.01,&#10004;
+CFSAN000954,Salmonella enterica,90.08,unclassified,5.75,Staphylococcus aureus,0.04,Salmonella bongori,0.01,&#10004;
+CFSAN000970,Salmonella enterica,93.65,unclassified,2.58,Salmonella bongori,0.01,Escherichia coli,0.01,&#10004;
+CFSAN000961,Salmonella enterica,94.04,unclassified,2.31,Escherichia coli,0.01,Salmonella bongori,0.00,&#10004;
+CFSAN000669,Salmonella enterica,95.31,unclassified,0.96,Escherichia coli,0.01,Klebsiella pneumoniae,0.01,&#10004;
+CFSAN000960,Salmonella enterica,94.42,unclassified,1.83,Escherichia coli,0.01,Salmonella bongori,0.00,&#10004;
+CFSAN001140,Salmonella enterica,88.10,unclassified,7.70,Escherichia coli,0.01,Salmonella bongori,0.00,&#10004;
+CFSAN000661,Salmonella enterica,96.16,unclassified,1.06,Escherichia coli,0.01,Salmonella bongori,0.00,&#10004;
+CFSAN000189,Salmonella enterica,94.90,unclassified,1.53,Salmonella bongori,0.01,Escherichia coli,0.01,&#10004;
+CFSAN000212,Salmonella enterica,93.30,unclassified,3.36,Escherichia coli,0.01,Salmonella bongori,0.00,&#10004;
+CFSAN000951,Salmonella enterica,89.54,unclassified,5.47,Staphylococcus aureus,0.09,Burkholderia dolosa,0.07,&#10004;
+CFSAN000191,Salmonella enterica,95.74,unclassified,0.99,Escherichia coli,0.01,Klebsiella pneumoniae,0.01,&#10004;
+CFSAN001118,Salmonella enterica,88.48,unclassified,7.18,Escherichia coli,0.01,Salmonella bongori,0.00,&#10004;
+CFSAN000700,Salmonella enterica,95.65,unclassified,1.40,Escherichia coli,0.01,Klebsiella pneumoniae,0.01,&#10004;
+CFSAN000753,Salmonella enterica,95.62,unclassified,1.26,Escherichia coli,0.01,Klebsiella pneumoniae,0.01,&#10004;
+CFSAN000958,Salmonella enterica,94.55,unclassified,2.26,Escherichia coli,0.01,Klebsiella pneumoniae,0.01,&#10004;
+CFSAN000228,Salmonella enterica,93.61,unclassified,2.36,Salmonella phage vB_SosS_Oslo,0.11,Enterobacter hormaechei,0.03,&#10004;

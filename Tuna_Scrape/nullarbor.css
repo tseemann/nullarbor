@@ -1,0 +1,125 @@
+
+#pan SVG {
+  width: 100%;
+  height: auto;
+  font-family: sans-serif;
+}
+
+H1 {
+  text-align: center;
+}
+
+.nullarbor-section {
+  border-top: 0.66ex dotted DarkGray;
+  margin-top: 4ex;
+  width: auto;
+}
+
+A.jump-home {
+  font-size: smaller;
+}
+
+TT {
+  font-size: smaller;
+}
+
+/*
+TD:first-child {
+  font-family: monospace;
+  font-size: smaller;
+}
+*/
+
+TABLE {
+/*  font-size: smaller; */
+/*   width: auto; */
+}
+
+A.file-download {
+  font-family: monospace;
+  padding-left: 1ex;
+//  background: lightgray;
+//  border: 1pt dotted gray;
+}
+
+UL.pagination {
+  font-size: smaller;
+}
+
+TH {
+  background: LightGrey;
+  color: Black;
+}
+
+TH, TD {
+  text-align: center;
+}
+
+/* for vertical TH elements */
+DIV.vertical {
+  white-space: nowrap;
+  /* try different ways to make it vertical */
+  -webkit-writing-mode: vertical-rl; 
+  -ms-writing-mode: tb-rl; 
+  writing-mode: vertical-rl; 
+  filter: flipv fliph; 
+  /* make it centered */
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.binomial {
+  text-align: left;
+  font-family: serif;
+  font-style: italic;
+}
+
+.traffic-light {
+  font-size: larger;
+  font-weight: bold;
+}
+
+.pass {
+  color: green;
+}
+
+.fail {
+  color: red;
+}
+
+.dunno {
+  color: orange;
+}
+
+.dunno:hover {
+  cursor: help;
+}
+
+.allele {
+  font-style: italic;
+}
+
+.missing {
+  color: red;
+  font-weight: bold;
+}
+
+.novel {
+  color: orange;
+}
+
+.known {
+  
+}
+
+SPAN.legend {
+  font-size: larger;
+  border: 1px dotted black;
+  padding: 1ex;
+}
+
+SPAN.legend-item {
+  padding-left: 3ex;
+}
+
+

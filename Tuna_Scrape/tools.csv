@@ -1,0 +1,23 @@
+Tool,Version
+Abricate,0.8.7
+BWA MEM,0.7.17-r1188
+FastTree,2.1.10 Double precision (No SSE3)~ OpenMP (72 threads):
+FreeBayes,1.2.0-dirty
+IQtree,1.6.5 for Linux 64-bit built May 11 2018
+Kraken,1.0
+MLST,2.15.1
+MegaHit,1.1.3
+Newick-Utils,1.6
+Nullarbor,2.0.20180909
+Prokka,1.13.3
+Roary,3.12.0
+SAMtools,1.9
+SKESA,2.2
+SPAdes,3.12.0
+Shovill,1.0.1
+Snippy,4.1.1
+Trimmomatic,0.38
+centrifuge,1.0.3-beta
+seqret,6.6.0.0
+seqtk,1.3-r106
+snp-dists,0.6
