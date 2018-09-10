@@ -2,6 +2,7 @@ package Nullarbor::Module::seqdata;
 use Moo;
 extends 'Nullarbor::Module';
 
+use Nullarbor::Logger qw(msg err);
 use Data::Dumper;
 
 #...........................................................................................
@@ -20,13 +21,13 @@ sub name {
 sub html {
   my($self) = @_;
   my $indir = $self->indir;
-  my $ids = $self->isolates;
   
   my @wgs;
   my $first=1;
-  for my $id (@$ids) {
-    my $v2 = "$indir/$id/yield.tab";
-    my $infile = -r $v2 ? $v2 : "$indir/$id/yield.clean.tab";
+  for my $id ( @{ $self->isolates } ) {
+    my $infile = "$indir/$id/yield.tab";
+    -r $infile or err("Missing file: $infile");
+    -s $infile or err("Empty file: $infile\nTry 'find $indir -size 0 -delete' first");
     my $t = Nullarbor::Tabular::load(-file=>$infile, -sep=>"\t");
     if ($first) {
       # make the headings for the table
