@@ -183,6 +183,27 @@ See what's available with this command:
 
 ## Advanced usage
 
+### Quick preview mode
+
+You should not do a full run the first time, because it will probably
+contain outliers and QC failures. To build a quick "rough" tree:
+```
+make preview
+```
+This will create a mini-report in the same `report/` folder.
+Use this to identify outliers and then comment them out (or delete)
+them from the `--input` file. Then type the following to regenerate
+the report for a second round of inspection:
+```
+make again
+make preview
+```
+When you are happy with the result, proceed with the full analysis:
+```
+make again
+make
+```
+
 ### Prefilling data
 
 Often you want to perform multiple analyses where some of the isolates
@@ -233,7 +254,7 @@ to your original `--input TAB` file when you want to expand the analysis.
 Then just type `make again` and it should only recalculate
 things it needs to, saving a lot of computation.
 
-### Quick run
+### Immediate start
 
 If you don't want to cut and paste the `make ....` instructions to 
 start the analysis, just add the `--run` option to your `nullarbor.pl` command.
@@ -244,6 +265,24 @@ start the analysis, just add the `--run` option to your `nullarbor.pl` command.
 * `NULLARBOR_ASSEMBLER` - default `--assembler` tool
 * `NULLARBOR_TREEBUILDER` - default `--treebuilder` tool
 * `NULLARBOR_TAXONER` - default `--taxoner` tool
+
+## Dependencies
+
+Nullarbor has *many* dependencies, so you are best off using a package
+manager to install it. Type `nullarbor.pl --check` to see what you need.
+
+__Perl:__ Bio::Perl Time::Piece List::Util Path::Tiny YAML::Tiny
+Moo SVG Text::CSV List::MoreUtils IO::File
+
+__Tools:__ seqtk trimmomatic prokka roary mlst abricate seqret skesa
+megahit spades shovill snippy snp-dists newick-utils iqtree fasttree
+quicktree kraken kraken2 centrifuge
+
+__Databases:__ minikraken centrifuge-bacvirhum
+
+Note that these are only the *immediate* dependencies and that the
+tools listed above will depend on various other tools, Perl modules,
+and Python modules.
 
 ## Etymology
 

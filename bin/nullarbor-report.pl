@@ -25,7 +25,7 @@ use Nullarbor::Module;
 
 my $EXE = "$FindBin::RealScript";
 my $TEMPLATE_DIR = "$FindBin::RealBin/../conf";
-my $VERSION = '2.0.20181006';
+my $VERSION = '2.0.20181007';
 my $AUTHOR = 'Torsten Seemann';
 my @CMDLINE = ($0, @ARGV);
 
@@ -37,6 +37,7 @@ my $quiet   = 0;
 my $name = '';
 my $indir = '';
 my $outdir = '';
+my $preview = 0;
 
 @ARGV or usage();
 
@@ -48,6 +49,7 @@ GetOptions(
   "name=s"   => \$name,
   "indir=s"  => \$indir,
   "outdir=s" => \$outdir,
+  "preview"  => \$preview,
 ) 
 or usage();
 
@@ -92,6 +94,10 @@ push @html, "<h1>$name</h1>\n";
 my @section = qw(jobinfo seqdata identification mlst serotype resistome virulome
                  assembly reference core phylotree snpdist snpdensity pan
                  tools databases about);
+
+if ($preview) {
+  @section = qw(jobinfo mashtree about);
+}
 
 for my $section (@section) {
   msg("Generating: $section");
@@ -149,6 +155,7 @@ sub usage {
   print "    --name      Check dependencies only\n";
   print "    --indir     Nullarbor result folder\n";
   print "    --outdir    Folder to build report HTML in\n";
+  print "    --preview   Quick summary after 'make preview'\n";
   print "    --quiet     No output\n";
   print "    --verbose   More output\n";
   print "    --version   Print version and exit\n";

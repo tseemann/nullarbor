@@ -30,7 +30,7 @@ use Nullarbor::Plugins;
 # constants
 
 my $EXE = "$FindBin::RealScript";
-my $VERSION = '2.0.20181006';
+my $VERSION = '2.0.20181007';
 my $AUTHOR = 'Torsten Seemann';
 my $URL = "https://github.com/tseemann/nullarbor";
 my @CMDLINE = ($0, @ARGV);
@@ -246,7 +246,7 @@ my $R2 = "R2.fq.gz";
 
 my @CMDLINE_NO_FORCE = grep !m/^--?f\S*$/, @CMDLINE; # remove --force / -f etc
 $make{'again'} = {
-  CMD => "(rm -fr roary/ roary_*/ report/ core.* *.gff {denovo,mlst}.tab tree.* && cd .. && @CMDLINE_NO_FORCE --force)",
+  CMD => "(rm -fr roary/ roary_*/ report/ core.* *.gff {denovo,mlst}.tab preview.* tree.* distances.tab && cd .. && @CMDLINE_NO_FORCE --force)",
 };
 
 # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
@@ -326,7 +326,9 @@ if ($run) {
   exec($run_cmd) or err("Could not run pipeline's Makefile");
 }
 else {
-  msg("Run the pipeline with:");
+  msg("Run the fast preview pipeline with:");
+  msg( colored("rm -f $relout/preview.* && nice make preview -j $jobs -l $MAXLOAD -C $relout", "bold") );
+  msg("Run the full pipeline with:");
   msg( colored("$run_cmd", "bold") );
 }
 
@@ -357,7 +359,7 @@ sub write_makefile {
   print $fh "ROARY := roary -v $roary_opt\n";
   print $fh "ABRICATE := abricate\n";
   print $fh "MLST := mlst\n";
-  print $fh "MASH := mash sketch -p \$(CPUS) -m 3 -r\n";
+  print $fh "MASH := mash sketch -p \$(CPUS) -m 5 -r -s 10000\n";
 
   # copy any header stuff from the __DATA__ block at the end of this script
   while (<DATA>) {
@@ -455,20 +457,24 @@ sub version {
 sub check_deps { 
   my($self) = @_;
 
-  require_perlmod( qw'Bio::SeqIO Cwd Sys::Hostname Time::Piece List::Util Path::Tiny YAML::Tiny' );
-  require_perlmod( qw'Moo Term::ANSIColor Path::Tiny File::Copy File::Spec File::Path Data::Dumper' );
+  require_perlmod( qw'Bio::SeqIO Cwd Sys::Hostname Time::Piece List::Util YAML::Tiny' );
+  require_perlmod( qw'Moo Path::Tiny File::Copy File::Spec File::Path Data::Dumper' );
+  require_perlmod( qw'Term::ANSIColor SVG Text::CSV List::MoreUtils IO::File' );
 
   require_exe( qw'head cat install env nl grep touch' );
-  require_exe( qw'seqtk trimmomatic prokka roary snippy mlst abricate seqret' );
-  require_exe( qw'skesa megahit spades.py shovill nw_order nw_display iqtree FastTree snp-dists' );
-  require_exe( qw'kraken kraken-report centrifuge centrifuge-kreport' );
+  require_exe( qw'seqtk trimmomatic prokka roary mlst abricate seqret' );
+  require_exe( qw'skesa megahit spades.py shovill snippy snp-dists' );
+  require_exe( qw'nw_order nw_display iqtree FastTree quicktree' );
+  require_exe( qw'kraken kraken-report kraken2 centrifuge centrifuge-kreport' );
   require_exe( qw'fq fa roary2svg.pl' );
 
-  require_version('shovill', 0.9);
+  require_version('shovill', 1.0);
   require_version('megahit', 1.1);
-  require_version('skesa', 2.1);
-  require_version('snippy', 4.0);
+  require_version('skesa', 2.2);
+  require_version('snippy', 4.2);
   require_version('prokka', 1.12);
+  require_version('quicktree', 2.4, undef, '-v');
+  require_version('iqtree', 1.6, undef, '-version');
   require_version('roary', 3.0, undef, '-w'); # uses -w
   require_version('mlst', 2.10);
   require_version('abricate', 0.8);
@@ -515,6 +521,26 @@ VIRULOME_DB := vfdb
 RESISTOME_DB := ncbi
 
 all : isolates.txt report/index.html
+
+# ...................................................................................
+
+preview : isolates.txt preview.svg
+  nullarbor-report.pl --name "PREVIEW__$(NAME)" --indir . --outdir report --preview
+
+preview.svg : preview.nwk
+  $(NW_DISPLAY) $< > $@
+
+preview.nwk : preview.mat
+  quicktree -in m -out t $< | nw_order -c n - > $@
+
+preview.mat : preview.msh
+  cat isolates.txt | wc -l > $@
+  mash dist -p $(CPUS) -t $< $< | grep -v '^#' | sed 's/\/R1.fq.gz//' >> $@
+
+preview.msh : $(addsuffix /sketch.msh,$(ISOLATES))
+  mash paste $(basename $@) $^
+
+# ...................................................................................
 
 info :
   @echo CPUS: $(CPUS)
