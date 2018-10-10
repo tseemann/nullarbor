@@ -30,7 +30,7 @@ use Nullarbor::Plugins;
 # constants
 
 my $EXE = "$FindBin::RealScript";
-my $VERSION = '2.0.20181007';
+my $VERSION = '2.0.20181010';
 my $AUTHOR = 'Torsten Seemann';
 my $URL = "https://github.com/tseemann/nullarbor";
 my @CMDLINE = ($0, @ARGV);
@@ -359,7 +359,7 @@ sub write_makefile {
   print $fh "ROARY := roary -v $roary_opt\n";
   print $fh "ABRICATE := abricate\n";
   print $fh "MLST := mlst\n";
-  print $fh "MASH := mash sketch -p \$(CPUS) -m 5 -r -s 10000\n";
+  print $fh "MASH := mash sketch -m 5 -s 10000 -r\n";
 
   # copy any header stuff from the __DATA__ block at the end of this script
   while (<DATA>) {
@@ -470,7 +470,7 @@ sub check_deps {
 
   require_version('shovill', 1.0);
   require_version('megahit', 1.1);
-  require_version('skesa', 2.2);
+  require_version('skesa', 2.3);
   require_version('snippy', 4.2);
   require_version('prokka', 1.12);
   require_version('quicktree', 2.4, undef, '-v');
@@ -482,6 +482,7 @@ sub check_deps {
   require_version('trimmomatic', 0.36, undef, '-version'); # supports -version not --version
   require_version('spades.py', 3.12); 
   require_version('kraken', 1.0);
+  require_version('mash', 2.1);
   require_version('centrifuge', 1.0, undef, '--help');
 
   my $value = require_var('KRAKEN_DEFAULT_DB', 'kraken');
@@ -617,7 +618,7 @@ roary/acc.svg : roary/accessory_binary_genes.fa.newick
   $(ABRICATE) --db $(VIRULOME_DB) $^ > $@
 
 %/sketch.msh : %/R1.fq.gz %/R2.fq.gz
-  $(MASH) -o $(basename $@) $<
+  $(MASH) -o $(basename $@) -I $(@D) -C $< $<
 
 %.svg : %.newick
   $(NW_DISPLAY) $< > $@
