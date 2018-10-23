@@ -152,7 +152,7 @@ sub usage {
   print "  $AUTHOR\n";
   print "USAGE\n";
   print "  $EXE [options] --name NAME --indir NULLARBOR_DIR --outdir REPORT_DIR\n";
-  print "    --name      Check dependencies only\n";
+  print "    --name      Report name to put in the top heading\n";
   print "    --indir     Nullarbor result folder\n";
   print "    --outdir    Folder to build report HTML in\n";
   print "    --preview   Quick summary after 'make preview'\n";
