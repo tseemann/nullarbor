@@ -1,0 +1,55 @@
+
+```raxmlHPC-PTHREADS -f a -x 84 -p 42 -N autoMRE -s core.aln -m ASC_GTRCAT -n TEST -T 16 --asc-corr=stamatakis -q part
+
+# if more than 500 isolates add -D flag
+
+# if more than 1000 isolates add -F flag
+
+# `-f a` do rapid bootstrap and search for best ML tree in single run
+
+# -x <seed> tell it to run fast boostrap with seed (required to initiate boostrap, but no guarantee of reprod when running in parallel)
+
+# -p <seed> a random seed for the initial parsimony search to start the ML search
+
+# -N autoMRE --- max number of boostrap replicates --- use an automatic stopping criteria. NOTE: if over 1000 taxa use autoMRE_ING to safe time
+
+# -s alignment file
+
+# -m ASC_GTRCAT --- GTRCAT is an approximation to the GTRGAMMA model --- supposed to run faster. The ASC prefix indicates that some correction for invariable sites should be applied
+
+# --asc-corr --- use the stamatakis ascertainment correction to specify the number of invariable sites for each of A,C,G,T (in that order)
+
+# -q <partition_file> --- this is a partition file, that specifies how the alignemt is partitioned. It should look like this:
+
+#[asc~count_inv_sites_core.txt], ASC_DNA, core=1-<length of alignment>
+
+# the file `count_inv_sites_core.txt` should have one line with space separated counts of invariable sites in the order A,C,G,T:
+# 250 300 400 100 ## this says to correct the alignment for 250 constant A, 300 constant C, 400 constant G, and 200 constant T
+
+# -n <suffix_name> --- a suffix for all outputted files (e.g., -n TEST produces `RAxML_bestTree.TEST`)
+
+# -T number of CPUs (only works for PTHREADS versions)
+
+### ADDITIONAL OPTIONS ###
+
+# add -b for traditional bootstrap
+
+# add -d could help with phylogenomic alignments with strong phylogenetic signal
+
+# add -D when >500 taxa to speed things up a bit --- changes the convergence criterion
+
+# add -F When conducting analyses under the CAT model of rate heterogeneity in RAxML, the
+# program will in most cases try to evaluate the GAMMA-based score and do some additional
+# optimization of the tree under GAMMA in the very end of the search. If you want to avoid
+# this because of time and/or memory constraints (GAMMA needs four times more memory
+# than CAT) you can use this option.```
+(edited)
+So, I think we need slightly different commands depending on the number of isolates.
+That should help maintain performance.
+Note that files are named by suffix:
+```# -n <suffix_name> --- a suffix for all outputted files (e.g., -n TEST produces `RAxML_bestTree.TEST`)```
+And, that you need a partition file and a file with number of constant sites.
+
+
+
+
