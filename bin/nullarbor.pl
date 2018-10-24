@@ -30,7 +30,7 @@ use Nullarbor::Plugins;
 # constants
 
 my $EXE = "$FindBin::RealScript";
-my $VERSION = '2.0.20181010';
+my $VERSION = '2.0.20181015';
 my $AUTHOR = 'Torsten Seemann';
 my $URL = "https://github.com/tseemann/nullarbor";
 my @CMDLINE = ($0, @ARGV);
@@ -47,7 +47,7 @@ my $ref = '';
 my $mlst = '';
 my $input = '';
 my $outdir = '';
-my $cpus = max( 2, num_cpus() );  # megahit needs 2
+my $cpus = $ENV{'NULLARBOR_CPUS'} || num_cpus();
 my $force = 0;
 my $run = 0;
 my $name = '';
@@ -56,7 +56,7 @@ my $keepfiles = 0;
 my $minctg = 500;
 my $trim = 0;
 my $conf_file = $ENV{'NULLARBOR_CONF'} || "$FindBin::RealBin/../conf/nullarbor.conf";
-my $prefill = $ENV{'NULLARBOR_PREFILL'} || 0;
+my $prefill = 0; # $ENV{'NULLARBOR_PREFILL'} || 0;
 my $check = 0;
 my $gcode = 11; # genetic code for prokka + roary
 my $snippy_opt = '';
@@ -72,6 +72,8 @@ my $taxoner_opt = '';
 my $annotator = $ENV{'NULLARBOR_ANNOTATOR'} || 'prokka_fast';
 my $annotator_opt = '';
 my $mask = '';
+my $mode = 'all';
+my %MODES = ( map { $_ => 1 } qw(all preview) );
 
 my $plugin = Nullarbor::Plugins->discover();
 #msg(Dumper($plugin));
@@ -87,6 +89,7 @@ GetOptions(
   "quiet"    => \$quiet,
   "conf=s"   => \$conf_file,
   "mlst=s"   => \$mlst,
+  "mode=s"   => \$mode,
   "gcode=i"  => \$gcode,
   "snippy_opt=s" => \$snippy_opt,
   "roary_opt=s"  => \$roary_opt,
@@ -149,6 +152,8 @@ if ($auto) {
   msg("* --outdir $outdir") if $outdir;
   msg("* --mask   $mask") if $mask;
 }
+
+($assembler eq 'megahit' and $cpus < 2) and err("megahit assembler needs at least 2 CPUs");
 
 $minctg >= 1 or err("Minimum contig size --minctg must be >= 1");
 $gcode >= 1 or err("Genetic code --gcode must be >= 1");
@@ -321,13 +326,11 @@ open my $make_fh, '>', $makefile or err("Could not write $makefile");
 write_makefile(\%make, $make_fh);
 my $relout = path($outdir)->relative(getcwd())->canonpath;
 my $MAXLOAD = max(1, num_cpus() - $threads);
-my $run_cmd = "nice make -j $jobs -l $MAXLOAD -C $relout 2>&1 | tee -a $relout/$LOGFILE";
+my $run_cmd = "nice make $mode -j $jobs -l $MAXLOAD -C $relout 2>&1 | tee -a $relout/$LOGFILE";
 if ($run) {
   exec($run_cmd) or err("Could not run pipeline's Makefile");
 }
 else {
-  msg("Run the fast preview pipeline with:");
-  msg( colored("rm -f $relout/preview.* && nice make preview -j $jobs -l $MAXLOAD -C $relout", "bold") );
   msg("Run the full pipeline with:");
   msg( colored("$run_cmd", "bold") );
 }
@@ -393,6 +396,11 @@ sub default_string {
 sub yesno { return $_[0] ? 'YES' : 'NO'; }
 sub onoff { return $_[0] ? 'ON' : 'OFF'; }
 
+sub choices {
+  my($opt, $def) = @_;
+  return join(" ", map { $_ eq $def ? "[$_]" : $_ } sort keys %$opt);
+}
+
 #-------------------------------------------------------------------
 sub usage {
   my($ok) = @_;
@@ -408,6 +416,7 @@ sub usage {
   print "  --ref FILE             Reference file in FASTA or GBK format\n";
   print "  --input FILE           Input TSV file with format:  | Isolate_ID | R1.fq.gz | R2.fq.gz |\n";
   print "  --outdir DIR           Output folder\n";
+  print "  --mode MODE            Run mode: ", choices(\%MODES, $mode), "\n";
   print "OPTIONS\n";
   print "  --cpus INT             Maximum number of CPUs to use in total ($cpus)\n";
   print "  --force                Overwrite --outdir (useful for adding samples to existing analysis)\n";
@@ -419,11 +428,11 @@ sub usage {
   print "ADVANCED OPTIONS\n";
   print "  --conf FILE            Config file ($conf_file)\n";
   print "  --gcode INT            Genetic code for prokka ($gcode)\n";
-  print "  --trim                 Trim reads of adaptors (",onoff($trim),")\n";
+  print "  --trim                 Trim reads of adaptors ($trim)\n";
   print "  --mlst SCHEME          Force this MLST scheme (AUTO)\n";
 #  print "  --fullanno             Don't use --fast for Prokka\n";
   print "  --minctg LEN_BP        Minimum contig length for Prokka and Roary\n";
-  print "  --prefill              Prefill precomputed data via [prefill] in --conf file (",onoff($prefill),")\n";
+  print "  --prefill              UsewPrefill precomputed data as per --conf file. Use --no-prefill to override.\n";
   print "  --snippy_opt STR       Options to pass to snippy eg. '--mincov 10 --ram 32' ($snippy_opt)\n";
   print "  --roary_opt STR        Options to pass to roary eg. '-iv 1.75 -s -cd 97' ($snippy_opt)\n";
   print "  --mask BED | auto      Mask core SNPS in these regions or 'auto' ($mask)\n";
@@ -526,7 +535,7 @@ all : isolates.txt report/index.html
 # ...................................................................................
 
 preview : isolates.txt preview.svg
-  nullarbor-report.pl --name "PREVIEW__$(NAME)" --indir . --outdir report --preview
+  nullarbor-report.pl --name "PREVIEW:$(NAME)" --indir . --outdir report --preview
 
 preview.svg : preview.nwk
   $(NW_DISPLAY) $< > $@

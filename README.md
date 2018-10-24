@@ -1,4 +1,6 @@
-[![License: GPL v2](https://img.shields.io/badge/License-GPL%20v2-blue.svg)](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html) ![Don't judge me](https://img.shields.io/badge/Language-Perl_5-steelblue.svg)
+[![License: GPL v2](https://img.shields.io/badge/License-GPL%20v2-blue.svg)](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html)
+![Don't judge me](https://img.shields.io/badge/Language-Perl_5-steelblue.svg)
+![Difficult to install](https://img.shields.io/badge/Installation-difficult-orange.svg)
 
 # Nullarbor
 
@@ -262,6 +264,7 @@ start the analysis, just add the `--run` option to your `nullarbor.pl` command.
 ## Influential environmental variables
 
 * `NULLARBOR_CONF` - default `--conf`, the path to `nullarbor.conf`
+* `NULLARBOR_CPUS` - default `--cpus`
 * `NULLARBOR_ASSEMBLER` - default `--assembler` tool
 * `NULLARBOR_TREEBUILDER` - default `--treebuilder` tool
 * `NULLARBOR_TAXONER` - default `--taxoner` tool
