@@ -90,10 +90,12 @@ Install [Homebrew](http://brew.sh/) (macOS) or [LinuxBrew](http://linuxbrew.sh/)
     brew untap tseemann/bioinformatics-linux
     brew install brewsci/bio/nullarbor # COMING SOON!
 
-#### Conda
+#### Conda 
+[![Nullarbord downloads](https://anaconda.org/bioconda/nullarbor/badges/downloads.svg)](http://bioconda.github.io/recipes/nullarbor/README.html)
+
 Install [Conda](https://conda.io/docs/) or [Miniconda](https://conda.io/miniconda.html):
 
-    conda install -c bioconda -c conda-forge nullarbor  # COMING SOON!
+    conda install -c bioconda nullarbor  
 
 #### Containers
 Once the `bioconda` package is working, Docker and Singularity containers will follow.
