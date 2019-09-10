@@ -77,14 +77,14 @@ Install [Conda](https://conda.io/docs/) or [Miniconda](https://conda.io/minicond
 
     conda install -c conda-forge -c bioconda -c defaults nullarbor
 
-#### Homebrew
+#### Homebrew (coming soon)
 Install [Homebrew](http://brew.sh/) (macOS) or [LinuxBrew](http://linuxbrew.sh/) (Linux).
 
-    brew install brewsci/bio/nullarbor # COMING SOON!
+    brew install brewsci/bio/nullarbor # NOT YET SORRY :-(
 
 
-#### Github
-This is the hardest way to instal Nullarbor, but is currently the only way for version 2:
+#### Source
+This is the hardest way to install Nullarbor.
 
     cd $HOME
     git clone https://github.com/tseemann/nullarbor.git
