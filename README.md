@@ -109,7 +109,7 @@ You need to install a [Kraken](https://ccb.jhu.edu/software/kraken/) database (~
     wget https://ccb.jhu.edu/software/kraken/dl/minikraken_20171019_4GB.tgz
     tar -C $HOME -zxvf minikraken_20171019_4GB.tgz
 
-You need to install a [Kraken2](https://ccb.jhu.edu/software/kraken2/) database (~4 GB).
+You need to install a [Kraken2](https://ccb.jhu.edu/software/kraken2/) database (~8 GB).
 
     wget ftp://ftp.ccb.jhu.edu/pub/data/kraken2_dbs/minikraken2_v2_8GB_201904_UPDATE.tgz
     tar -C $HOME -zxvf minikraken2_v2_8GB_201904_UPDATE.tgz
