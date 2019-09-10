@@ -109,6 +109,11 @@ You need to install a [Kraken](https://ccb.jhu.edu/software/kraken/) database (~
     wget https://ccb.jhu.edu/software/kraken/dl/minikraken_20171019_4GB.tgz
     tar -C $HOME -zxvf minikraken_20171019_4GB.tgz
 
+You need to install a [Kraken2](https://ccb.jhu.edu/software/kraken2/) database (~4 GB).
+
+    wget ftp://ftp.ccb.jhu.edu/pub/data/kraken2_dbs/minikraken2_v2_8GB_201904_UPDATE.tgz
+    tar -C $HOME -zxvf minikraken2_v2_8GB_201904_UPDATE.tgz
+
 #### Centrifuge
     
 Install a [Centrifuge](http://www.ccb.jhu.edu/software/centrifuge/) database (~8 GB):
@@ -122,6 +127,7 @@ Install a [Centrifuge](http://www.ccb.jhu.edu/software/centrifuge/) database (~8
 Then add the following to your `$HOME/.bashrc` so Nullarbor can find the databases:
 
     export KRAKEN_DEFAULT_DB=$HOME/minikraken_20171019_4GB
+    export KRAKEN2_DEFAULT_DB=$HOME/minikraken2_v2_8GB_201904_UPDATE
     export CENTRIFUGE_DEFAULT_DB=$HOME/centrifuge-db/p_compressed+h+v
 
 You should be good to go now. When you first run Nullarbor it will let you
