@@ -68,7 +68,20 @@ distributing the work across a high performance cluster.
 
 ## Installation
 
+You need to install both the software _and_ the databases separately.
+
 ### Software
+
+#### Conda
+Install [Conda](https://conda.io/docs/) or [Miniconda](https://conda.io/miniconda.html):
+
+    conda install -c conda-forge -c bioconda -c defaults nullarbor
+
+#### Homebrew
+Install [Homebrew](http://brew.sh/) (macOS) or [LinuxBrew](http://linuxbrew.sh/) (Linux).
+
+    brew install brewsci/bio/nullarbor # COMING SOON!
+
 
 #### Github
 This is the hardest way to instal Nullarbor, but is currently the only way for version 2:
@@ -84,21 +97,6 @@ This is the hardest way to instal Nullarbor, but is currently the only way for v
     yum install perl-YAML-Tiny      # centos/redhat
     cpan YAML::Tiny
     cpanm YAML::Tiny
-
-#### Homebrew
-Install [Homebrew](http://brew.sh/) (macOS) or [LinuxBrew](http://linuxbrew.sh/) (Linux).
-
-    brew untap homebrew/science
-    brew untap tseemann/bioinformatics-linux
-    brew install brewsci/bio/nullarbor # COMING SOON!
-
-#### Conda
-Install [Conda](https://conda.io/docs/) or [Miniconda](https://conda.io/miniconda.html):
-
-    conda install -c bioconda -c conda-forge nullarbor  # COMING SOON!
-
-#### Containers
-Once the `bioconda` package is working, Docker and Singularity containers will follow.
 
 ### Databases
 
