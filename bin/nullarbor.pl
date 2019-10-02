@@ -432,7 +432,7 @@ sub usage {
   print "  --mlst SCHEME          Force this MLST scheme (AUTO)\n";
 #  print "  --fullanno             Don't use --fast for Prokka\n";
   print "  --minctg LEN_BP        Minimum contig length for Prokka and Roary\n";
-  print "  --prefill              UsewPrefill precomputed data as per --conf file. Use --no-prefill to override.\n";
+  print "  --prefill              Use precomputed data as per --conf file. Use --no-prefill to override.\n";
   print "  --snippy_opt STR       Options to pass to snippy eg. '--mincov 10 --ram 32' ($snippy_opt)\n";
   print "  --roary_opt STR        Options to pass to roary eg. '-iv 1.75 -s -cd 97' ($snippy_opt)\n";
   print "  --mask BED | auto      Mask core SNPS in these regions or 'auto' ($mask)\n";
