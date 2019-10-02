@@ -1,28 +1,34 @@
-Synopsis:
+SYNOPIS
   Nullarbor job runner makefile syntax
 
-Usage:
-  make [command]
+USAGE
+  make [var=value ...] [command ...]
 
-Commands:
-
+COMMANDS
   help		Show this help
+  preview       Do a quick mash analyses to look for outliers
   all		Do all the analyses and generate the report
-  report	(Re-)generate a report
   publish	Place web report in folder specified in nullarbor.conf file
 
-  clip		Just do enough to clip all the reads
-  denovo	Just do enough to get genome assemblies
-  mlst		Just do enough to genotype using MLST
-  abricate	Just do enough to call AMR genes
+  yield         Just do enough to measure read stats
+  kraken        Just to enough to get species predictions
+  denovo.tab	Just do enough to get genome assemblies
+  mlst.tab	Just do enough to genotype using MLST
+  resistome	Just do enough to call AMR genes
+  virulome	Just do enough to call VIR genes
   prokka	Just do enough to get annotated genomes
-  roary		Just do enough to generate the pan-genome
 
-  again		Re-generate the Makefile, useful if Nullarbor now has new featues
+  again		Re-generate the Makefile w/ new isolates
   list		List the isolates in this analysis
-  space		Delete most of the unnecessary big files
   panic		In case of emergency only!
 
-More help:
-  https://github.com/tseemann/nullarbor#nullarbor
+VARIABLES
+  CPUS=4	     Number of cores (per -j JOBS, not total)
+  GCODE=11	     Genetic code (--gcode)
+  NAME=xxxxx         Project name (--name)
+  MIN_CTG_LEN=500    Min contig length in stats (--minctglen)
+  VIRULOME_DB=vfdb   Abricate database for 'Virulome' section
+  RESISTOME_DB=ncbi  Abricate database for 'Resistome' section
 
+DOCUMENTATION
+  https://github.com/tseemann/nullarbor#nullarbor
