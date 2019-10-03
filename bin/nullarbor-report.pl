@@ -25,7 +25,7 @@ use Nullarbor::Module;
 
 my $EXE = "$FindBin::RealScript";
 my $TEMPLATE_DIR = "$FindBin::RealBin/../conf";
-my $VERSION = '2.0.20190825';
+my $VERSION = '2.0.20191003';
 my $AUTHOR = 'Torsten Seemann';
 my @CMDLINE = ($0, @ARGV);
 
