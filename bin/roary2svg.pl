@@ -5,7 +5,7 @@ use Data::Dumper;
 use List::Util qw(min max sum);
 use List::MoreUtils qw(uniq all any);
 use Text::CSV;
-use File::Slurp;
+use Path::Tiny;
 use SVG;
 
 use constant FONT_ASPECT => 0.8;
@@ -48,7 +48,7 @@ print STDERR "\nFound $C clusters.\n";
 
 if ($sortlist) {
   -r $sortlist or die "Can't open --sortlist '$sortlist'";
-  my @order = read_file($sortlist);
+  my @order = path($sortlist)->lines( { chomp => 1 } );
   print STDERR "Read ", 0+@order, " taxa from file: $sortlist\n";
   @order == $N or die "Mismatch with number of taxa from Roary ($N)";
 }
