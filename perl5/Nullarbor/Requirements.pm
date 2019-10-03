@@ -44,7 +44,7 @@ sub require_version {
   $line =~ m/(\d+(\.\d+)?)/;
   my $ver = $1 or err("Could not determine $exe version using '$switch': $line");
   # $ver =~ s/\.(\d)$/\.0\1/;
-  msg("Parsed version '$ver' from '$line'");
+  msg("Parsed $exe $ver from '$line'");
   err("Need $exe >= $minver (found $ver)") if defined $minver && $ver < $minver;
   err("Need $exe <= $maxver (found $ver)") if defined $maxver && $ver > $maxver;
   return;
