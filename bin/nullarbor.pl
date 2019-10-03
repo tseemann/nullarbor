@@ -471,7 +471,7 @@ sub check_deps {
   require_perlmod( qw'Term::ANSIColor SVG Text::CSV List::MoreUtils IO::File' );
 
   require_exe( qw'head cat install env nl grep touch' );
-  require_exe( qw'seqtk trimmomatic prokka roary mlst abricate seqret' );
+  require_exe( qw'seqtk trimmomatic prokka roary mlst abricate any2fasta' );
   require_exe( qw'skesa megahit spades.py shovill snippy snp-dists' );
   require_exe( qw'nw_order nw_display iqtree FastTree quicktree' );
   require_exe( qw'kraken kraken-report kraken2 centrifuge centrifuge-kreport' );
@@ -564,7 +564,7 @@ publish : report/index.html
   install -p -D -t $(PUBLISH_DIR)/$(NAME) report/*
   
 $(FASTAREF) : $(REF)
-  seqret -auto -filter -osformat2 fasta < $< > $@
+  any2fasta -u $< > $@
   touch --reference=$< $@
 
 virulome : $(addsuffix /virulome.tab,$(ISOLATES))

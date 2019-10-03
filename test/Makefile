@@ -31,7 +31,7 @@ input.tab: $(addsuffix /R1.fq.gz,$(SAMPLES))
 	cat $(addsuffix /reads.tab,$(dir $^*)) > $@
 
 %.fasta: %.gbk
-	seqret -auto -filter -osformat2 fasta < $< > $@
+	any2fasta -u $< > $@
 
 clean:
 	rm -fr $(OUTDIR) $(SAMPLES) input.tab ref.fasta *~
