@@ -361,7 +361,7 @@ sub write_makefile {
   print $fh "SNIPPYCORE := snippy-core".($mask ? " --mask $mask\n" : "\n");
   print $fh "ROARY := roary -v $roary_opt\n";
   print $fh "ABRICATE := abricate\n";
-  print $fh "MLST := mlst\n";
+  print $fh "MLST := mlst", ($mlst ? " --scheme $mlst" : ""), "\n";;
   print $fh "MASH := mash sketch -m 5 -s 10000 -r\n";
 
   # copy any header stuff from the __DATA__ block at the end of this script
@@ -576,7 +576,7 @@ kraken : $(addsuffix /kraken.tab,$(ISOLATES))
 yield : $(addsuffix /yield.tab,$(ISOLATES)) 
 
 mlst.tab : $(FASTAREF) $(CONTIGS)
-  mlst $^ > $@
+ $(MLST) $^ > $@
 
 denovo.tab : $(CONTIGS)
   fa --minsize $(MIN_CTG_LEN) -e -t $^ > $@
