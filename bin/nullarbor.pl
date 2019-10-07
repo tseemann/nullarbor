@@ -635,7 +635,7 @@ roary/acc.svg : roary/accessory_binary_genes.fa.newick
   $(NW_DISPLAY) $< > $@
 
 %.newick : %.aln
-  aln="$(<)" tree="$(@)" $(TREEBUILDER)
+  aln="$(<)" tree="$(@)" ref=$(FASTAREF) $(TREEBUILDER)
 
 %.fa.fai : %.fa
   samtools faidx $<
