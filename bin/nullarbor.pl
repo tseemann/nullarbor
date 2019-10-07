@@ -30,7 +30,7 @@ use Nullarbor::Plugins;
 # constants
 
 my $EXE = "$FindBin::RealScript";
-my $VERSION = '2.0.20191003';
+my $VERSION = '2.0.20191007';
 my $AUTHOR = 'Torsten Seemann';
 my $URL = "https://github.com/tseemann/nullarbor";
 my @CMDLINE = ($0, @ARGV);
@@ -556,7 +556,7 @@ info :
   @echo CPUS: $(CPUS)
   @echo REF: $(REF)
 
-report/index.html : ref.fa.fai yield denovo.tab mlst.tab virulome resistome kraken core.svg distances.tab roary/pan.svg roary/acc.svg
+report/index.html : ref.fa.fai yield denovo.tab mlst.tab virulome.tab resistome.tab kraken core.svg distances.tab roary/pan.svg roary/acc.svg
   nullarbor-report.pl --name $(NAME) --indir . --outdir report
 
 publish : report/index.html
@@ -567,13 +567,15 @@ $(FASTAREF) : $(REF)
   any2fasta -u $< > $@
   touch --reference=$< $@
 
-virulome : $(addsuffix /virulome.tab,$(ISOLATES))
-
-resistome : $(addsuffix /resistome.tab,$(ISOLATES)) 
-
 kraken : $(addsuffix /kraken.tab,$(ISOLATES)) 
 
 yield : $(addsuffix /yield.tab,$(ISOLATES)) 
+
+resistome.tab : $(addsuffix /resistome.tab,$(ISOLATES))
+ $(ABRICATE) --summary $^ > $@
+
+virulome.tab : $(addsuffix /virulome.tab,$(ISOLATES))
+ $(ABRICATE) --summary $^ > $@
 
 mlst.tab : $(FASTAREF) $(CONTIGS)
  $(MLST) $^ > $@
