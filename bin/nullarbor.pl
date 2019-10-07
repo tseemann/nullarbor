@@ -360,7 +360,7 @@ sub write_makefile {
   print $fh "SNIPPY := snippy --force $snippy_opt\n";
   print $fh "SNIPPYCORE := snippy-core".($mask ? " --mask $mask\n" : "\n");
   print $fh "ROARY := roary -v $roary_opt\n";
-  print $fh "ABRICATE := abricate\n";
+  print $fh "ABRICATE := abricate --threads \$(CPUS)\n";
   print $fh "MLST := mlst", ($mlst ? " --scheme $mlst" : ""), "\n";;
   print $fh "MASH := mash sketch -m 5 -s 10000 -r\n";
 
