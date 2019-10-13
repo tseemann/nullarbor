@@ -628,7 +628,7 @@ roary/acc.svg : roary/accessory_binary_genes.fa.newick
   read1="$(word 1,$^)" read2="$(word 2,$^)" outdir="$(@D)" $(ASSEMBLER)
 
 %/yield.tab : %/R1.fq.gz %/R2.fq.gz
-  fq --quiet --ref $(FASTAREF) $^ > $@
+  fq --ref $(FASTAREF) $^ > $@
 
 %/resistome.tab : %/contigs.fa
   $(ABRICATE) --db $(RESISTOME_DB) $^ > $@

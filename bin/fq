@@ -1,8 +1,14 @@
 #!/usr/bin/env perl
 use strict;
+use File::Basename;
 #use Data::Dumper;
 
-my(@Options, $quiet, $ref, $hist);
+my $quiet = 0;
+my $EXE = basename($0);
+sub msg { print STDERR "[$EXE] @_\n" unless $quiet; }
+sub err { $quiet=0; msg("ERROR:", @_); exit(-1); }
+
+my(@Options, $ref, $hist);
 setOptions();
 
 @ARGV or die "Please provide some FASTQ files!";
@@ -19,8 +25,8 @@ $hist and die "Sorry, --hist is no longer supported";
 
 my %stat;
 my $cmd = "cat @ARGV | seqtk fqchk -q0 -";
-print STDERR "Running: $cmd\n" unless $quiet;
-open my $IN, '-|', $cmd or die "ERROR running: $cmd";
+msg("running command: $cmd");
+open my $IN, '-|', $cmd or err("could not run command: $cmd");
 while (<$IN>) {
   if (m/^min_len/) {
     s/\s//g;
@@ -40,6 +46,7 @@ while (<$IN>) {
     $stat{num_reads} = $1;
   }
 }
+msg("processed", $stat{num_reads}, "reads.");
 #print Dumper(\%stat);
 
 printf "Files\t@ARGV\n";
@@ -56,7 +63,7 @@ printf "AvgQual\t%.1f\n", $stat{avg_qual};
 
 if ($ref) {
   my $size = ($ref =~ m/^(\d+)$/ ? $1 : (-s $ref));
-  print STDERR "Calculating depth, using size $size\n" unless $quiet;
+  msg("calculating depth, using size $size (via --ref $ref)");
   printf "Depth\t%dx\n", $stat{total_bp} / $size;
 }
 
@@ -86,7 +93,7 @@ sub setOptions {
 }
 
 sub usage {
-  print "Usage: $0 [options] <file.fq | file.fq.gz ...>\n";
+  print "Usage: $EXE [options] <file.fq | file.fq.gz ...>\n";
   foreach (@Options) {
     printf "  --%-13s %s%s.\n",$_->{OPT},$_->{DESC},
            defined($_->{DEFAULT}) ? " (default '$_->{DEFAULT}')" : "";
