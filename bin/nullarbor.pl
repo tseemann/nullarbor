@@ -542,7 +542,7 @@ all : isolates.txt report/index.html
 
 # ...................................................................................
 
-preview : isolates.txt preview.svg
+preview : isolates.txt preview.svg yield
   nullarbor-report.pl --name "PREVIEW:$(NAME)" --indir . --outdir report --preview
 
 preview.svg : preview.nwk
