@@ -52,6 +52,7 @@ my $force = 0;
 my $run = 0;
 my $name = '';
 my $keepfiles = 0;
+my $link_cmd = "ln -s -f";
 #my $fullanno = 0;
 my $minctg = 500;
 my $trim = 0;
@@ -118,6 +119,7 @@ GetOptions(
   "treebuilder-opt=s" => \$treebuilder_opt,
   "taxoner=s"     => \$taxoner,
   "taxoner-opt=s" => \$taxoner_opt,
+  "link-cmd=s" => \$link_cmd,
 ) 
 or usage();
 
@@ -274,7 +276,7 @@ for my $s ($set->isolates) {
   $make{$clipped[0]} = {
     DEP => [ @reads ],  # FIXME: should this be '|' ?
     CMD => $trim ? [ "trimmomatic PE -threads \$(CPUS) -phred33 @reads $id/$R1 /dev/null $id/$R2 /dev/null ".($cfg->{trimmomatic} || '') ]
-                 : [ "ln -f -s '$reads[0]' '$id/$R1'", "ln -f -s '$reads[1]' '$id/$R2'" ],
+                 : [ "\$(LINK) '$reads[0]' '$id/$R1'", "\$(LINK) '$reads[1]' '$id/$R2'" ],
   };
   
   # we need this special rule to handle the 'double dependency' problem
@@ -363,6 +365,7 @@ sub write_makefile {
   print $fh "ABRICATE := abricate --threads \$(CPUS)\n";
   print $fh "MLST := mlst", ($mlst ? " --scheme $mlst" : ""), "\n";;
   print $fh "MASH := mash sketch -m 5 -s 10000 -r\n";
+  print $fh "LINK := $link_cmd\n";
 
   # copy any header stuff from the __DATA__ block at the end of this script
   while (<DATA>) {
@@ -433,6 +436,7 @@ sub usage {
 #  print "  --fullanno             Don't use --fast for Prokka\n";
   print "  --minctg LEN_BP        Minimum contig length for Prokka and Roary\n";
   print "  --prefill              Use precomputed data as per --conf file. Use --no-prefill to override.\n";
+  print "  --link-cmd 'CMD'       Command to symlink/copy FASTQ files into --outdir ('$link_cmd')\n";
   print "  --snippy_opt STR       Options to pass to snippy eg. '--mincov 10 --ram 32' ($snippy_opt)\n";
   print "  --roary_opt STR        Options to pass to roary eg. '-iv 1.75 -s -cd 97' ($snippy_opt)\n";
   print "  --mask BED | auto      Mask core SNPS in these regions or 'auto' ($mask)\n";
