@@ -13,6 +13,7 @@ use YAML::Tiny;
 use Cwd qw(realpath getcwd);
 use Path::Tiny;
 use Term::ANSIColor;
+use File::Copy;
 
 #-------------------------------------------------------------------
 # local modules 
@@ -288,6 +289,9 @@ for my $s ($set->isolates) {
 }
 close ISOLATES;
 #END per isolate
+
+# https://github.com/tseemann/nullarbor/issues/197
+copy($input, "$outdir/input.tab");
 
 #.............................................................................
 
