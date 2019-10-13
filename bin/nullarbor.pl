@@ -30,7 +30,7 @@ use Nullarbor::Plugins;
 # constants
 
 my $EXE = "$FindBin::RealScript";
-my $VERSION = '2.0.20191007';
+my $VERSION = '2.0.20191013';
 my $AUTHOR = 'Torsten Seemann';
 my $URL = "https://github.com/tseemann/nullarbor";
 my @CMDLINE = ($0, @ARGV);
@@ -467,7 +467,7 @@ sub check_deps {
   my($self) = @_;
 
   require_perlmod( qw'Bio::SeqIO Cwd Sys::Hostname Time::Piece List::Util YAML::Tiny' );
-  require_perlmod( qw'Moo Path::Tiny File::Copy File::Spec File::Path Data::Dumper' );
+  require_perlmod( qw'Moo Path::Tiny File::Copy File::Which File::Basename File::Spec File::Path Data::Dumper' );
   require_perlmod( qw'Term::ANSIColor SVG Text::CSV List::MoreUtils IO::File' );
 
   require_exe( qw'head cat install env nl grep touch tr' );
