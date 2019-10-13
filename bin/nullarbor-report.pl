@@ -96,7 +96,7 @@ my @section = qw(jobinfo seqdata identification mlst serotype resistome virulome
                  tools databases about);
 
 if ($preview) {
-  @section = qw(jobinfo mashtree about);
+  @section = qw(jobinfo mashtree mashdist about);
 }
 
 for my $section (@section) {
