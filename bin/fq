@@ -1,90 +1,63 @@
 #!/usr/bin/env perl
-
-use warnings;
 use strict;
-
-use List::Util qw(min max sum);
-use List::MoreUtils qw(pairwise);
-use Data::Dumper;
-
-use constant SAMPLE_RATE => 1_000;
+#use Data::Dumper;
 
 my(@Options, $quiet, $ref, $hist);
 setOptions();
 
-my $N=0;
-my %len;
-my $qv = '';
-my $GC=0;
-
-### http://en.wikipedia.org/wiki/FASTQ_format
-
 @ARGV or die "Please provide some FASTQ files!";
+$hist and die "Sorry, --hist is no longer supported";
 
-for my $file (@ARGV) {
-  print STDERR "Opening: $file\n" unless $quiet;
-  open my $fh, "gzip -c -d -f \Q$file\E |";
-  while (<$fh>) {
-    my $seq = scalar(<$fh>);
-    chomp $seq;
-    $len{ length($seq) }++;
-    $GC += ($seq =~ tr/[GgCc]/[GgCc]/);
-    $N++;
-    scalar(<$fh>);
-    my $qual = scalar(<$fh>);
-    if ($N % SAMPLE_RATE == 0) {
-      chomp $qual;
-      $qv .= $qual;
-      print STDERR "\rProcessed: $N" unless $quiet;
+#min_len: 35; max_len: 151; avg_len: 147.63; 6 distinct quality values
+#POS     #bases  %A      %C      %G      %T      %N      avgQ    errQ    %low    %high
+#ALL     134985892       21.7    28.2    28.6    21.5    0.0     32.1    22.9    11.3 >
+#1       914379  19.4    23.9    43.8    13.0    0.0     30.9    25.7    4.3     95.7
+#2       914379  18.3    28.6    18.0    35.1    0.0     31.1    26.3    3.6     96.4
+#....
+#150     785526  22.8    26.1    31.3    19.8    0.0     27.3    19.8    23.8    76.2
+#151     530460  31.4    0.0     44.7    23.9    0.0     23.9    17.9    38.3    61.7
+
+my %stat;
+my $cmd = "cat @ARGV | seqtk fqchk -q0 -";
+print STDERR "Running: $cmd\n" unless $quiet;
+open my $IN, '-|', $cmd or die "ERROR running: $cmd";
+while (<$IN>) {
+  if (m/^min_len/) {
+    s/\s//g;
+    for my $pair (split m';') {
+      my($k,$v) = split m':', $pair;
+      $stat{$k} = $v if $v;
     }
   }
-  print STDERR "\n" unless $quiet;
-  close $fh;
+  elsif (m/^ALL/) {
+    my @x = split ' ';
+    $stat{total_bp} = $x[1];
+    $stat{gee_cee} = $x[3] + $x[4];
+    $stat{avg_qual} = $x[7];
+    $stat{ambig_bp_pc} = $x[6];
+  }
+  elsif (m/^1\s+(\d+)\b/) {
+    $stat{num_reads} = $1;
+  }
 }
+#print Dumper(\%stat);
 
-my @len = sort { $a <=> $b }  map { $len{$_} ? $_ : () } keys %len;
-
-my @k = keys %len;
-my @v = values %len;
-my $yield = sum( pairwise { $a * $b } @k, @v );
-
-my %qv;
-map { $qv{ord($_)}++ } (split m//, $qv);
-#my $offset = max(keys %qv) > 73 ? 64 : 33;
-my $quality = sum(map { $_ * $qv{$_} } keys %qv) / sum(values %qv);
-#print STDERR Dumper(\%qv);
-my $offset = $quality-64 < 20 ? 33 : 64;
-$quality -= $offset;
-
-my $maxcount = max(values %len);
-my($mode) = grep { $len{$_}==$maxcount } (keys %len);
-
-### Print out statistics
-
-#printf "Nfiles\t%d\n", scalar(@ARGV);
 printf "Files\t@ARGV\n";
-printf "Reads\t%d\n", $N;
-printf "Yield\t%d\n", $yield;  
-printf "GeeCee\t%.1f\n", (100*$GC/$yield);  
-printf "MinLen\t%d\n", $len[0];
-printf "AvgLen\t%d\n", $yield/$N;
-printf "MaxLen\t%d\n", $len[-1];
-printf "ModeLen\t%d\n", $mode;
-printf "Phred\t%s\n", $offset;
-printf "AvgQual\t%.1f\n", $quality;
+printf "Reads\t%d\n", $stat{num_reads};
+printf "Yield\t%d\n", $stat{total_bp};
+printf "GeeCee\t%.1f\n", $stat{gee_cee};
+printf "MinLen\t%d\n", $stat{min_len};
+printf "AvgLen\t%d\n", int($stat{avg_len}); # don't round up (compat)
+printf "MaxLen\t%d\n", $stat{max_len};
+#printf "ModeLen\t%d\n", $mode;
+#printf "Phred\t%s\n", $offset;
+printf "AvgQual\t%.1f\n", $stat{avg_qual};
+#printf "AmbigBases\t%.3f\n", $stat{ambig_bp_pc};
 
 if ($ref) {
   my $size = ($ref =~ m/^(\d+)$/ ? $1 : (-s $ref));
-  print STDERR "Calculating depth, using size $size\n";
-  printf "Depth\t%dx\n", $yield/$size;
-}
-
-if ($hist) {
-  for my $i ($len[0] .. $len[-1]) {
-    my $count = $len{$i} || 0;
-    my $bar = '#'x(int(($count*50/$maxcount)+1));
-    printf "Len-%d\t%d\t%s\n", $i, $count, $bar;
-  }
+  print STDERR "Calculating depth, using size $size\n" unless $quiet;
+  printf "Depth\t%dx\n", $stat{total_bp} / $size;
 }
 
 #----------------------------------------------------------------------
@@ -97,7 +70,7 @@ sub setOptions {
     {OPT=>"help",    VAR=>\&usage,             DESC=>"This help"},
     {OPT=>"quiet!",  VAR=>\$quiet, DEFAULT=>0, DESC=>"Quiet mode: no progress output"},
     {OPT=>"ref=s",   VAR=>\$ref, DEFAULT=>'',  DESC=>"Reference FASTA file OR size in bp"},
-    {OPT=>"hist",    VAR=>\$hist, DEFAULT=>0,  DESC=>"Length histogram"},
+    {OPT=>"hist",    VAR=>\$hist, DEFAULT=>0,  DESC=>"Length histogram (NO LONGER SUPPORTED)"},
   );
 
   (!@ARGV) && (usage());
