@@ -253,7 +253,7 @@ my $R2 = "R2.fq.gz";
 
 my @CMDLINE_NO_FORCE = grep !m/^--?f\S*$/, @CMDLINE; # remove --force / -f etc
 $make{'again'} = {
-  CMD => "(rm -fr roary/ roary_*/ report/ core.* *.gff {denovo,mlst,resistome,virulome}.tab preview.* tree.* distances.tab && cd .. && @CMDLINE_NO_FORCE --force)",
+  CMD => "(rm -fr roary/ roary_*/ report/ core.* *.gff {denovo,resistome,virulome}.tab preview.* tree.* distances.tab && cd .. && @CMDLINE_NO_FORCE --force)",
 };
 
 # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
