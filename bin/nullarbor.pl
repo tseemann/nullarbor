@@ -251,7 +251,7 @@ my $R2 = "R2.fq.gz";
 
 my @CMDLINE_NO_FORCE = grep !m/^--?f\S*$/, @CMDLINE; # remove --force / -f etc
 $make{'again'} = {
-  CMD => "(rm -fr roary/ roary_*/ report/ core.* *.gff {denovo,mlst}.tab preview.* tree.* distances.tab && cd .. && @CMDLINE_NO_FORCE --force)",
+  CMD => "(rm -fr roary/ roary_*/ report/ core.* *.gff {denovo,mlst,resistome,virulome}.tab preview.* tree.* distances.tab && cd .. && @CMDLINE_NO_FORCE --force)",
 };
 
 # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
@@ -470,7 +470,7 @@ sub check_deps {
   require_perlmod( qw'Moo Path::Tiny File::Copy File::Spec File::Path Data::Dumper' );
   require_perlmod( qw'Term::ANSIColor SVG Text::CSV List::MoreUtils IO::File' );
 
-  require_exe( qw'head cat install env nl grep touch' );
+  require_exe( qw'head cat install env nl grep touch tr' );
   require_exe( qw'seqtk trimmomatic prokka roary mlst abricate any2fasta' );
   require_exe( qw'skesa megahit spades.py shovill snippy snp-dists' );
   require_exe( qw'nw_order nw_display iqtree FastTree quicktree' );
