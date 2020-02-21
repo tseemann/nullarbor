@@ -80,7 +80,7 @@ Install [Conda](https://conda.io/docs/) or [Miniconda](https://conda.io/minicond
 #### Homebrew (coming soon)
 Install [Homebrew](http://brew.sh/) (macOS) or [LinuxBrew](http://linuxbrew.sh/) (Linux).
 
-    brew install brewsci/bio/nullarbor # NOT YET SORRY :-(
+    brew install brewsci/bio/nullarbor
 
 
 #### Source
