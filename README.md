@@ -102,10 +102,10 @@ This is the hardest way to install Nullarbor.
 
 #### Kraken
 
-You need to install a [Kraken](https://ccb.jhu.edu/software/kraken/) database (~4 GB).
+You need to install a [Kraken](https://ccb.jhu.edu/software/kraken/) database (~8 GB).
 
-    wget https://ccb.jhu.edu/software/kraken/dl/minikraken_20171019_4GB.tgz
-    tar -C $HOME -zxvf minikraken_20171019_4GB.tgz
+    wget https://ccb.jhu.edu/software/kraken/dl/minikraken_20171019_8GB.tgz
+    tar -C $HOME -zxvf minikraken_20171019_8GB.tgz
 
 
 #### Kraken 2
@@ -127,7 +127,7 @@ Install a [Centrifuge](http://www.ccb.jhu.edu/software/centrifuge/) database (~8
 
 Then add the following to your `$HOME/.bashrc` so Nullarbor can find the databases:
 
-    export KRAKEN_DEFAULT_DB=$HOME/minikraken_20171019_4GB
+    export KRAKEN_DEFAULT_DB=$HOME/minikraken_20171019_8GB
     export KRAKEN2_DEFAULT_DB=$HOME/minikraken2_v2_8GB_201904_UPDATE
     export CENTRIFUGE_DEFAULT_DB=$HOME/centrifuge-db/p_compressed+h+v
 
