@@ -54,7 +54,7 @@ sub html {
   $aln = $aln->next_seq;
   my $stats = sprintf "%d taxa, %d SNPs", $taxa, $aln->length;
   my $fontsize = 14;
-  my $height = int( $fontsize * $taxa );
+  my $height = int( $fontsize * $taxa ); # use auto now
 
 
 # https://github.com/phylocanvas/phylocanvas/issues/212
@@ -63,7 +63,7 @@ sub html {
 
 my $html=<<"HTML_TOP";
 <div style="text-align: center;">$stats</div>
-<div id="phylocanvas" style="width: 100%; height: ${height}pt;">
+<div id="phylocanvas" style="width: 100%; height: auto;">
 <script type="application/javascript" src="https://cdn.rawgit.com/phylocanvas/phylocanvas-quickstart/v2.8.1/phylocanvas-quickstart.js"></script>
 <script type="application/javascript">
 var tree = Phylocanvas.createTree('phylocanvas', {
