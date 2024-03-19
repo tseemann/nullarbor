@@ -112,8 +112,8 @@ You need to install a [Kraken](https://ccb.jhu.edu/software/kraken/) database (~
 
 You need to install a [Kraken2](https://ccb.jhu.edu/software/kraken2/) database (~8 GB).
 
-    wget ftp://ftp.ccb.jhu.edu/pub/data/kraken2_dbs/minikraken2_v2_8GB_201904_UPDATE.tgz
-    tar -C $HOME -zxvf minikraken2_v2_8GB_201904_UPDATE.tgz
+    wget https://genome-idx.s3.amazonaws.com/kraken/minikraken2_v2_8GB_201904.tgz
+    tar -C $HOME -zxvf minikraken2_v2_8GB_201904.tgz
 
 #### Centrifuge
     
